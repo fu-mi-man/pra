@@ -12,6 +12,9 @@ shweb:
 shdb:
 	$(DOCKER_COMPOSE) exec db bash
 
+ps:
+	$(DOCKER_COMPOSE) ps -a
+
 up:
 	$(DOCKER_COMPOSE) up -d
 
