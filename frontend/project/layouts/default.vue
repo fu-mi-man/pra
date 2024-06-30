@@ -1,9 +1,13 @@
 <template>
-  <div>
-    <!-- ヘッダーやナビゲーションなどの共通要素 -->
-    <nuxt />
-    <!-- フッターなどの共通要素 -->
-  </div>
+  <v-app>
+    <!-- ヘッダー（v-app-bar）やナビゲーション（v-navigation-drawer）などの共通要素 -->
+    <v-main>
+      <v-container>
+        <nuxt />
+      </v-container>
+    </v-main>
+    <!-- フッター（v-footer）などの共通要素 -->
+  </v-app>
 </template>
 
 <script>
