@@ -28,13 +28,14 @@
           ref="fileInput"
           type="file"
           :accept="accept"
+          :multiple="multiple"
           style="display: none"
-          @change="onFileChange"
+          @input="onFileInput"
         />
       </v-sheet>
 
-      <v-list v-if="file" class="mt-4">
-        <v-list-item>
+      <v-list v-if="files.length > 0" class="mt-4">
+        <v-list-item v-for="(file, index) in files" :key="index">
           <v-list-item-icon>
             <v-icon>{{ fileIcon }}</v-icon>
           </v-list-item-icon>
@@ -45,7 +46,7 @@
             }}</v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
-            <v-btn icon @click="removeFile">
+            <v-btn icon @click="removeFile(index)">
               <v-icon>mdi-close</v-icon>
             </v-btn>
           </v-list-item-action>
@@ -79,14 +80,14 @@ export default {
       type: String,
       default: 'mdi-file-outline',
     },
-    validateFile: {
-      type: Function,
-      required: true,
+    multiple: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
     return {
-      file: null,
+      files: [],
       isDragging: false,
     }
   },
@@ -94,45 +95,35 @@ export default {
     triggerFileInput() {
       this.$refs.fileInput.click()
     },
-    onFileChange(event) {
-      const files = event.target.files
-      if (files.length === 0) return
-
-      const file = files[0]
-      if (this.validateFile(file)) {
-        this.file = file
-        this.$emit('file-selected', file)
-      } else {
-        alert(`File "${file.name}" is not valid.`)
-      }
-      event.target.value = ''
+    onFileInput(event) {
+      const inputFiles = [...event.target.files] // アップロードファイルは、常に配列として扱う
+      this.processFiles(inputFiles)
     },
     onDragEnter(e) {
-      // ドラッグが要素に入った時
       this.isDragging = true
     },
     onDragLeave(e) {
-      // ドラッグが要素から出た時
       this.isDragging = false
     },
     onDrop(e) {
-      // ドロップされた時の処理
-      // ※ preventDefault()はテンプレード側で`.prevent`修飾子を使用しているため不要
       this.isDragging = false
-      const droppedFiles = e.dataTransfer.files
-      if (droppedFiles.length > 0) {
-        const file = droppedFiles[0]
-        if (this.validateFile(file)) {
-          this.file = file
-          this.$emit('file-selected', file)
-        } else {
-          alert(`Please drop a valid ${this.fileType} file.`)
-        }
-      }
+      const droppedFiles = [...e.dataTransfer.files] // アップロードファイルは、常に配列として扱う
+      this.processFiles(droppedFiles)
     },
-    removeFile() {
-      this.file = null
+    processFiles(files) {
+      if (this.multiple) {
+        this.files = [...this.files, ...files]
+      } else {
+        // this.files = [files[0]] と同じ意味
+        const [firstFile] = files
+        this.files = [firstFile]
+      }
+      this.$emit('files-selected', this.files)
+    },
+    removeFile(index) {
+      this.files.splice(index, 1)
       this.$emit('file-removed')
+      this.$refs.fileInput.value = ''
     },
     formatFileSize(bytes) {
       if (bytes === 0) return '0 Bytes'

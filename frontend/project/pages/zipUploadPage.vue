@@ -5,11 +5,11 @@
         title="CSV Upload"
         file-type="CSV"
         accept=".csv"
+        :multiple="false"
         icon="mdi-file-delimited"
         file-icon="mdi-file-document-outline"
-        :validate-file="validateCSV"
-        @file-selected="onCSVFileSelected"
-        @file-removed="onFileRemoved"
+        @files-selected="onCSVFilesSelected"
+        @file-removed="onCSVFileRemoved"
       />
 
       <v-divider class="my-6"></v-divider>
@@ -18,11 +18,11 @@
         title="ZIP Upload"
         file-type="ZIP"
         accept=".zip"
+        :multiple="false"
         icon="mdi-zip-box"
         file-icon="mdi-zip-box-outline"
-        :validate-file="validateZIP"
-        @file-selected="onZIPFileSelected"
-        @file-removed="onFileRemoved"
+        @files-selected="onZIPFilesSelected"
+        @file-removed="onZIPFileRemoved"
       />
 
       <v-btn
@@ -51,7 +51,7 @@ import FileUploader from '@/components/FileUploader.vue'
 export default {
   name: 'ZipUploadPage',
   components: {
-    FileUploader
+    FileUploader,
   },
   data() {
     return {
@@ -66,19 +66,35 @@ export default {
         'application/vnd.ms-excel',
         'application/csv',
       ]
-      return validMimeTypes.includes(file.type) || file.name.toLowerCase().endsWith('.csv')
+      return (
+        validMimeTypes.includes(file.type) ||
+        file.name.toLowerCase().endsWith('.csv')
+      )
     },
     validateZIP(file) {
-      return file.type === 'application/zip' || file.name.toLowerCase().endsWith('.zip')
+      return (
+        file.type === 'application/zip' ||
+        file.name.toLowerCase().endsWith('.zip')
+      )
     },
-    onCSVFileSelected(file) {
-      this.csvFile = file
+    onCSVFilesSelected(files) {
+      if (files.length > 0 && this.validateCSV(files[0])) {
+        this.csvFile = files[0]
+      } else {
+        // alert('Invalid CSV file')
+      }
     },
-    onZIPFileSelected(file) {
-      this.zipFile = file
+    onZIPFilesSelected(files) {
+      if (files.length > 0 && this.validateZIP(files[0])) {
+        this.zipFile = files[0]
+      } else {
+        // alert('Invalid ZIP file')
+      }
     },
-    onFileRemoved() {
+    onCSVFileRemoved() {
       this.csvFile = null
+    },
+    onZIPFileRemoved() {
       this.zipFile = null
     },
     uploadFiles() {
@@ -92,7 +108,9 @@ export default {
         const csv = e.target.result
         const lines = csv.split('\n')
         const headers = lines[0].split(',')
-        const imageNameIndex = headers.findIndex(header => header.trim().toLowerCase() === 'image_name')
+        const imageNameIndex = headers.findIndex(
+          (header) => header.trim().toLowerCase() === 'image_name'
+        )
 
         if (imageNameIndex === -1) {
           alert('CSV file does not contain an "image_name" column.')
@@ -106,8 +124,8 @@ export default {
       reader.readAsText(this.csvFile)
     },
     handleUpload(csvLines, zipFile) {
-      console.log('Uploading CSV data:', csvLines)
-      console.log('Uploading ZIP file:', zipFile.name)
+      // console.log('Uploading CSV data:', csvLines)
+      // console.log('Uploading ZIP file:', zipFile.name)
       // ここで実際のアップロード処理を実装します
       alert('Files uploaded successfully!')
     },
@@ -118,6 +136,6 @@ export default {
       const i = Math.floor(Math.log(bytes) / Math.log(k))
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
     },
-  }
+  },
 }
 </script>
