@@ -60,39 +60,94 @@ export default {
     }
   },
   methods: {
-    validateCSV(file) {
+    async onCSVFilesSelected(files) {
+      const file = files[0]
+      if (!this.hasSingleCSVFile(files)) {
+        // Error Messageなどを画面に出す
+        this.csvFile = null
+      }
+      if (!this.validateCSVMimeType(file)) {
+        // Error Messageなどを画面に出す
+        this.csvFile = null
+      }
+
+      if (!this.validateCSVExtension(file)) {
+        // Error Messageなどを画面に出す
+        this.csvFile = null
+      }
+
+      const isValid = await this.validateCSVContent(file)
+      if (isValid) {
+        this.csvFile = file
+      } else {
+        console.error('Invalid CSV content')
+        this.csvFile = null
+      }
+    },
+    hasSingleCSVFile(file) {
+      return file.length === 1
+    },
+    validateCSVMimeType(file) {
       const validMimeTypes = [
         'text/csv',
         'application/vnd.ms-excel',
         'application/csv',
       ]
-      return (
-        validMimeTypes.includes(file.type) ||
-        file.name.toLowerCase().endsWith('.csv')
-      )
+      return validMimeTypes.includes(file.type)
     },
-    validateZIP(file) {
-      return (
-        file.type === 'application/zip' ||
-        file.name.toLowerCase().endsWith('.zip')
-      )
-    },
-    onCSVFilesSelected(files) {
-      if (files.length > 0 && this.validateCSV(files[0])) {
-        this.csvFile = files[0]
-      } else {
-        // alert('Invalid CSV file')
-      }
-    },
-    onZIPFilesSelected(files) {
-      if (files.length > 0 && this.validateZIP(files[0])) {
-        this.zipFile = files[0]
-      } else {
-        // alert('Invalid ZIP file')
-      }
+    validateCSVExtension(file) {
+      return file.name.toLowerCase().endsWith('.csv')
     },
     onCSVFileRemoved() {
       this.csvFile = null
+    },
+    async validateCSVContent(file) {
+      return await true
+      // try {
+      //   console.log('AA');
+      //   const formData = new FormData()
+      //   formData.append('file', file)
+
+      //   const response = await this.$axios.post('/api/validate-csv', formData, {
+      //     headers: {
+      //       'Content-Type': 'multipart/form-data',
+      //     },
+      //   })
+
+      //   if (response.data.isValid) {
+      //     return true
+      //   } else {
+      //     this.showError(response.data.errorMessage || 'Invalid CSV content')
+      //     return false
+      //   }
+      // } catch (error) {
+      //   this.showError(
+      //     'Error validating CSV file: ' +
+      //       (error.response?.data?.message || error.message)
+      //   )
+      //   return false
+      // }
+    },
+    onZIPFilesSelected(files) {
+      const file = files[0]
+      if (!this.hasZipFiles(file)) {
+        // Error Messageなどを画面に出す
+      }
+      if (!this.validateZIPMimeType(file)) {
+        // Error Messageなどを画面に出す
+      }
+      if (!this.validateZIPExtension(file)) {
+        // Error Messageなどを画面に出す
+      }
+    },
+    hasSingleZIPFile(file) {
+      return file.length === 1
+    },
+    validateZIPMimeType(file) {
+      return file.type === 'application/zip'
+    },
+    validateZIPExtension(file) {
+      return file.name.toLowerCase().endsWith('.zip')
     },
     onZIPFileRemoved() {
       this.zipFile = null
