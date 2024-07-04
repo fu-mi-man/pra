@@ -139,6 +139,9 @@ export default {
       if (!this.validateZIPExtension(file)) {
         // Error Messageなどを画面に出す
       }
+      if (!this.isValidZIPFileSize(file)) {
+        // return;
+      }
     },
     hasSingleZIPFile(file) {
       return file.length === 1
@@ -148,6 +151,10 @@ export default {
     },
     validateZIPExtension(file) {
       return file.name.toLowerCase().endsWith('.zip')
+    },
+    isValidZIPFileSize(file) {
+      const maxSize = 1 * 1024 * 1024 * 1024; // 1GB
+      return file.size <= maxSize
     },
     onZIPFileRemoved() {
       this.zipFile = null
