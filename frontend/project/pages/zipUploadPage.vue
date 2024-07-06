@@ -61,26 +61,34 @@ export default {
   },
   methods: {
     async onCSVFilesSelected(files) {
+      // CSVファイルを検証する
       const file = files[0]
-      if (!this.hasSingleCSVFile(files)) {
+      if (!this.hasSingleCSVFile(file)) {
         // Error Messageなどを画面に出す
         this.csvFile = null
+        return
       }
       if (!this.validateCSVMimeType(file)) {
         // Error Messageなどを画面に出す
         this.csvFile = null
+        return
       }
-
       if (!this.validateCSVExtension(file)) {
         // Error Messageなどを画面に出す
         this.csvFile = null
+        return
+      }
+      if (!this.validateCSVFileSize(file)) {
+        // Error Messageなどを画面に出す
+        this.csvFile = null
+        return
       }
 
-      const isValid = await this.validateCSVContent(file)
+      // CSVデータを検証する
+      const isValid = await this.validateCSV(file)
       if (isValid) {
         this.csvFile = file
       } else {
-        console.error('Invalid CSV content')
         this.csvFile = null
       }
     },
@@ -98,35 +106,96 @@ export default {
     validateCSVExtension(file) {
       return file.name.toLowerCase().endsWith('.csv')
     },
+    validateCSVFileSize(file) {
+      const maxSize = 20 * 1024 * 1024 // 20MB
+      return file.size <= maxSize
+    },
+    async validateCSV(file) {
+      // アップロードしたCSVファイルを読み込む
+      const content = await this.readCSVContent(file)
+
+      // 内容の検証
+      if (!this.validateCSVContent(content)) {
+        return false
+      }
+
+      return true
+    },
+    async readCSVContent(file) {
+      try {
+        return await new Promise((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onload = (e) => resolve(e.target.result)
+          reader.onerror = (e) =>
+            reject(new Error('ファイルを読み込めませんでした'))
+          reader.readAsText(file)
+        })
+      } catch (error) {
+        console.error('CSVファイルの読み込み中にエラーが発生しました:', error)
+      }
+    },
     onCSVFileRemoved() {
       this.csvFile = null
     },
-    async validateCSVContent(file) {
+    async validateCSVContent(content) {
+      // 行数の検証
+      const lines = content.split('\n')
+      if (!this.isValidCSVLineCount(lines.length)) {
+        return false
+      }
+      // 列数の検証
+      if (!this.isValidCSVColumnCount(lines)) {
+        return false
+      }
+      // ヘッダーの検証（2行目は必ずカラム名で確定）
+      const headers = lines[1].split(',')
+      if (!this.validateCSVHeaders(headers)) {
+        return false
+      }
+      // データ行の検証
+      
       return await true
-      // try {
-      //   console.log('AA');
-      //   const formData = new FormData()
-      //   formData.append('file', file)
+    },
+    isValidCSVLineCount(lineCount) {
+      const minLines = 3 // ヘッダー2行分 + 少なくとも1つのデータ行
+      const maxLines = 10002 // 最大許容行数
 
-      //   const response = await this.$axios.post('/api/validate-csv', formData, {
-      //     headers: {
-      //       'Content-Type': 'multipart/form-data',
-      //     },
-      //   })
+      return minLines <= lineCount && lineCount <= maxLines
+    },
+    isValidCSVColumnCount(lines) {
+      const maxColumns = 120
 
-      //   if (response.data.isValid) {
-      //     return true
-      //   } else {
-      //     this.showError(response.data.errorMessage || 'Invalid CSV content')
-      //     return false
-      //   }
-      // } catch (error) {
-      //   this.showError(
-      //     'Error validating CSV file: ' +
-      //       (error.response?.data?.message || error.message)
-      //   )
-      //   return false
-      // }
+      return lines.every((line) => {
+        const columnCount = line.split(',').length
+        return columnCount <= maxColumns
+      })
+    },
+    validateCSVHeaders(headers) {
+      const trimmedHeaders = headers.map((h) => h.trim()) // ヘッダーをトリムするが、空の要素は保持する
+      const requiredHeaders = ['ID', 'Name', 'Email', 'Age'] // 必須ヘッダー
+      const allowDuplicates = ['Message'] // 重複を許可するヘッダー
+
+      // 必須ヘッダーのチェック
+      const missingHeaders = requiredHeaders.filter(
+        (required) => !trimmedHeaders.includes(required)
+      )
+      if (0 < missingHeaders.length) {
+        // 欠落しているヘッダーを返せる
+        return false
+      }
+
+      // 重複ヘッダーのチェック（空文字列は無視）
+      const duplicates = trimmedHeaders.filter(
+        (header, index, self) =>
+          header !== '' && // 空文字列でないヘッダーのみを対象
+          self.indexOf(header) !== index && // 現在のindexと最初に現れるindexが異なる場合，重複
+          !allowDuplicates.includes(header) // 許可された重複は無視
+      )
+      if (0 < duplicates.length) {
+        return false
+      }
+
+      return true
     },
     onZIPFilesSelected(files) {
       const file = files[0]
@@ -153,7 +222,7 @@ export default {
       return file.name.toLowerCase().endsWith('.zip')
     },
     isValidZIPFileSize(file) {
-      const maxSize = 1 * 1024 * 1024 * 1024; // 1GB
+      const maxSize = 1 * 1024 * 1024 * 1024 // 1GB
       return file.size <= maxSize
     },
     onZIPFileRemoved() {
@@ -197,6 +266,11 @@ export default {
       const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
       const i = Math.floor(Math.log(bytes) / Math.log(k))
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+    },
+    showErrorToUser(message) {
+      // ここでエラーメッセージを表示する
+      // 例: this.$toast.error(message); や alert(message); など
+      console.error(message) // 開発中はコンソールにも出力
     },
   },
 }
