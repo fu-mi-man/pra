@@ -1,15 +1,21 @@
 <template>
   <v-row justify="center">
     <v-col cols="12" md="8">
+      <v-alert v-if="shouldShowError" type="error" dense outlined class="mb-4">
+        {{ errorMessage }}
+      </v-alert>
       <file-uploader
+        ref="csvUploader"
         title="CSV Upload"
         file-type="CSV"
         accept=".csv"
         :multiple="false"
         icon="mdi-file-delimited"
         file-icon="mdi-file-document-outline"
+        :should-clear="shouldClearCSV"
         @files-selected="onCSVFilesSelected"
         @file-removed="onCSVFileRemoved"
+        @cleared="onCSVUploaderCleared"
       />
 
       <v-divider class="my-6"></v-divider>
@@ -57,29 +63,38 @@ export default {
     return {
       csvFile: null,
       zipFile: null,
+      errorMessage: '',
+      shouldClearCSV: false,
+      shouldShowError: false,
     }
   },
   methods: {
     async onCSVFilesSelected(files) {
+      this.clearError();
       // CSVファイルを検証する
       const file = files[0]
-      if (!this.hasSingleCSVFile(file)) {
-        // Error Messageなどを画面に出す
+      if (!this.hasSingleCSVFile(files)) {
+        this.showErrorToUser('単一のCSVファイルを選択してください')
+        // this.$refs.csvUploader.clearFiles() 単方向データフローの原則に反するため採用しない
+        this.shouldClearCSV = true // ウォッチャーを使用する方を採用
         this.csvFile = null
         return
       }
       if (!this.validateCSVMimeType(file)) {
-        // Error Messageなどを画面に出す
+        this.showErrorToUser('無効なファイル形式です。CSVファイルを選択してください') // prettier-ignore
+        this.shouldClearCSV = true
         this.csvFile = null
         return
       }
       if (!this.validateCSVExtension(file)) {
-        // Error Messageなどを画面に出す
+        this.showErrorToUser('無効なファイル拡張子です。.csv形式のファイルを選択してください') // prettier-ignore
+        this.shouldClearCSV = true
         this.csvFile = null
         return
       }
       if (!this.validateCSVFileSize(file)) {
-        // Error Messageなどを画面に出す
+        this.showErrorToUser('ファイルサイズが大きすぎます。20MB以下のファイルを選択してください') // prettier-ignore
+        this.shouldClearCSV = true
         this.csvFile = null
         return
       }
@@ -89,6 +104,7 @@ export default {
       if (isValid) {
         this.csvFile = file
       } else {
+        this.shouldClearCSV = true
         this.csvFile = null
       }
     },
@@ -131,7 +147,7 @@ export default {
           reader.readAsText(file)
         })
       } catch (error) {
-        console.error('CSVファイルの読み込み中にエラーが発生しました:', error)
+        // console.error('CSVファイルの読み込み中にエラーが発生しました:', error)
       }
     },
     onCSVFileRemoved() {
@@ -153,7 +169,10 @@ export default {
         return false
       }
       // データ行の検証
-      
+      if (!this.validateCSVData(lines, headers)) {
+        return false // エラーメッセージは validateCSVData 内で表示される
+      }
+
       return await true
     },
     isValidCSVLineCount(lineCount) {
@@ -175,12 +194,15 @@ export default {
       const requiredHeaders = ['ID', 'Name', 'Email', 'Age'] // 必須ヘッダー
       const allowDuplicates = ['Message'] // 重複を許可するヘッダー
 
-      // 必須ヘッダーのチェック
       const missingHeaders = requiredHeaders.filter(
-        (required) => !trimmedHeaders.includes(required)
+        (required) =>
+          !trimmedHeaders
+            .map((h) => h.toLowerCase())
+            .includes(required.toLowerCase())
       )
-      if (0 < missingHeaders.length) {
-        // 欠落しているヘッダーを返せる
+      if (missingHeaders.length > 0) {
+        this.showErrorToUser(`必須ヘッダーが不足しています: ${missingHeaders.join(', ')}`) // prettier-ignore
+        this.shouldClearCSV = true
         return false
       }
 
@@ -191,25 +213,85 @@ export default {
           self.indexOf(header) !== index && // 現在のindexと最初に現れるindexが異なる場合，重複
           !allowDuplicates.includes(header) // 許可された重複は無視
       )
-      if (0 < duplicates.length) {
+      if (duplicates.length > 0) {
+        this.showErrorToUser(
+          `ヘッダーが重複しています: ${missingHeaders.join(', ')}`
+        )
+        this.shouldClearCSV = true
         return false
       }
 
       return true
     },
+    validateCSVData(lines, headers) {
+      const idIndex = headers.findIndex((h) => h.trim() === 'ID')
+      const nameIndex = headers.findIndex((h) => h.trim() === 'Name')
+      const emailIndex = headers.findIndex((h) => h.trim() === 'Email')
+      const ageIndex = headers.findIndex((h) => h.trim() === 'Age')
+
+      for (let i = 2; i < lines.length; i++) {
+        const values = lines[i].split(',')
+
+        // 各行の列数チェック
+        if (values.length !== headers.length) {
+          this.showErrorToUser(`行 ${i + 1} の列数が不正です。`)
+          this.shouldClearCSV = true
+          return false
+        }
+
+        // ID のチェック（空でないこと）
+        if (!values[idIndex].trim()) {
+          this.showErrorToUser(`行 ${i + 1} の ID が空です。`)
+          this.shouldClearCSV = true
+          return false
+        }
+
+        // Name のチェック（空でないこと）
+        if (!values[nameIndex].trim()) {
+          this.showErrorToUser(`行 ${i + 1} の Name が空です。`)
+          this.shouldClearCSV = true
+          return false
+        }
+
+        // Email のチェック（簡単な形式チェック）
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(values[emailIndex].trim())) {
+          this.showErrorToUser(`行 ${i + 1} の Email が不正です。`)
+          // this.shouldClearCSV = true
+          return false
+        }
+
+        // Age のチェック（数値であること）
+        if (isNaN(parseInt(values[ageIndex]))) {
+          this.showErrorToUser(`行 ${i + 1} の Age が数値ではありません。`)
+          this.shouldClearCSV = true
+          return false
+        }
+      }
+
+      return true
+    },
+    onCSVUploaderCleared() {
+      this.csvFile = null
+      this.shouldClearCSV = false
+    },
+    clearError() {
+      this.shouldShowError = false
+      this.errorMessage = ''
+    },
     onZIPFilesSelected(files) {
       const file = files[0]
       if (!this.hasZipFiles(file)) {
-        // Error Messageなどを画面に出す
+        this.showErrorToUser('単一のZIPファイルを選択してください')
       }
       if (!this.validateZIPMimeType(file)) {
-        // Error Messageなどを画面に出す
+        this.showErrorToUser('無効なファイル形式です。ZIPファイルを選択してください') // prettier-ignore
       }
       if (!this.validateZIPExtension(file)) {
-        // Error Messageなどを画面に出す
+        this.showErrorToUser('無効なファイル拡張子です。.zip形式のファイルを選択してください') // prettier-ignore
       }
       if (!this.isValidZIPFileSize(file)) {
-        // return;
+        this.showErrorToUser('ファイルサイズが大きすぎます。1GB以下のファイルを選択してください') // prettier-ignore
       }
     },
     hasSingleZIPFile(file) {
@@ -268,9 +350,9 @@ export default {
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
     },
     showErrorToUser(message) {
-      // ここでエラーメッセージを表示する
-      // 例: this.$toast.error(message); や alert(message); など
-      console.error(message) // 開発中はコンソールにも出力
+      this.errorMessage = message
+      this.shouldShowError = true
+      this.shouldClearCSV = true
     },
   },
 }

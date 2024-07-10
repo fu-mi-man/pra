@@ -84,11 +84,23 @@ export default {
       type: Boolean,
       default: false,
     },
+    shouldClear: {
+      type: Boolean,
+      default: false,
+    }
   },
   data() {
     return {
       files: [],
       isDragging: false,
+    }
+  },
+  watch: {
+    shouldClear(newVal) {
+      if (newVal) {
+        this.clearFiles();
+        this.$emit('cleared');
+      }
     }
   },
   methods: {
@@ -131,6 +143,12 @@ export default {
       const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
       const i = Math.floor(Math.log(bytes) / Math.log(k))
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+    },
+    clearFiles() {
+      this.files = []
+      if (this.$refs.fileInput) {
+        this.$refs.fileInput.value = ''
+      }
     },
   },
 }
