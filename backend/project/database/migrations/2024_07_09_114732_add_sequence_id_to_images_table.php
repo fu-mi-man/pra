@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -12,28 +13,26 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // ALTER TABLE images DROP COLUMN sequence_id;
+        // `SHOW CREATE TABLE images\G`と`show index from images\G` で現在のテーブル状況を確認しておく
+        // `sequence_id`カラム追加が暗黙的に先に実行され，主キーの重複エラーとなるためマイグレーションを分割する
         Schema::table('images', function (Blueprint $table) {
-            // インデックスを追加
-            // $table->index(['sequence_id', 'user_id']);
-            // idのプライマリーキーを外すが，インデックスは残す
-            // DB::statement('ALTER TABLE images MODIFY id VARCHAR(255) NOT NULL');
-            // $table->dropPrimary('id');
-            // $table->index('id')->comment('S3 Path')->change();
-            // DB::statement('ALTER TABLE images MODIFY id VARCHAR(255) NOT NULL COMMENT "S3 Path"');
+            $table->dropPrimary('id');
+            $table->unique('id', 'images_id_unique'); // 主キーを外すと非ユニークインデックスになるためユニークを設定
+        });
+        Schema::table('images', function (Blueprint $table) {
+            $table->string('id')->comment('S3 Path')->change();
 
             // sequence_id, user_id, typeを追加
             $table->bigIncrements('sequence_id')->first()->comment('シーケンスID');
-            $table->unsignedBigInteger('user_id')->after('sequence_id')->comment('ユーザID');
+            $table->integer('user_id')->after('sequence_id')->comment('ユーザID');
             $table->string('type')->after('user_id')->default('')->comment('画像の種類：product, catalog, kiritori, user, other');
 
-            // $table->index(['sequence_id', 'user_id']); // 複合インデックス
+            $table->index(['sequence_id', 'user_id'], 'idx_sequence_id_user_id'); // 複合インデックス
         });
 
         // 既存のデータに対してuser_idを設定
         $this->updateUserIds();
-        //
-        //         DB::statement("ALTER TABLE images ADD CONSTRAINT check_image_type CHECK (type IN ('', 'product', 'catalog', 'kiritori', 'user', 'other'))");
+        // DB::statement("ALTER TABLE images ADD CONSTRAINT check_image_type CHECK (type IN ('', 'product', 'catalog', 'kiritori', 'user', 'other'))");
     }
 
     /**
@@ -42,14 +41,15 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('images', function (Blueprint $table) {
-            $table->dropColumn('sequence_id');
-            $table->dropColumn('user_id');
+            // 複合インデックス削除
+            $table->dropIndex('idx_sequence_id_user_id');
+            // カラムを削除
             $table->dropColumn('type');
-            // $table->dropIndex(['sequence_id', 'user_id']);
-            // $table->dropIndex('id');
-            // $table->dropUnique('images_sequence_id_unique');
+            $table->dropColumn('user_id');
+            $table->dropColumn('sequence_id');
 
-            // $table->primary('id'); // idを再度プライマリーキーに設定
+            $table->dropUnique('images_id_unique');
+            $table->primary('id'); // idを再度主キーに設定（ユニークインデックス）
         });
 
         // DB::statement("ALTER TABLE images DROP CONSTRAINT IF EXISTS check_image_type");
@@ -60,6 +60,7 @@ return new class extends Migration
         DB::table('images')->orderBy('id')->chunk(1000, function ($images) {
             foreach ($images as $image) {
                 $parts = explode('/', $image->id);
+                Log::debug($parts);
                 if (count($parts) >= 3) {
                     DB::table('images')
                         ->where('id', $image->id)
