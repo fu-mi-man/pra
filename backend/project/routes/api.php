@@ -8,8 +8,9 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+// http://localhost/api/hello
 Route::get('/hello', function() {
-    return 'Hello!';
+    return response()->json(['message' => 'Hello!']);
 });
 
 Route::post('/validate-csv', [CSVValidationController::class, 'validate']);
