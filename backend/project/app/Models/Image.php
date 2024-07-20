@@ -33,9 +33,9 @@ class Image extends Model
     public static function getSumSizeByType(int $user_id): collection
     {
         return self::query()
+            ->selectRaw('type, SUM(size) AS sum_size')
             ->where('user_id', $user_id)
             ->groupBy('type')
-            ->selectRaw('type, SUM(size) as sum_size')
             ->pluck('sum_size', 'type');
     }
 }
