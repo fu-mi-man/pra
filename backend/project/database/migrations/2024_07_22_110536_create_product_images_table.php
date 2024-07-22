@@ -12,14 +12,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('images', function (Blueprint $table) {
-            $table->string('id')->primary();
-            $table->string('name');
-            $table->integer('size');
+        Schema::create('product_images', function (Blueprint $table) {
+            $table->id('product_id');
+            $table->integer('sequence'); // index
+            $table->string('image_id');
             $table->timestamps();
         });
 
-        // $this->insertSampleData();
+        //  $this->insertSampleData();
     }
 
     /**
@@ -27,27 +27,27 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('images');
+        Schema::dropIfExists('product_images');
     }
 
     /**
-     * Insert sample data into the images table.
+     * Insert sample data into the product_images table.
      */
     private function insertSampleData(): void
     {
         $sampleData = [];
         for ($i = 1; $i <= 100; $i++) {
-            $userId = rand(10000000, 99999999);
+            $sequence = rand(1, 10);
+            $userId = rand(1, 100);
             $date = date('Y-md-His', strtotime("-{$i} days"));
             $sampleData[] = [
-                'id' => "image/41653966/{$userId}/4270b026/{$date}/XXXXXXXXXXXX.pdf.page_1.jpg",
-                'name' => "Sample Image {$i}",
-                'size' => rand(1000000, 10000000), // 1MB to 10MB
+                'sequence' => $sequence,
+                'image_id' => "image/41653966/{$userId}/4270b026/{$date}/XXXXXXXXXXXX.pdf.page_1.jpg",
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
         }
 
-        DB::table('images')->insert($sampleData);  // ここを 'images' に修正
+        DB::table('product_images')->insert($sampleData);
     }
 };

@@ -36,10 +36,10 @@ return new class extends Migration
             $table->index(['sequence_id', 'user_id'], 'idx_sequence_id_user_id'); // 複合インデックス
         });
         // MySQL5.7ではCHECK制約が無視されるので、機能するのはMySQL8.0以降
-        DB::statement("ALTER TABLE images ADD CONSTRAINT check_images_type CHECK (type IN ('', 'product', 'catalog', 'crop', 'user', 'other'))");
+        // DB::statement("ALTER TABLE images ADD CONSTRAINT check_images_type CHECK (type IN ('', 'product', 'catalog', 'crop', 'enterprise', 'profile'))");
 
         // 既存のデータに対してuser_idを設定
-        $this->updateUserIds();
+        // $this->updateUserIds();
     }
 
     /**
