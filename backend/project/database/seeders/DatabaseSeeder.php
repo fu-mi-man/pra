@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             ProductImageSeeder::class,
+            CatalogPageSeeder::class,
         ]);
         // User::factory(10)->create();
 
