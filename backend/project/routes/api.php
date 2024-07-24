@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CSVValidationController;
+use App\Http\Controllers\UploadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,3 +15,4 @@ Route::get('/hello', function() {
 });
 
 Route::post('/validate-csv', [CSVValidationController::class, 'validate']);
+Route::post('/upload', [UploadController::class, 'upload']);
