@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Aws\Exception\AwsException;
 use Aws\S3\S3Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class UploadController extends Controller
 {
@@ -39,6 +40,11 @@ class UploadController extends Controller
 
             return response()->json(['message' => 'ファイルがアップロードされました', 'path' => $result['ObjectURL']]);
         } catch (AwsException $e) {
+            Log::error('AWS Error: ' . $e->getMessage(), [
+                'code' => $e->getAwsErrorCode(),
+                'type' => $e->getAwsErrorType(),
+                'requestId' => $e->getAwsRequestId(),
+            ]);
             return response()->json(['error' => 'アップロードに失敗しました: ' . $e->getMessage()], 500);
         }
     }
