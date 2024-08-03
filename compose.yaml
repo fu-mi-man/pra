@@ -24,6 +24,9 @@ services:
     image: "php:8.3"
     volumes:
       - ./backend:/var/www
+    #   - ./backend/conf.d/custom-php.ini:/usr/local/etc/php/conf.d/zz-custom-php.ini:ro # 読み取り専用でマウントする
+    # environment:
+    #   - TZ=Asia/Tokyo # コンテナ自体のタイムゾーンの設定
     working_dir: "/var/www/project"
     tty: true
     depends_on:
@@ -52,6 +55,7 @@ services:
       MYSQL_DATABASE: laravel
       MYSQL_USER: user
       MYSQL_PASSWORD: pass
+      TZ: Asia/Tokyo
   adminer:
     container_name: adminer
     image: adminer
