@@ -13,11 +13,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // 商品
         $this->call([
-            // ProductImageSeeder::class,
-            // CatalogPageSeeder::class,
+            ProductImageSeeder::class,
+            CatalogPageSeeder::class,
+        ]);
+        // ユーザと出展者
+        $this->call([
             UserSeeder::class,
             EnterpriseSeeder::class,
+            EnterpriseUserSeeder::class,
         ]);
         // User::factory(10)->create();
 
