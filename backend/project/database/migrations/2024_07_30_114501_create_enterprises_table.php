@@ -12,19 +12,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('enterprises', function (Blueprint $table) {
-            $table->id('enterprise_id');
-            $table->unsignedBigInteger('user_id');
-            $table->string('name');
+            $table->id('enterprise_id')->comment('id');
+            // $table->unsignedBigInteger('user_id');
+            $table->string('name')->comment('企業名');
             $table->text('description')->nullable();
-            $table->string('address')->nullable();
-            $table->string('phone_number')->nullable();
-            $table->string('email')->nullable();
+            $table->string('address');
+            $table->string('email');
+            $table->string('icon')->nullable();
+            $table->string('header')->nullable();
+            $table->boolean('is_published')->default(false);
             $table->string('website')->nullable();
-            $table->date('founded_at')->nullable();
-            $table->string('industry')->nullable();
-            $table->integer('employee_count')->nullable();
-            $table->string('status')->default('active');
+            $table->string('site_id');
             $table->timestamps();
+
+            $table->comment('出展者テーブル');
         });
     }
 
