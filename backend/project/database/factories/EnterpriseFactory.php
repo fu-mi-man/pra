@@ -18,17 +18,16 @@ class EnterpriseFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
-            'name' => $this->faker->company,
-            'description' => $this->faker->paragraph,
-            'address' => $this->faker->address,
-            'phone_number' => $this->faker->phoneNumber,
-            'email' => $this->faker->companyEmail,
-            'website' => $this->faker->url,
-            'founded_at' => $this->faker->date(),
-            'industry' => $this->faker->word,
-            'employee_count' => $this->faker->numberBetween(1, 10000),
-            'status' => $this->faker->randomElement(['active', 'inactive']),
+            'id' => fake()->unique()->numberBetween(10000000, 99999999),
+            'name' => fake()->company(),
+            'description' => fake()->realText(1000, 2),
+            'address' => fake()->address(),
+            'email' => fake()->companyEmail(),
+            'icon' => fake()->optional()->imageUrl(100, 100),
+            'header' => fake()->optional()->imageUrl(1200, 300),
+            'is_published' => fake()->boolean(),
+            'website' => fake()->optional()->url(),
+            'site_id' => fake()->unique()->word(),
         ];
     }
 }

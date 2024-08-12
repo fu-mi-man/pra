@@ -18,9 +18,12 @@ class EnterpriseUserFactory extends Factory
      */
     public function definition(): array
     {
-        return [
-            'user_id' => User::factory(),
-            'enterprise_id' => Enterprise::factory(),
-        ];
+        return []; // このfactoryは何もしていない
+        // return [
+        //     'user_id' => User::factory(),
+        //     'enterprise_id' => Enterprise::factory(),
+        //     'is_completed' => fake()->boolean(),
+        //     'is_cancelled' => fake()->boolean(),
+        // ];
     }
 }
