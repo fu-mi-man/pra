@@ -15,15 +15,34 @@ class EnterpriseUserSeeder extends Seeder
      */
     public function run(): void
     {
-        // enterpriseテーブルから全件取得
+        // 全出展者のテストデータを作成
+        $users = User::all();
         $enterprises = Enterprise::all();
 
+        // 除外した出展者以外からランダムにテストデータを作成したい場合
+        // $excludeEnterpriseIds = [93544150, 86914186, 73328207];
+        // $numberOfEnterprisesToSelect = 5; // 選択したい企業の数
+        // $enterprises = Enterprise::whereNotIn('id', $excludeEnterpriseIds)
+        //     ->inRandomOrder()
+        //     ->take($numberOfEnterprisesToSelect)
+        //     ->get();
+
+        // テストデータを作成する出展者を指定したい場合
+        // $selectedEnterpriseIds = [74934729, 40943199];
+        // $enterprises = Enterprise::whereIn('id', $selectedEnterpriseIds)->get();
+
         foreach ($enterprises as $enterprise) {
-            // enterprise_userテーブルに同じ組み合わせを挿入
-            EnterpriseUser::create([
-                'user_id' => $enterprise->user_id,
-                'enterprise_id' => $enterprise->enterprise_id,
-            ]);
+            $randomUsers = $users->random(rand(1, 5)); // 1出展者あたり1人〜5人のユーザをランダムに選ぶ
+
+            foreach ($randomUsers as $user) {
+                EnterpriseUser::firstOrCreate([ // 第1引数：検索条件
+                    'user_id' => $user->id,
+                    'enterprise_id' => $enterprise->id,
+                ], [ // 第2引数：新規作成時の追加データ
+                    'is_completed' => fake()->boolean(),
+                    'is_cancelled' => fake()->boolean(),
+                ]);
+            }
         }
         // 20人のユーザーをランダムに選択
 //         $users = User::inRandomOrder()->limit(5)->get();
@@ -50,7 +69,5 @@ class EnterpriseUserSeeder extends Seeder
 //                 $enterprises->random(rand(1, 3))->pluck('id')->toArray()
 //             );
 //         });
-//
-//         EnterpriseUser::factory(20)->create();
     }
 }
