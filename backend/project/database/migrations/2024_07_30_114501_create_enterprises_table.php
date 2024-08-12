@@ -12,14 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('enterprises', function (Blueprint $table) {
-            $table->id('enterprise_id')->comment('id');
-            // $table->unsignedBigInteger('user_id');
-            $table->string('name')->comment('企業名');
-            $table->text('description')->nullable();
-            $table->string('address');
-            $table->string('email');
-            $table->string('icon')->nullable();
-            $table->string('header')->nullable();
+            $table->id()->comment('出展者ID');
+            $table->string('name')->comment('出展者名');
+            $table->text('description')->nullable()->comment('説明');
+            $table->string('address')->comment('住所');
+            $table->string('email')->comment('メールアドレス');
+            $table->string('icon')->nullable()->comment('アイコン');
+            $table->string('header')->nullable()->comment('ヘッダー');
             $table->boolean('is_published')->default(false);
             $table->string('website')->nullable();
             $table->string('site_id');
