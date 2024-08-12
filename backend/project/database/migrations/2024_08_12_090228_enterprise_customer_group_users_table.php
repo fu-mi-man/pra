@@ -11,14 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('enterprise_user', function (Blueprint $table) {
-            $table->unsignedBigInteger('enterprise_id')->comment('出展者ID');
+        Schema::create('enterprise_customer_group_users', function (Blueprint $table) {
+            $table->unsignedBigInteger('enterprise_customer_group_id')->comment('出展者顧客グループID');
             $table->unsignedBigInteger('user_id')->comment('ユーザID');
-            $table->boolean('is_completed')->default(false);
-            $table->boolean('is_cancelled')->default(false);
             $table->timestamps();
 
-            $table->comment('出展者ユーザテーブル');
+            $table->comment('顧客グループユーザテーブル');
         });
     }
 
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('enterprise_user');
+        Schema::dropIfExists('enterprise_customer_group_users');
     }
 };
