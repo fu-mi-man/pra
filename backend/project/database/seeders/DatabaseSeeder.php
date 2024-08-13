@@ -23,12 +23,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             EnterpriseSeeder::class,
             EnterpriseUserSeeder::class,
+            BusinessCardSeeder::class,
+            EnterpriseCustomerUserSeeder::class,
         ]);
-        // User::factory(10)->create();
-
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
     }
 }
