@@ -19,6 +19,7 @@ export default {
       directoryStructure: [
         { name: 'ホーム', path: '/' },
         { name: 'プロファイル', path: '/inspire' },
+        { name: 'ダイアログ', path: '/dialog' },
         { name: 'ポップアップ', path: '/popup' },
         { name: 'ポップアップURL', path: '/popup-url' },
         { name: 'S3', path: '/s3' },
