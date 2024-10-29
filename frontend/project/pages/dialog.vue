@@ -1,83 +1,88 @@
 <template>
   <div>
-    <v-btn
-      color="primary"
-      @click="dialog = true"
-    >
-      ダイアログを開く
-    </v-btn>
+    <v-btn color="primary" @click="dialog = true"> ダイアログを開く </v-btn>
 
-    <v-dialog
-      v-model="dialog"
-      width="700"
-    >
+    <v-dialog v-model="dialog" width="700">
       <v-card>
         <v-card-title class="text-body-1 text-sm-body-2 text-md-h6">
-          Safarigamesからのお知らせ
+          SAFARI GAMES からのお知らせ
         </v-card-title>
 
         <v-card-text>
-          <!-- カスタムHTMLコンテンツ -->
           <div class="custom-content">
-            <div class="header-section">
-              <h2 class="text-body-1 text-sm-body-2 text-md-h6 line-height-2">
-                モストラは<br>
-                Safaruganes が提供するBtoBサービスです
+            <div class="text-center header-section">
+              <!-- PC・タブレットサイズ以上（960px以上）で表示 -->
+              <h2
+                class="hidden-sm-and-down text-md-h6 line-height-2 black--text font-weight-bold"
+              >
+                モストラは<br />
+                SAFARI GAMES が提供するBtoBサービスです
+              </h2>
+              <!-- スマホ・タブレットサイズ（959px以下）で表示 -->
+              <h2
+                class="hidden-md-and-up text-body-1 line-height-2 black--text font-weight-bold"
+              >
+                モストラは<br />
+                SAFARI GAMES が提供する<br />
+                BtoBサービスです
               </h2>
             </div>
-            <div class="content-grid">
-              <div class="grid-item">
-                <img src="/api/placeholder/200/200" alt="サンプル画像">
-                <h3>簡単操作でカタログ、商品を公開</h3>
-              </div>
-
-              <div class="grid-item">
-                <img src="/api/placeholder/200/200" alt="サンプル画像">
-                <h3>商品の見積依頼、受発注が可能</h3>
-              </div>
-            </div>
-           <!-- <v-row class="mb-6">
-              <v-col cols="6">
+            <v-row
+              class="content-grid"
+              :class="{ 'mx-0': $vuetify.breakpoint.smAndDown }"
+            >
+              <v-col
+                cols="6"
+                sm="6"
+                md="6"
+                :class="{ 'px-1': $vuetify.breakpoint.smAndDown }"
+              >
                 <div class="grid-item">
-                  <v-img
-                    src="/api/placeholder/300/300"
-                    max-width="300"
-                    class="mx-auto"
-                  ></v-img>
-                  <h3 class="mt-4">簡単操作でカタログ、商品を公開</h3>
+                  <img src="/api/placeholder/200/200" alt="サンプル画像" />
+                  <p>簡単操作でカタログ、商品を公開</p>
                 </div>
               </v-col>
 
-              <v-col cols="6">
+              <v-col
+                cols="6"
+                sm="6"
+                md="6"
+                :class="{ 'px-1': $vuetify.breakpoint.smAndDown }"
+              >
                 <div class="grid-item">
-                  <v-img
-                    src="/api/placeholder/300/300"
-                    max-width="300"
-                    class="mx-auto"
-                  ></v-img>
-                  <h3 class="mt-4">商品の見積依頼、受発注が可能</h3>
+                  <img src="/api/placeholder/200/200" alt="サンプル画像" />
+                  <p>商品の見積依頼、受発注が可能</p>
                 </div>
               </v-col>
-            </v-row> -->
+            </v-row>
             <div class="text-center">
-                <p class="text-body-1 text-sm-body-2 text-md-h6">
-                  初期費用¥0<br>
-                  31日間無料でお試しできます
-                </p>
-                <div class="my-2">
-                  <v-btn
-                    class="mb-4"
-                    large
-                    color="primary"
-                    hide-details
-                    dark
-                    >
+              <p
+                class="text-body-1 text-sm-body-2 text-md-h6 black--text font-weight-bold"
+              >
+                初期費用 ¥0<br />
+                31日間無料でお試しできます
+              </p>
+              <div class="my-2">
+                <v-btn
+                  class="mb-4"
+                  :block="$vuetify.breakpoint.smAndDown"
+                  large
+                  color="primary"
+                  hide-details
+                  dark
+                >
                   詳しくはこちら
-                  </v-btn>
-                </div>
-              <p>お気軽にお問い合わせください</p>
-              <p>Powered by mostra</p>
-              <p>https://mostra-web.com</p>
+                </v-btn>
+              </div>
+              <p class="text-body-2 text-sm-body-1 text-md-h6">
+                お気軽にお問い合わせください
+              </p>
+              <p class="text-caption text-sm-body-2 text-md-body-1">
+                Powered by mostra
+              </p>
+              <p class="text-body-2 text-sm-body-1 text-md-h6">
+                https://mostra-web.com
+              </p>
               <div class="text-center">
                 <v-checkbox
                   v-model="ex4"
@@ -89,11 +94,12 @@
                   dense
                 ></v-checkbox>
               </div>
-              <p>閉じる</p>
+              <p class="text-body-2 text-sm-body-1 text-md-h6">
+                閉じる
+              </p>
             </div>
           </div>
         </v-card-text>
-
       </v-card>
     </v-dialog>
   </div>
@@ -104,27 +110,15 @@ export default {
   name: 'DialogExample',
   data() {
     return {
-      dialog: false
+      dialog: false,
     }
-  }
+  },
 }
 </script>
 
 <style scoped>
 .custom-content {
-  padding: 20px;
   font-family: Arial, sans-serif;
-}
-
-.header-section {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.header-section h2 {
-  color: #333;
-  font-size: 28px;
-  margin-bottom: 10px;
 }
 
 .grid-item {
@@ -134,13 +128,40 @@ export default {
   text-align: center;
 }
 
-.grid-item h3 {
-  color: #2c3e50;
-  margin-bottom: 10px;
+.grid-item img {
+  max-width: 100%;
+  height: auto;
 }
 
 .d-inline-flex ::v-deep .v-label {
   font-size: 14px !important;
+}
+
+@media (max-width: 959px) {
+  .grid-item {
+    padding: 8px; /* スマホではパディングを小さく */
+  }
+
+  .content-grid {
+    margin: 0 -4px; /* ネガティブマージンで端までいっぱいに */
+  }
+}
+
+/* PC表示時のスタイル */
+@media (min-width: 960px) {
+  .content-grid {
+    margin: 0 auto; /* 中央寄せ */
+    max-width: 1200px; /* 最大幅を設定（必要に応じて調整） */
+  }
+
+  .grid-item {
+    margin: 0 8px; /* アイテム間の横の間隔 */
+  }
+
+  .grid-item p {
+    font-size: 14px; /* スマホでは文字サイズを小さく */
+    margin-top: 8px;
+  }
 }
 
 /* レスポンシブ対応 */
@@ -148,22 +169,5 @@ export default {
   .header-section h2 {
     font-size: 24px;
   }
-}
-
-/* チェックボックスのスタイル */
-.caption-checkbox {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-.caption-checkbox ::v-deep .v-label {
-  font-size: 10px !important;
-  white-space: nowrap;
-  margin-right: 0;
-}
-
-.caption-checkbox ::v-deep .v-input--selection-controls__input {
-  transform: scale(0.8);
-  margin-right: 0;
 }
 </style>
