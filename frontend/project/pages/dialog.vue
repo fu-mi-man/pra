@@ -33,25 +33,21 @@
             >
               <v-col
                 cols="6"
-                sm="6"
-                md="6"
                 :class="{ 'px-1': $vuetify.breakpoint.smAndDown }"
               >
                 <div class="grid-item">
                   <img src="/api/placeholder/200/200" alt="サンプル画像" />
-                  <p>簡単操作でカタログ、商品を公開</p>
+                  <p class="text-caption text-sm-body-2 text-md-body-1">簡単操作でカタログ、商品を公開</p>
                 </div>
               </v-col>
 
               <v-col
                 cols="6"
-                sm="6"
-                md="6"
                 :class="{ 'px-1': $vuetify.breakpoint.smAndDown }"
               >
                 <div class="grid-item">
                   <img src="/api/placeholder/200/200" alt="サンプル画像" />
-                  <p>商品の見積依頼、受発注が可能</p>
+                  <p class="text-caption text-sm-body-2 text-md-body-1">商品の見積依頼、受発注が可能</p>
                 </div>
               </v-col>
             </v-row>
@@ -68,7 +64,6 @@
                   :block="$vuetify.breakpoint.smAndDown"
                   large
                   color="primary"
-                  hide-details
                   dark
                 >
                   詳しくはこちら
@@ -150,24 +145,13 @@ export default {
 /* PC表示時のスタイル */
 @media (min-width: 960px) {
   .content-grid {
-    margin: 0 auto; /* 中央寄せ */
-    max-width: 1200px; /* 最大幅を設定（必要に応じて調整） */
+    margin: 0 auto;
+    max-width: 1200px;
   }
 
   .grid-item {
-    margin: 0 8px; /* アイテム間の横の間隔 */
-  }
-
-  .grid-item p {
-    font-size: 14px; /* スマホでは文字サイズを小さく */
-    margin-top: 8px;
+    margin: 0 8px;
   }
 }
 
-/* レスポンシブ対応 */
-@media (max-width: 600px) {
-  .header-section h2 {
-    font-size: 24px;
-  }
-}
 </style>
