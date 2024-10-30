@@ -9,7 +9,7 @@
         </v-card-title>
 
         <v-card-text>
-          <div class="custom-content">
+          <div>
             <div class="text-center header-section">
               <!-- PC・タブレットサイズ以上（960px以上）で表示 -->
               <h2
@@ -37,7 +37,9 @@
               >
                 <div class="grid-item">
                   <img src="/api/placeholder/200/200" alt="サンプル画像" />
-                  <p class="text-caption text-sm-body-2 text-md-body-1">簡単操作でカタログ、商品を公開</p>
+                  <p class="text-caption text-sm-body-2 text-md-body-1">
+                    簡単操作でカタログ、商品を公開
+                  </p>
                 </div>
               </v-col>
 
@@ -47,7 +49,9 @@
               >
                 <div class="grid-item">
                   <img src="/api/placeholder/200/200" alt="サンプル画像" />
-                  <p class="text-caption text-sm-body-2 text-md-body-1">商品の見積依頼、受発注が可能</p>
+                  <p class="text-caption text-sm-body-2 text-md-body-1">
+                    商品の見積依頼、受発注が可能
+                  </p>
                 </div>
               </v-col>
             </v-row>
@@ -60,8 +64,9 @@
               </p>
               <div class="my-2">
                 <v-btn
-                  class="mb-4"
-                  :block="$vuetify.breakpoint.smAndDown"
+                  class="mb-4 btn-width"
+                  :block="$vuetify.breakpoint.xs"
+
                   large
                   color="primary"
                   dark
@@ -89,9 +94,7 @@
                   dense
                 ></v-checkbox>
               </div>
-              <p class="text-body-2 text-sm-body-1 text-md-h6">
-                閉じる
-              </p>
+              <p class="text-body-2 text-sm-body-1 text-md-h6">閉じる</p>
             </div>
           </div>
         </v-card-text>
@@ -112,14 +115,10 @@ export default {
 </script>
 
 <style scoped>
-.custom-content {
-  font-family: Arial, sans-serif;
-}
-
 .grid-item {
   background: #f5f5f5;
   padding: 15px;
-  border-radius: 8px;
+  border-radius: 4px;
   text-align: center;
 }
 
@@ -128,30 +127,43 @@ export default {
   height: auto;
 }
 
-.d-inline-flex ::v-deep .v-label {
+/* チェックボックスのフォントサイズ: PCおよびタブレット（960px以上） */
+::v-deep .d-inline-flex .v-label {
+  font-size: 16px !important;
+}
+
+/* スマホ（959px以下） */
+@media (max-width: 959px) {
+  .content-grid {
+    margin: 0 -4px;
+  }
+}
+/* デフォルトがスマホサイズ */
+/* チェックボックスのフォントサイズ */
+::v-deep .d-inline-flex .v-label {
   font-size: 14px !important;
 }
 
-@media (max-width: 959px) {
-  .grid-item {
-    padding: 8px; /* スマホではパディングを小さく */
+/* タブレットサイズ: 600px以上 */
+@media (min-width: 600px) {
+  .btn-width {
+    width: 260px;
   }
 
-  .content-grid {
-    margin: 0 -4px; /* ネガティブマージンで端までいっぱいに */
+  ::v-deep .d-inline-flex .v-label {
+    font-size: 16px !important;
   }
 }
 
-/* PC表示時のスタイル */
+/* PCサイズ: 960px以上 */
 @media (min-width: 960px) {
   .content-grid {
     margin: 0 auto;
     max-width: 1200px;
   }
 
-  .grid-item {
-    margin: 0 8px;
+  .btn-width {
+    width: 230px;
   }
 }
-
 </style>
