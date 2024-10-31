@@ -5,97 +5,115 @@
     <v-dialog v-model="dialog" width="700">
       <v-card>
         <v-card-title class="text-body-1 text-sm-body-2 text-md-h6">
-          SAFARI GAMES からのお知らせ
+          <v-img
+            :src="require('~/assets/images/news.png')"
+            height="30"
+            :max-width="140"
+            contain
+            alt="News"
+          />
+          <span class="ml-2">からのお知らせ</span>
         </v-card-title>
 
         <v-card-text>
-          <div>
-            <div class="text-center header-section">
-              <!-- PC・タブレットサイズ以上（960px以上）で表示 -->
-              <h2
-                class="hidden-sm-and-down text-md-h6 line-height-2 black--text font-weight-bold"
-              >
-                モストラは<br />
-                SAFARI GAMES が提供するBtoBサービスです
-              </h2>
-              <!-- スマホ・タブレットサイズ（959px以下）で表示 -->
-              <h2
-                class="hidden-md-and-up text-body-1 line-height-2 black--text font-weight-bold"
-              >
-                モストラは<br />
-                SAFARI GAMES が提供する<br />
+          <div class="text-center header-section">
+            <!-- PC・タブレットサイズ以上（960px以上）で表示 -->
+            <h2 class="d-none d-md-flex align-center justify-center">
+              <v-img
+                :src="require('~/assets/images/news.png')"
+                max-height="35"
+                contain
+                class="mr-2"
+                alt="news"
+              />
+              <span class="header-text">は XXXXXX XXXXX が提供するBtoBサービスです</span>
+            </h2>
+            <!-- スマホ・タブレットサイズ（959px以下）で表示 -->
+            <h2 class="d-md-none mobile-header">
+              <div class="d-flex align-center justify-center mb-2">
+                <v-img
+                  :src="require('~/assets/images/mostra.png')"
+                  max-height="30"
+                  contain
+                  class="mr-2"
+                  alt="mostra"
+                />
+                <span>は</span>
+              </div>
+              <div class="text-wrap">
+                XXXXXX XXXXX が提供する<br />
                 BtoBサービスです
-              </h2>
-            </div>
-            <v-row
-              class="content-grid"
-              :class="{ 'mx-0': $vuetify.breakpoint.smAndDown }"
+              </div>
+            </h2>
+          </div>
+          <v-row
+            class="content-grid"
+            :class="{ 'mx-0': $vuetify.breakpoint.smAndDown }"
+          >
+            <v-col
+              cols="6"
+              :class="{ 'px-1': $vuetify.breakpoint.smAndDown }"
             >
-              <v-col
-                cols="6"
-                :class="{ 'px-1': $vuetify.breakpoint.smAndDown }"
-              >
-                <div class="grid-item">
-                  <img src="/api/placeholder/200/200" alt="サンプル画像" />
-                  <p class="text-caption text-sm-body-2 text-md-body-1">
-                    簡単操作でカタログ、商品を公開
-                  </p>
-                </div>
-              </v-col>
-
-              <v-col
-                cols="6"
-                :class="{ 'px-1': $vuetify.breakpoint.smAndDown }"
-              >
-                <div class="grid-item">
-                  <img src="/api/placeholder/200/200" alt="サンプル画像" />
-                  <p class="text-caption text-sm-body-2 text-md-body-1">
-                    商品の見積依頼、受発注が可能
-                  </p>
-                </div>
-              </v-col>
-            </v-row>
-            <div class="text-center">
-              <p
-                class="text-body-1 text-sm-body-2 text-md-h6 black--text font-weight-bold"
-              >
-                初期費用 ¥0<br />
-                31日間無料でお試しできます
-              </p>
-              <div class="my-2">
-                <v-btn
-                  class="mb-4 btn-width"
-                  :block="$vuetify.breakpoint.xs"
-
-                  large
-                  color="primary"
-                  dark
-                >
-                  詳しくはこちら
-                </v-btn>
+              <div class="grid-item">
+                <img src="/api/placeholder/200/200" alt="サンプル画像" />
+                <p class="text-caption text-sm-body-2 text-md-body-1">
+                  簡単操作でカタログ、商品を公開
+                </p>
               </div>
-              <p class="text-body-2 text-sm-body-1 text-md-h6">
-                お気軽にお問い合わせください
-              </p>
-              <p class="text-caption text-sm-body-2 text-md-body-1">
-                Powered by mostra
-              </p>
-              <p class="text-body-2 text-sm-body-1 text-md-h6">
-                https://mostra-web.com
-              </p>
-              <div class="text-center">
-                <v-checkbox
-                  v-model="ex4"
-                  label="今後このお知らせを表示しない"
-                  color="indigo"
-                  value="indigo"
-                  hide-details
-                  class="d-inline-flex mb-4"
-                  dense
-                ></v-checkbox>
+            </v-col>
+
+            <v-col
+              cols="6"
+              :class="{ 'px-1': $vuetify.breakpoint.smAndDown }"
+            >
+              <div class="grid-item">
+                <img src="/api/placeholder/200/200" alt="サンプル画像" />
+                <p class="text-caption text-sm-body-2 text-md-body-1">
+                  商品の見積依頼、受発注が可能
+                </p>
               </div>
-              <p class="text-body-2 text-sm-body-1 text-md-h6">閉じる</p>
+            </v-col>
+          </v-row>
+          <div class="text-center">
+            <p
+              class="text-body-1 text-sm-body-2 text-md-h6 black--text font-weight-bold"
+            >
+              初期費用 ¥0<br />
+              31日間無料でお試しできます
+            </p>
+            <div class="my-2">
+              <v-btn
+                class="mb-4 btn-width"
+                :block="$vuetify.breakpoint.xs"
+
+                large
+                color="primary"
+                dark
+              >
+                詳しくはこちら
+              </v-btn>
             </div>
+            <p class="text-body-2 text-sm-body-1 text-md-h6">
+              お気軽にお問い合わせください
+            </p>
+            <p class="text-caption text-sm-body-2 text-md-body-1">
+              Powered by mostra
+            </p>
+            <p class="text-body-2 text-sm-body-1 text-md-h6">
+              https://www.yahoo.co.jp/
+            </p>
+            <div class="text-center">
+              <v-checkbox
+                v-model="ex4"
+                label="今後このお知らせを表示しない"
+                color="indigo"
+                value="indigo"
+                hide-details
+                class="d-inline-flex mb-4"
+                dense
+              ></v-checkbox>
+            </div>
+            <p class="text-body-2 text-sm-body-1 text-md-h6">閉じる</p>
           </div>
         </v-card-text>
       </v-card>
