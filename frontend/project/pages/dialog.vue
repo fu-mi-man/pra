@@ -16,7 +16,7 @@
         </v-card-title>
 
         <v-card-text>
-          <div class="text-center header-section">
+          <div class="text-center">
             <!-- PC・タブレットサイズ以上（960px以上）で表示 -->
             <h2 class="d-none d-md-flex align-center justify-center">
               <v-img
@@ -29,22 +29,27 @@
               <span class="header-text">は XXXXXX XXXXX が提供するBtoBサービスです</span>
             </h2>
             <!-- スマホ・タブレットサイズ（959px以下）で表示 -->
-            <h2 class="d-md-none mobile-header">
-              <div class="d-flex align-center justify-center mb-2">
-                <v-img
-                  :src="require('~/assets/images/mostra.png')"
-                  max-height="30"
-                  contain
-                  class="mr-2"
+            <div class="d-md-none mobile-content">
+              <div class="content-line">
+                <img
+                  src="~/assets/images/mostra.png"
+                  class="logo"
                   alt="mostra"
                 />
                 <span>は</span>
               </div>
-              <div class="text-wrap">
-                XXXXXX XXXXX が提供する<br />
-                BtoBサービスです
+              <div class="content-line">
+                <img
+                  src="~/assets/images/mostra.png"
+                  class="logo"
+                  alt="mostra"
+                />
+                <span>が提供する</span>
               </div>
-            </h2>
+              <div class="content-line">
+                <span>BtoBサービスです</span>
+              </div>
+            </div>
           </div>
           <v-row
             class="content-grid"
@@ -133,6 +138,29 @@ export default {
 </script>
 
 <style scoped>
+.mobile-content {
+  align-items: center;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  font-size: 1.0rem;
+  font-weight: bold;
+  gap: 0.6rem; /* 行間の調整 */
+}
+
+.content-line {
+  align-items: center;
+  display: flex;
+  gap: 4px; /* 画像とテキストの間隔 */
+  height: 1.0rem;
+}
+
+.logo {
+  height: 1.25rem;
+  width: auto;
+  object-fit: contain;
+}
+
 .grid-item {
   background: #f5f5f5;
   padding: 15px;
