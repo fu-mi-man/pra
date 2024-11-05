@@ -16,37 +16,49 @@
         </v-card-title>
 
         <v-card-text>
-          <div class="text-center">
+          <div class="text-center dialog-header">
             <!-- PC・タブレットサイズ以上（960px以上）で表示 -->
-            <h2 class="d-none d-md-flex align-center justify-center">
-              <v-img
-                :src="require('~/assets/images/news.png')"
-                max-height="35"
-                contain
-                class="mr-2"
-                alt="news"
-              />
-              <span class="header-text">は XXXXXX XXXXX が提供するBtoBサービスです</span>
-            </h2>
+            <div
+              class="d-none d-md-flex align-center justify-center dialog-header__pc"
+            >
+              <div class="dialog-header__line">
+                <img
+                  :src="require('~/assets/images/mostra.png')"
+                  class="dialog-header__logo"
+                  contain
+                  alt="news"
+                />
+                <span>は</span>
+              </div>
+              <div class="dialog-header__line">
+                <img
+                  :src="require('~/assets/images/mostra.png')"
+                  class="pc-logo dialog-header__logo"
+                  contain
+                  alt="news"
+                />
+                <span>が提供するBtoBサービスです</span>
+              </div>
+            </div>
             <!-- スマホ・タブレットサイズ（959px以下）で表示 -->
-            <div class="d-md-none mobile-content">
-              <div class="content-line">
+            <div class="d-md-none dialog-header__sp">
+              <div class="dialog-header__line">
                 <img
                   src="~/assets/images/mostra.png"
-                  class="logo"
+                  class="dialog-header__logo"
                   alt="mostra"
                 />
                 <span>は</span>
               </div>
-              <div class="content-line">
+              <div class="dialog-header__line">
                 <img
                   src="~/assets/images/mostra.png"
-                  class="logo"
+                  class="dialog-header__logo"
                   alt="mostra"
                 />
                 <span>が提供する</span>
               </div>
-              <div class="content-line">
+              <div class="dialog-header__line">
                 <span>BtoBサービスです</span>
               </div>
             </div>
@@ -55,10 +67,7 @@
             class="content-grid"
             :class="{ 'mx-0': $vuetify.breakpoint.smAndDown }"
           >
-            <v-col
-              cols="6"
-              :class="{ 'px-1': $vuetify.breakpoint.smAndDown }"
-            >
+            <v-col cols="6" :class="{ 'px-1': $vuetify.breakpoint.smAndDown }">
               <div class="grid-item">
                 <img src="/api/placeholder/200/200" alt="サンプル画像" />
                 <p class="text-caption text-sm-body-2 text-md-body-1">
@@ -67,10 +76,7 @@
               </div>
             </v-col>
 
-            <v-col
-              cols="6"
-              :class="{ 'px-1': $vuetify.breakpoint.smAndDown }"
-            >
+            <v-col cols="6" :class="{ 'px-1': $vuetify.breakpoint.smAndDown }">
               <div class="grid-item">
                 <img src="/api/placeholder/200/200" alt="サンプル画像" />
                 <p class="text-caption text-sm-body-2 text-md-body-1">
@@ -88,9 +94,8 @@
             </p>
             <div class="my-2">
               <v-btn
-                class="mb-4 btn-width"
+                class="mb-4 dialog-footer__btn"
                 :block="$vuetify.breakpoint.xs"
-
                 large
                 color="primary"
                 dark
@@ -138,27 +143,41 @@ export default {
 </script>
 
 <style scoped>
-.mobile-content {
-  align-items: center;
+.dialog-header {
   color: black;
+  font-weight: bold;
+}
+
+.dialog-header__pc,
+.dialog-header__sp {
+  align-items: center;
   display: flex;
   flex-direction: column;
-  font-size: 1.0rem;
-  font-weight: bold;
-  gap: 0.6rem; /* 行間の調整 */
+  gap: 0.6rem;
 }
 
-.content-line {
+.dialog-header__line {
   align-items: center;
   display: flex;
-  gap: 4px; /* 画像とテキストの間隔 */
-  height: 1.0rem;
+  gap: 4px;
 }
 
-.logo {
-  height: 1.25rem;
-  width: auto;
+.dialog-header__logo {
   object-fit: contain;
+  width: auto;
+}
+
+/* Mobile (default) */
+.dialog-header__sp {
+  font-size: 1rem;
+}
+
+.dialog-header__line {
+  height: 1rem;
+}
+
+.dialog-header__logo {
+  height: 1.25rem;
 }
 
 .grid-item {
@@ -173,9 +192,9 @@ export default {
   height: auto;
 }
 
-/* チェックボックスのフォントサイズ: PCおよびタブレット（960px以上） */
+/* チェックボックスのフォントサイズ */
 ::v-deep .d-inline-flex .v-label {
-  font-size: 16px !important;
+  font-size: 14px !important;
 }
 
 /* スマホ（959px以下） */
@@ -184,15 +203,10 @@ export default {
     margin: 0 -4px;
   }
 }
-/* デフォルトがスマホサイズ */
-/* チェックボックスのフォントサイズ */
-::v-deep .d-inline-flex .v-label {
-  font-size: 14px !important;
-}
 
 /* タブレットサイズ: 600px以上 */
 @media (min-width: 600px) {
-  .btn-width {
+  .dialog-footer__btn {
     width: 260px;
   }
 
@@ -203,13 +217,30 @@ export default {
 
 /* PCサイズ: 960px以上 */
 @media (min-width: 960px) {
+  .dialog-header__pc {
+    font-size: 1.5rem;
+  }
+
+  .dialog-header__line {
+    height: 2rem;
+  }
+
+  .dialog-header__logo {
+    height: 2.25rem;
+  }
+
   .content-grid {
     margin: 0 auto;
     max-width: 1200px;
   }
 
-  .btn-width {
+  .dialog-footer__btn {
     width: 230px;
+  }
+
+  /* チェックボックスのフォントサイズ */
+  ::v-deep .d-inline-flex .v-label {
+    font-size: 16px !important;
   }
 }
 </style>
