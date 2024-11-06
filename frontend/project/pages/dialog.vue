@@ -84,6 +84,7 @@
               </div>
             </v-col>
           </v-row>
+
           <div class="text-center">
             <p class="text-body-1 text-sm-body-2 text-md-h6 black--text font-weight-bold">
               初期費用 ¥0<br />
@@ -183,8 +184,8 @@ export default {
 }
 
 .card-info img {
-  max-width: 40%;
   height: auto;
+  max-width: 30%;
 }
 
 /* チェックボックスのフォントサイズ */
@@ -213,7 +214,7 @@ export default {
 /* PCサイズ: 960px以上 */
 @media (min-width: 960px) {
   .card-info {
-    padding: 1.0rem;
+    padding: 0.2rem;
   }
 
   .dialog-header__pc {
