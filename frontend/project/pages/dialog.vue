@@ -2,7 +2,7 @@
   <div>
     <v-btn color="primary" @click="dialog = true"> ダイアログを開く </v-btn>
 
-    <v-dialog v-model="dialog" width="700">
+    <v-dialog v-model="dialog" width="600">
       <v-card>
         <v-card-title class="text-body-1 text-sm-body-2 text-md-h6">
           <v-img
@@ -18,9 +18,7 @@
         <v-card-text>
           <div class="text-center dialog-header">
             <!-- PC・タブレットサイズ以上（960px以上）で表示 -->
-            <div
-              class="d-none d-md-flex align-center justify-center dialog-header__pc"
-            >
+            <div class="d-none d-md-flex align-center justify-center dialog-header__pc">
               <div class="dialog-header__line">
                 <img
                   :src="require('~/assets/images/mostra.png')"
@@ -33,7 +31,7 @@
               <div class="dialog-header__line">
                 <img
                   :src="require('~/assets/images/mostra.png')"
-                  class="pc-logo dialog-header__logo"
+                  class="dialog-header__logo"
                   contain
                   alt="news"
                 />
@@ -43,19 +41,11 @@
             <!-- スマホ・タブレットサイズ（959px以下）で表示 -->
             <div class="d-md-none dialog-header__sp">
               <div class="dialog-header__line">
-                <img
-                  src="~/assets/images/mostra.png"
-                  class="dialog-header__logo"
-                  alt="mostra"
-                />
+                <img class="dialog-header__logo" src="~/assets/images/mostra.png" alt="mostra"/>
                 <span>は</span>
               </div>
               <div class="dialog-header__line">
-                <img
-                  src="~/assets/images/mostra.png"
-                  class="dialog-header__logo"
-                  alt="mostra"
-                />
+                <img class="dialog-header__logo" src="~/assets/images/mostra.png" alt="mostra"/>
                 <span>が提供する</span>
               </div>
               <div class="dialog-header__line">
@@ -68,27 +58,34 @@
             :class="{ 'mx-0': $vuetify.breakpoint.smAndDown }"
           >
             <v-col cols="6" :class="{ 'px-1': $vuetify.breakpoint.smAndDown }">
-              <div class="grid-item">
-                <img src="/api/placeholder/200/200" alt="サンプル画像" />
-                <p class="text-caption text-sm-body-2 text-md-body-1">
-                  簡単操作でカタログ、商品を公開
-                </p>
+              <div class="text-center rounded card-info">
+                <img class="card-info__image" src="~/assets/images/kigyo_icon.png" alt="サンプル画像" />
+                <div class="d-flex flex-column mt-2">
+                  <span class="text-caption text-sm-body-2 text-md-body-1 mb-0 font-weight-medium card-info__text">
+                    簡単操作でカタログ、
+                  </span>
+                  <span class="text-caption text-sm-body-2 text-md-body-1 font-weight-medium card-info__text">
+                    商品を公開
+                  </span>
+                </div>
               </div>
             </v-col>
-
             <v-col cols="6" :class="{ 'px-1': $vuetify.breakpoint.smAndDown }">
-              <div class="grid-item">
-                <img src="/api/placeholder/200/200" alt="サンプル画像" />
-                <p class="text-caption text-sm-body-2 text-md-body-1">
-                  商品の見積依頼、受発注が可能
-                </p>
+              <div class="text-center rounded card-info">
+                <img src="~/assets/images/mitsumori_icon.png" alt="サンプル画像" />
+                <div class="d-flex flex-column mt-2">
+                  <span class="text-caption text-sm-body-2 text-md-body-1 mb-0">
+                    商品の見積依頼、
+                  </span>
+                  <span class="text-caption text-sm-body-2 text-md-body-1">
+                    受発注が可能
+                  </span>
+                </div>
               </div>
             </v-col>
           </v-row>
           <div class="text-center">
-            <p
-              class="text-body-1 text-sm-body-2 text-md-h6 black--text font-weight-bold"
-            >
+            <p class="text-body-1 text-sm-body-2 text-md-h6 black--text font-weight-bold">
               初期費用 ¥0<br />
               31日間無料でお試しできます
             </p>
@@ -180,15 +177,13 @@ export default {
   height: 1.25rem;
 }
 
-.grid-item {
+.card-info {
   background: #f5f5f5;
-  padding: 15px;
-  border-radius: 4px;
-  text-align: center;
+  padding: 0.2rem;
 }
 
-.grid-item img {
-  max-width: 100%;
+.card-info img {
+  max-width: 40%;
   height: auto;
 }
 
@@ -217,6 +212,10 @@ export default {
 
 /* PCサイズ: 960px以上 */
 @media (min-width: 960px) {
+  .card-info {
+    padding: 1.0rem;
+  }
+
   .dialog-header__pc {
     font-size: 1.5rem;
   }
@@ -231,7 +230,7 @@ export default {
 
   .content-grid {
     margin: 0 auto;
-    max-width: 1200px;
+    max-width: 1000px;
   }
 
   .dialog-footer__btn {
