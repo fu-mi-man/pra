@@ -1,8 +1,8 @@
 <template>
   <div>
-    <v-btn color="primary" @click="dialog = true"> ダイアログを開く </v-btn>
+    <v-btn color="primary" @click="showPopup = true"> ダイアログを開く </v-btn>
 
-    <v-dialog v-model="dialog" width="600">
+    <v-dialog v-model="showPopup" width="600">
       <v-card>
         <v-card-title class="text-body-1 text-sm-body-2 text-md-h6">
           <v-img
@@ -121,7 +121,9 @@
                 dense
               ></v-checkbox>
             </div>
-            <p class="text-body-2 text-sm-body-1 text-md-h6">閉じる</p>
+            <span class="text-body-2 text-sm-body-1 text-md-h6 dialog__close" @click="closePopup">
+              閉じる
+            </span>
           </div>
         </v-card-text>
       </v-card>
@@ -134,9 +136,14 @@ export default {
   name: 'DialogExample',
   data() {
     return {
-      dialog: false,
+      showPopup: false,
     }
   },
+  methods: {
+    closePopup() {
+      this.showPopup = false
+    }
+  }
 }
 </script>
 
@@ -191,6 +198,14 @@ export default {
 /* チェックボックスのフォントサイズ */
 ::v-deep .d-inline-flex .v-label {
   font-size: 14px !important;
+}
+
+.dialog__close {
+  cursor: pointer;
+}
+
+.dialog__close:hover {
+  opacity: 0.7;
 }
 
 /* スマホ（959px以下） */
