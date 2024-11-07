@@ -7,7 +7,7 @@
         <v-card-title class="text-body-1 text-sm-body-2 text-md-h6">
           <v-img
             :src="require('~/assets/images/news.png')"
-            height="30"
+            :height="30"
             :max-width="140"
             contain
             alt="News"
@@ -112,7 +112,7 @@
             </p>
             <div class="text-center">
               <v-checkbox
-                v-model="ex4"
+                v-model="doNotShowAgain"
                 label="今後このお知らせを表示しない"
                 color="indigo"
                 value="indigo"
@@ -136,11 +136,41 @@ export default {
   name: 'DialogExample',
   data() {
     return {
-      showPopup: false,
+      showPopup: false,       // ポップアップ表示ステータス
+      doNotShowAgain: false,  // チェックボックスステータス
     }
   },
+  mounted() {
+    this.checkRouteAndShowPopup()
+  },
   methods: {
+    /**
+     * 遷移ページチェックとポップアップ表示チェック
+     */
+    checkRouteAndShowPopup() {
+      const isAmPage = this.$route.path === '/am/product/'
+      const isPageOne = this.$route.query.page === '1'
+      if (isAmPage && isPageOne) {
+        this.showPopup = this.$shouldShowPopup()
+      }
+      else {
+        this.showPopup = false
+      }
+    },
+    /**
+     * 閉じるボタン押下処理
+     */
     closePopup() {
+      if (this.doNotShowAgain) {
+        const popupPeriod = this.$getPopupPeriod() // ポップアップ表示期間を取得する
+        // console.log(popupPeriod);
+        const settings = {
+          hidden: true,
+          expireTime: popupPeriod.end.getTime() // 期間終了時刻（timestamp形式）
+        }
+        console.log(settings);
+        // localStorage.setItem('popupSettings', JSON.stringify(settings))
+      }
       this.showPopup = false
     }
   }

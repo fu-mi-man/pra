@@ -1,11 +1,32 @@
 export default ({ app }, inject) => {
+  // ポップアップ表示期間の設定
+  const POPUP_PERIOD = {
+    start: new Date(2024, 10, 7, 20, 0), // 2024/11/6 21:15
+    end: new Date(2024, 10, 8, 0, 0), // 2024/11/7 00:00
+  }
+
+  // 期間設定を取得するための関数を注入
+  inject('getPopupPeriod', () => POPUP_PERIOD)
+
   inject('shouldShowPopup', () => {
-    const now = new Date()
+    // 日本時間で取得
     const japanTime = new Date(
-      now.toLocaleString('en-US', { timeZone: 'Asia/Tokyo' })
+      new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })
     )
-    const start = new Date('2024-10-21T21:45:00+09:00') // 日本時間 2024年10月21日 21:00:00
-    const end = new Date('2024-10-21T22:00:00+09:00') // 日本時間 2024年10月21日 22:00:00
-    return start <= japanTime && japanTime < end
+
+    const popupSettings = localStorage.getItem('popupSettings')
+    if (!popupSettings) {
+      return POPUP_PERIOD.start <= japanTime && japanTime < POPUP_PERIOD.end
+    }
+
+    // 「今後表示しない」にチェックしている場合
+    const settings = JSON.parse(popupSettings)
+
+    // 期間外ならローカルストレージをクリアする
+    if (new Date(settings.expireTime) < japanTime) {
+      localStorage.removeItem('popupSettings')
+    }
+
+    return false
   })
 }
