@@ -59,7 +59,7 @@
           >
             <v-col cols="6" :class="{ 'px-1': $vuetify.breakpoint.smAndDown }">
               <div class="text-center rounded card-info">
-                <img class="card-info__image" src="~/assets/images/kigyo_icon.png" alt="サンプル画像" />
+                <img class="card-info__image" src="~/assets/images/kigyo_icon.png" alt="catalog" />
                 <div class="d-flex flex-column mt-2">
                   <span class="text-caption text-sm-body-2 text-md-body-1 mb-0 font-weight-medium card-info__text">
                     簡単操作でカタログ、
@@ -72,7 +72,7 @@
             </v-col>
             <v-col cols="6" :class="{ 'px-1': $vuetify.breakpoint.smAndDown }">
               <div class="text-center rounded card-info">
-                <img src="~/assets/images/mitsumori_icon.png" alt="サンプル画像" />
+                <img src="~/assets/images/mitsumori_icon.png" alt="product" />
                 <div class="d-flex flex-column mt-2">
                   <span class="text-caption text-sm-body-2 text-md-body-1 mb-0">
                     商品の見積依頼、
@@ -163,7 +163,6 @@ export default {
     closePopup() {
       if (this.doNotShowAgain) {
         const popupPeriod = this.$getPopupPeriod() // ポップアップ表示期間を取得する
-        // console.log(popupPeriod);
         const settings = {
           hidden: true,
           expireTime: popupPeriod.end.getTime() // 期間終了時刻（timestamp形式）
