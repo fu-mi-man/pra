@@ -161,3 +161,97 @@
 - 印刷用クラスは画面表示には影響しません
 - レスポンシブクラス（hidden-\*）と組み合わせて使用できます
 - 印刷プレビューで表示を確認することをお勧めします
+
+
+<br>
+<br>
+<br>
+
+# Vuetify Styling Guide
+
+## Border Radius
+Vuetifyには様々なborder-radiusクラスが用意されています。
+
+### 基本的なborder-radius
+| クラス名 | サイズ |
+|----------|--------|
+| rounded-0 | 0px |
+| rounded | 4px |
+| rounded-sm | 2px |
+| rounded-lg | 8px |
+| rounded-xl | 12px |
+| rounded-pill | 9999px |
+| rounded-circle | 50% |
+
+### 特定の角のborder-radius
+形式: `rounded-{side}-{size}`
+
+sides:
+- t (top)
+- b (bottom)
+- l (left)
+- r (right)
+- tl (top-left)
+- tr (top-right)
+- bl (bottom-left)
+- br (bottom-right)
+
+sizes:
+- 0
+- sm
+- lg
+- xl
+
+使用例:
+```vue
+<v-card class="rounded-lg">通常の丸み</v-card>
+<v-card class="rounded-t">上部のみ丸み</v-card>
+<v-card class="rounded-tr-lg">右上のみ大きな丸み</v-card>
+```
+
+
+<br>
+<br>
+<br>
+<br>
+# Vuetify Font Weight Guide
+
+テキストの太さを制御するVuetifyのユーティリティクラスについて説明します。
+
+## 基本クラス
+font-weightプロパティを直接指定するクラスです。
+
+| クラス名 | font-weight値 | 用途 |
+|----------|--------------|------|
+| font-weight-thin | 100 | 極細テキスト |
+| font-weight-light | 300 | 細めテキスト |
+| font-weight-regular | 400 | 通常テキスト |
+| font-weight-medium | 500 | やや太めテキスト |
+| font-weight-bold | 700 | 太字テキスト |
+| font-weight-black | 900 | 最も太いテキスト |
+
+## 短縮形
+同じ効果を持つ短縮形のクラスです。
+
+| クラス名 | font-weight値 | 用途 |
+|----------|--------------|------|
+| text-thin | 100 | 極細テキスト |
+| text-light | 300 | 細めテキスト |
+| text-regular | 400 | 通常テキスト |
+| text-medium | 500 | やや太めテキスト |
+| text-bold | 700 | 太字テキスト |
+| text-black | 900 | 最も太いテキスト |
+
+## 使用例
+
+```vue
+<!-- 基本クラスの使用 -->
+<div class="font-weight-regular">通常の太さのテキスト</div>
+<div class="font-weight-bold">太字テキスト</div>
+
+<!-- 短縮形の使用 -->
+<div class="text-medium">やや太めのテキスト</div>
+<div class="text-bold">太字テキスト</div>
+
+<!-- 他のスタイルと組み合わせ -->
+<div class="text-h1 font-weight-black">大きな見出し（最も太い）</div>
