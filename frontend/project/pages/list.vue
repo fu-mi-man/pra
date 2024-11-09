@@ -19,6 +19,7 @@ export default {
       directoryStructure: [
         { name: 'ホーム', path: '/' },
         { name: 'プロファイル', path: '/inspire' },
+        { name: '価格', path: '/price' },
         { name: 'ダイアログ', path: '/dialog' },
         { name: 'ポップアップ', path: '/popup' },
         { name: 'ポップアップURL', path: '/popup-url' },
