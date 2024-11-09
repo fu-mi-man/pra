@@ -34,12 +34,47 @@
                   基本価格
                 </v-card-subtitle>
 
-                <v-card outlined class="pa-3 mb-4">
-                  <v-card-text class="">
+                <v-card outlined class="pa-10 mb-4">
+                  <div class="">
                     <span class="pa-3 rounded grey lighten-4 font-weight-bold">
                       通常価格
                     </span>
-                  </v-card-text>
+                  </div>
+                  <v-radio-group
+                    v-model="priceVisibility"
+                    row
+                    class="mt-4"
+                    hide-details
+                  >
+                    <v-radio
+                      label="価格を表示"
+                      value="visible"
+                    ></v-radio>
+                    <v-radio
+                      label="価格を非表示"
+                      value="hidden"
+                      class="ml-4"
+                    ></v-radio>
+                  </v-radio-group>
+
+                  <!-- 価格表示の場合のみ表示 -->
+                  <v-radio-group
+                    v-if="priceVisibility === 'visible'"
+                    v-model="priceType"
+                    row
+                    class="mt-4"
+                    hide-details
+                  >
+                    <v-radio
+                      label="税別価格で入力"
+                      value="excludingTax"
+                    ></v-radio>
+                    <v-radio
+                      label="税込価格で入力"
+                      value="includingTax"
+                      class="ml-4"
+                    ></v-radio>
+                  </v-radio-group>
                 </v-card>
 
               </v-col>
@@ -80,7 +115,9 @@ export default {
   data() {
     return {
       dialog: false,
-      taxRate: 10  // 追加
+      taxRate: 10,                // 適用税率
+      priceVisibility: 'visible', // 価格の表示/非表示
+      priceType: 'excludingTax'   // 税別価格/税込価格で入力
     }
   },
 
