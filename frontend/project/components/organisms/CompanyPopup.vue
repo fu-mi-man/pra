@@ -130,7 +130,7 @@
 </template>
 
 <script>
-import popupTiming from '~/plugins/popup-timing2.js'
+import popupTiming from '~/plugins/popup-display.js'
 // import { checkPopupDisplayStatus, getPopupPeriod } from '~/plugins/popup-timing2.js'
 
 export default {
@@ -164,13 +164,12 @@ export default {
      */
     closePopup() {
       if (this.doNotShowAgain) {
-        const popupPeriod = popupTiming.getPopupPeriod() // ポップアップ表示期間を取得する
+        // ローカルストレージにポップアップ表示の有効期限をセット
+        const popupPeriod = popupTiming.getPopupPeriod()
         const settings = {
-          hidden: true,
-          expireTime: popupPeriod.end.getTime() // 期間終了時刻（timestamp形式）
+          expireTime: popupPeriod.end.getTime(), // timestamp
         }
-        console.log(settings);
-        // localStorage.setItem('popupSettings', JSON.stringify(settings))
+        localStorage.setItem('popupSettings', JSON.stringify(settings))
       }
       this.showPopup = false
     }

@@ -1,7 +1,7 @@
 // オブジェクトインポート/エクスポート
 const POPUP_PERIOD = {
-  start: new Date(2024, 10, 10, 0, 0),
-  end: new Date(2024, 10, 20, 0, 0),
+  start: new Date(2024, 10, 10, 17, 0), // 11月1日0時
+  end: new Date(2024, 10, 10, 17, 14),
 }
 
 // 各関数をオブジェクトにまとめる
@@ -9,6 +9,10 @@ function getPopupPeriod() {
   return POPUP_PERIOD
 }
 
+/**
+ * ポップアップの表示可否を判定する
+ * @returns
+ */
 function checkPopupDisplayStatus() {
   const japanTime = new Date(
     new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })
@@ -19,11 +23,13 @@ function checkPopupDisplayStatus() {
     const settings = JSON.parse(popupSettings)
 
     if (new Date(settings.expireTime) < japanTime) {
+      // ポップアップ有効期限が過ぎている場合，ローカルストレージをクリア
       localStorage.removeItem('popupSettings')
+    } else {
+      return false // 設定が有効であればポップアップを表示しない
     }
-    return false
   }
-
+  // 今日がポップアップ有効期間内かチェックする
   return POPUP_PERIOD.start <= japanTime && japanTime < POPUP_PERIOD.end
 }
 
