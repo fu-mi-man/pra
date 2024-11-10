@@ -6,7 +6,7 @@
       <v-card>
         <v-card-title class="text-body-1 text-sm-body-2 text-md-h6">
           <v-img
-            :src="require('~/assets/images/news.png')"
+            :src="require('~/assets/images/live.jpeg')"
             :height="30"
             :max-width="140"
             contain
@@ -21,7 +21,7 @@
             <div class="d-none d-md-flex align-center justify-center dialog-header__pc">
               <div class="dialog-header__line">
                 <img
-                  :src="require('~/assets/images/mostra.png')"
+                  :src="require('~/assets/images/live.jpeg')"
                   class="dialog-header__logo"
                   contain
                   alt="news"
@@ -30,7 +30,7 @@
               </div>
               <div class="dialog-header__line">
                 <img
-                  :src="require('~/assets/images/mostra.png')"
+                  :src="require('~/assets/images/live.jpeg')"
                   class="dialog-header__logo"
                   contain
                   alt="news"
@@ -41,11 +41,11 @@
             <!-- スマホ・タブレットサイズ（959px以下）で表示 -->
             <div class="d-md-none dialog-header__sp">
               <div class="dialog-header__line">
-                <img class="dialog-header__logo" src="~/assets/images/mostra.png" alt="mostra"/>
+                <img class="dialog-header__logo" src="~/assets/images/live.jpeg" alt="news"/>
                 <span>は</span>
               </div>
               <div class="dialog-header__line">
-                <img class="dialog-header__logo" src="~/assets/images/mostra.png" alt="mostra"/>
+                <img class="dialog-header__logo" src="~/assets/images/live.jpeg" alt="news"/>
                 <span>が提供する</span>
               </div>
               <div class="dialog-header__line">
@@ -59,7 +59,7 @@
           >
             <v-col cols="6" :class="{ 'px-1': $vuetify.breakpoint.smAndDown }">
               <div class="text-center rounded card-info">
-                <img class="card-info__image" src="~/assets/images/kigyo_icon.png" alt="catalog" />
+                <img class="card-info__image" src="~/assets/images/live.jpeg" alt="catalog" />
                 <div class="d-flex flex-column mt-2">
                   <span class="text-caption text-sm-body-2 text-md-body-1 mb-0 font-weight-medium card-info__text">
                     簡単操作でカタログ、
@@ -72,7 +72,7 @@
             </v-col>
             <v-col cols="6" :class="{ 'px-1': $vuetify.breakpoint.smAndDown }">
               <div class="text-center rounded card-info">
-                <img src="~/assets/images/mitsumori_icon.png" alt="product" />
+                <img src="~/assets/images/live.jpeg" alt="product" />
                 <div class="d-flex flex-column mt-2">
                   <span class="text-caption text-sm-body-2 text-md-body-1 mb-0">
                     商品の見積依頼、
@@ -105,10 +105,10 @@
               お気軽にお問い合わせください
             </p>
             <p class="text-caption text-sm-body-2 text-md-body-1">
-              Powered by mostra
+              Powered by test
             </p>
             <p class="text-body-2 text-sm-body-1 text-md-h6">
-              https://www.yahoo.co.jp/
+              https://www.test.co.jp/
             </p>
             <div class="text-center">
               <v-checkbox
