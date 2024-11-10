@@ -2,13 +2,13 @@
   <div>
     <v-select
       :value="value"
-      @input="$emit('input', $event)"
       :items="taxRates"
       dense
       outlined
       hide-details
       class="tax-rate-select"
       style="max-width: 150px"
+      @input="$emit('input', $event)"
     />
   </div>
 </template>

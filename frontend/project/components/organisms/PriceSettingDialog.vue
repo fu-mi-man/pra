@@ -273,10 +273,10 @@
 import TaxRateSelect from '~/components/atoms/selects/TaxRateSelect.vue'
 
 export default {
+  name: 'PriceSettingDialog',
   components: {
     TaxRateSelect,
   },
-  name: 'PriceSettingDialog',
 
   data() {
     return {
