@@ -22,6 +22,7 @@ export default {
         { name: '価格', path: '/price' },
         { name: 'ダイアログ', path: '/dialog' },
         { name: 'ポップアップ', path: '/popup' },
+        { name: 'ポップアップPRD', path: '/popup-prd' },
         { name: 'ポップアップURL', path: '/popup-url' },
         { name: 'S3', path: '/s3' },
         { name: 'csvアップロード', path: '/upload' },
