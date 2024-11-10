@@ -2,7 +2,7 @@ export default ({ app }, inject) => {
   // ポップアップ表示期間の設定
   const POPUP_PERIOD = {
     start: new Date(2024, 10, 10, 0, 0), // 2024/11/7 20:00
-    end: new Date(2024, 10, 20, 0, 0), // 2024/11/9 00:00
+    end: new Date(2029, 10, 20, 0, 0), // 2024/11/9 00:00
   }
 
   // 期間設定を取得するための関数を注入

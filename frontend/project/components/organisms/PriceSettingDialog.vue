@@ -248,9 +248,9 @@
                 </v-card>
 
 
-                <!-- 追加価格グループ -->
+                <!-- 追加グループ価格 -->
                 <v-card-subtitle class="px-0 text-subtitle-1 d-flex justify-space-between align-center">
-                  <span>追加価格グループ</span>
+                  <span>グループ価格</span>
                   <v-btn
                     v-if="additionalGroups.length < 5"
                     color="primary"
@@ -353,21 +353,6 @@
                         ¥{{ group.priceType === 'excludingTax' ? group.priceIncludingTax.toLocaleString() : group.priceExcludingTax.toLocaleString() }}
                       </span>
                     </div>
-
-                    <!-- 価格備考 -->
-                    <div class="mt-4">
-                      <label class="mb-2 text-subtitle-2 d-block">
-                        価格備考
-                      </label>
-                      <v-textarea
-                        v-model="group.priceNote"
-                        outlined
-                        dense
-                        hide-details
-                        placeholder="例：期間限定価格"
-                        rows="3"
-                      ></v-textarea>
-                    </div>
                   </div>
 
                   <!-- 価格を非表示の場合のみ表示 -->
@@ -382,6 +367,21 @@
                       hide-details
                       placeholder="例：オープン価格"
                     ></v-text-field>
+                  </div>
+
+                  <!-- 価格備考 -->
+                  <div class="mt-4">
+                    <label class="mb-2 text-subtitle-2 d-block">
+                      価格備考
+                    </label>
+                    <v-textarea
+                      v-model="group.priceNote"
+                      outlined
+                      dense
+                      hide-details
+                      placeholder="例：期間限定価格"
+                      rows="3"
+                    ></v-textarea>
                   </div>
                 </v-card>
 
@@ -443,7 +443,7 @@ export default {
       allCustomerPriceNote: '',
       allCustomerCustomText: '',
 
-      // 追加価格グループの状態
+      // 追加グループ価格の状態
       additionalGroups: []
     }
   },
