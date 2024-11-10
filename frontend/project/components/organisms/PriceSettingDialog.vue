@@ -84,14 +84,14 @@
                     </label>
                     <div class="d-flex align-center mb-5">
                       <v-text-field
-                        v-model.number="inputPrice"
+                        v-model="inputPrice"
                         type="number"
                         dense
                         outlined
                         hide-details
                         hide-spin-buttons
                         class="max-width-200"
-                        min="0"
+                        min=""
                         suffix="円"
                         @input="handlePriceInput"
                       >
@@ -107,21 +107,6 @@
                         ¥{{ priceType === 'excludingTax' ? priceIncludingTax.toLocaleString() : priceExcludingTax.toLocaleString() }}
                       </span>
                     </div>
-
-                    <!-- 価格備考 -->
-                    <div class="mt-4">
-                      <label class="mb-2 text-subtitle-2 d-block">
-                        価格備考
-                      </label>
-                      <v-textarea
-                        v-model="priceNote"
-                        outlined
-                        dense
-                        hide-details
-                        placeholder="例：期間限定価格"
-                        rows="3"
-                      ></v-textarea>
-                    </div>
                   </div>
 
                   <!-- 価格を非表示の場合のみ表示 -->
@@ -136,6 +121,21 @@
                       hide-details
                       placeholder="例：オープン価格"
                     ></v-text-field>
+                  </div>
+
+                  <!-- 価格備考 -->
+                  <div class="mt-4">
+                    <label class="mb-2 text-subtitle-2 d-block">
+                      価格備考
+                    </label>
+                    <v-textarea
+                      v-model="priceNote"
+                      outlined
+                      dense
+                      hide-details
+                      placeholder="例：期間限定価格"
+                      rows="3"
+                    ></v-textarea>
                   </div>
                 </v-card>
 
@@ -162,54 +162,72 @@
                     ></v-radio>
                   </v-radio-group>
 
-                  <!-- 税別価格で入力 / 税込価格で入力 -->
-                  <v-radio-group
-                    v-if="allCustomerPriceVisibility === 'visible'"
-                    v-model="allCustomerPriceType"
-                    row
-                    class="mt-4"
-                    hide-details
-                  >
-                    <v-radio
-                      label="税別価格で入力"
-                      value="excludingTax"
-                    ></v-radio>
-                    <v-radio
-                      label="税込価格で入力"
-                      value="includingTax"
-                      class="ml-4"
-                    ></v-radio>
-                  </v-radio-group>
+                    <!-- 価格表示設定後のコンテンツ -->
+                  <template v-if="allCustomerPriceVisibility">
 
-                  <!-- 価格入力部 -->
-                  <div v-if="allCustomerPriceVisibility === 'visible'" class="mt-4">
-                    <label class="mb-2 text-subtitle-2 d-block">
-                      {{ allCustomerPriceType === 'excludingTax' ? '税別価格' : '税込価格' }}
-                    </label>
-                    <div class="d-flex align-center mb-5">
+                    <!-- 税別価格で入力 / 税込価格で入力 -->
+                    <v-radio-group
+                      v-if="allCustomerPriceVisibility === 'visible'"
+                      v-model="allCustomerPriceType"
+                      row
+                      class="mt-4"
+                      hide-details
+                    >
+                      <v-radio
+                        label="税別価格で入力"
+                        value="excludingTax"
+                      ></v-radio>
+                      <v-radio
+                        label="税込価格で入力"
+                        value="includingTax"
+                        class="ml-4"
+                      ></v-radio>
+                    </v-radio-group>
+
+                    <!-- 価格入力部 -->
+                    <div v-if="allCustomerPriceVisibility === 'visible'" class="mt-4">
+                      <label class="mb-2 text-subtitle-2 d-block">
+                        {{ allCustomerPriceType === 'excludingTax' ? '税別価格' : '税込価格' }}
+                      </label>
+                      <div class="d-flex align-center mb-5">
+                        <v-text-field
+                          v-model="allCustomerInputPrice"
+                          type="number"
+                          dense
+                          outlined
+                          hide-details
+                          hide-spin-buttons
+                          class="max-width-200"
+                          min="0"
+                          suffix="円"
+                          @input="handleAllCustomerPriceInput"
+                        >
+                        </v-text-field>
+                      </div>
+
+                      <!-- 算出価格 -->
+                      <div class="pa-3 rounded grey lighten-4">
+                        <span class="text-subtitle-2">
+                          {{ allCustomerPriceType === 'excludingTax' ? '税込価格' : '税別価格' }}:
+                        </span>
+                        <span class="ml-2">
+                          ¥{{ allCustomerPriceType === 'excludingTax' ? allCustomerPriceIncludingTax.toLocaleString() : allCustomerPriceExcludingTax.toLocaleString() }}
+                        </span>
+                      </div>
+                    </div>
+
+                    <!-- 価格を非表示の場合のみ表示 -->
+                    <div v-if="allCustomerPriceVisibility === 'hidden'" class="mt-4">
+                      <label class="mb-2 text-subtitle-2 d-block">
+                        表示文言
+                      </label>
                       <v-text-field
-                        v-model.number="allCustomerInputPrice"
-                        type="number"
+                        v-model="allCustomerCustomText"
                         dense
                         outlined
                         hide-details
-                        hide-spin-buttons
-                        class="max-width-200"
-                        min="0"
-                        suffix="円"
-                        @input="handleAllCustomerPriceInput"
-                      >
-                      </v-text-field>
-                    </div>
-
-                    <!-- 算出価格 -->
-                    <div class="pa-3 rounded grey lighten-4">
-                      <span class="text-subtitle-2">
-                        {{ allCustomerPriceType === 'excludingTax' ? '税込価格' : '税別価格' }}:
-                      </span>
-                      <span class="ml-2">
-                        ¥{{ allCustomerPriceType === 'excludingTax' ? allCustomerPriceIncludingTax.toLocaleString() : allCustomerPriceExcludingTax.toLocaleString() }}
-                      </span>
+                        placeholder="例：オープン価格"
+                      ></v-text-field>
                     </div>
 
                     <!-- 価格備考 -->
@@ -226,15 +244,139 @@
                         rows="3"
                       ></v-textarea>
                     </div>
+                  </template>
+                </v-card>
+
+
+                <!-- 追加価格グループ -->
+                <v-card-subtitle class="px-0 text-subtitle-1 d-flex justify-space-between align-center">
+                  <span>追加価格グループ</span>
+                  <v-btn
+                    v-if="additionalGroups.length < 5"
+                    color="primary"
+                    text
+                    @click="addPriceGroup"
+                  >
+                    <v-icon left>mdi-plus-circle</v-icon>
+                    グループを追加
+                  </v-btn>
+                </v-card-subtitle>
+
+                <!-- 追加グループのカード -->
+                <v-card
+                  v-for="(group) in additionalGroups"
+                  :key="group.id"
+                  outlined
+                  class="pa-6 mb-6"
+                >
+                  <div class="d-flex justify-space-between align-center mb-4">
+                    <v-text-field
+                      v-model="group.name"
+                      dense
+                      outlined
+                      hide-details
+                      class="max-width-200"
+                    ></v-text-field>
+                    <v-btn
+                      icon
+                      color="red"
+                      @click="removePriceGroup(group.id)"
+                    >
+                      <v-icon>mdi-minus-circle</v-icon>
+                    </v-btn>
+                  </div>
+
+                  <!-- 価格を表示 / 価格を非表示 -->
+                  <v-radio-group
+                    v-model="group.isVisible"
+                    row
+                    class="mt-4"
+                    hide-details
+                  >
+                    <v-radio
+                      label="価格を表示"
+                      :value="true"
+                    ></v-radio>
+                    <v-radio
+                      label="価格を非表示"
+                      :value="false"
+                      class="ml-4"
+                    ></v-radio>
+                  </v-radio-group>
+
+                  <!-- 税別価格/税込価格の選択（価格表示時のみ） -->
+                  <v-radio-group
+                    v-if="group.isVisible"
+                    v-model="group.priceType"
+                    row
+                    class="mt-4"
+                    hide-details
+                  >
+                    <v-radio
+                      label="税別価格で入力"
+                      value="excludingTax"
+                    ></v-radio>
+                    <v-radio
+                      label="税込価格で入力"
+                      value="includingTax"
+                      class="ml-4"
+                    ></v-radio>
+                  </v-radio-group>
+
+                  <!-- 価格入力部 -->
+                  <div v-if="group.isVisible" class="mt-4">
+                    <label class="mb-2 text-subtitle-2 d-block">
+                      {{ group.priceType === 'excludingTax' ? '税別価格' : '税込価格' }}
+                    </label>
+                    <div class="d-flex align-center mb-5">
+                      <v-text-field
+                        v-model="group.inputPrice"
+                        type="number"
+                        dense
+                        outlined
+                        hide-details
+                        hide-spin-buttons
+                        class="max-width-200"
+                        min="0"
+                        suffix="円"
+                        @input="(value) => handleGroupPriceInput(group.id, value)"
+                      >
+                      </v-text-field>
+                    </div>
+
+                    <!-- 算出価格 -->
+                    <div class="pa-3 rounded grey lighten-4">
+                      <span class="text-subtitle-2">
+                        {{ group.priceType === 'excludingTax' ? '税込価格' : '税別価格' }}:
+                      </span>
+                      <span class="ml-2">
+                        ¥{{ group.priceType === 'excludingTax' ? group.priceIncludingTax.toLocaleString() : group.priceExcludingTax.toLocaleString() }}
+                      </span>
+                    </div>
+
+                    <!-- 価格備考 -->
+                    <div class="mt-4">
+                      <label class="mb-2 text-subtitle-2 d-block">
+                        価格備考
+                      </label>
+                      <v-textarea
+                        v-model="group.priceNote"
+                        outlined
+                        dense
+                        hide-details
+                        placeholder="例：期間限定価格"
+                        rows="3"
+                      ></v-textarea>
+                    </div>
                   </div>
 
                   <!-- 価格を非表示の場合のみ表示 -->
-                  <div v-if="allCustomerPriceVisibility === 'hidden'" class="mt-4">
+                  <div v-if="!group.isVisible" class="mt-4">
                     <label class="mb-2 text-subtitle-2 d-block">
                       表示文言
                     </label>
                     <v-text-field
-                      v-model="allCustomerCustomText"
+                      v-model="group.customText"
                       dense
                       outlined
                       hide-details
@@ -242,6 +384,8 @@
                     ></v-text-field>
                   </div>
                 </v-card>
+
+
 
               </v-col>
             </v-row>
@@ -284,20 +428,23 @@ export default {
       taxRate: 10,                // 適用税率
       priceVisibility: 'visible', // 価格の表示/非表示
       priceType: 'excludingTax',  // 税別価格/税込価格で入力
-      inputPrice: 0,              // 入力価格
+      inputPrice: '',             // 入力価格
       priceExcludingTax: 0,       // 税別価格
       priceIncludingTax: 0,       // 税込価格
       priceNote: '',              // 価格備考
       customText: '',             // 表示文言（価格非表示時）
 
 
-      allCustomerPriceVisibility: 'visible',
-      allCustomerPriceType: 'excludingTax',
-      allCustomerInputPrice: 0,
+      allCustomerPriceVisibility: '',
+      allCustomerPriceType: '',
+      allCustomerInputPrice: '',
       allCustomerPriceExcludingTax: 0,
       allCustomerPriceIncludingTax: 0,
       allCustomerPriceNote: '',
       allCustomerCustomText: '',
+
+      // 追加価格グループの状態
+      additionalGroups: []
     }
   },
   watch: {
@@ -309,6 +456,7 @@ export default {
       handler(newRate) {
         this.calculatePrice();
         this.calculateAllCustomerPrice();
+        this.recalculateGroupPrices();
       }
     },
     /**
@@ -327,6 +475,18 @@ export default {
         this.calculateAllCustomerPrice();
       },
       immediate: true
+    },
+
+    // グループの価格タイプが変更されたときの処理を追加
+    'additionalGroups': {
+      deep: true,
+      handler(newGroups) {
+        newGroups.forEach(group => {
+          if (group.inputPrice) {
+            this.calculateGroupPrice(group);
+          }
+        });
+      }
     }
   },
   methods: {
@@ -375,6 +535,53 @@ export default {
       this.allCustomerInputPrice = Number(value);
       this.calculateAllCustomerPrice();
     },
+    addPriceGroup() {
+      if (this.additionalGroups.length >= 5) return;
+
+      const newGroup = {
+        id: `group${this.additionalGroups.length + 1}`,
+        name: `グループ${String.fromCharCode(65 + this.additionalGroups.length)}価格`,
+        isVisible: true,
+        priceType: 'excludingTax',
+        inputPrice: '',
+        priceExcludingTax: 0,
+        priceIncludingTax: 0,
+        customText: '',
+        priceNote: ''
+      };
+
+      this.additionalGroups.push(newGroup);
+    },
+    removePriceGroup(groupId) {
+      const index = this.additionalGroups.findIndex(group => group.id === groupId);
+      if (index !== -1) {
+        this.additionalGroups.splice(index, 1);
+      }
+    },
+    handleGroupPriceInput(groupId, value) {
+      const group = this.additionalGroups.find(g => g.id === groupId);
+      if (!group) return;
+
+      group.inputPrice = Number(value);
+      this.calculateGroupPrice(group);
+    },
+    calculateGroupPrice(group) {
+      if (!group.inputPrice) return;
+
+      if (group.priceType === 'excludingTax') {
+        group.priceExcludingTax = group.inputPrice;
+        group.priceIncludingTax = Math.round(group.inputPrice * (1 + this.taxRate / 100));
+      } else {
+        group.priceIncludingTax = group.inputPrice;
+        group.priceExcludingTax = Math.round(group.inputPrice / (1 + this.taxRate / 100));
+      }
+    },
+    recalculateGroupPrices() {
+      this.additionalGroups.forEach(group => {
+        this.calculateGroupPrice(group);
+      });
+    },
+
     handleSave() {
       // 保存処理を実装予定
       this.dialog = false
