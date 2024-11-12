@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CSVValidationController;
+use App\Http\Controllers\GroupController;
 use App\Http\Controllers\UploadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -14,5 +15,6 @@ Route::get('/hello', function() {
     return response()->json(['message' => 'Hello!']);
 });
 
+Route::get('/groups', [GroupController::class, 'index']);
 Route::post('/validate-csv', [CSVValidationController::class, 'validate']);
 Route::post('/upload', [UploadController::class, 'upload']);

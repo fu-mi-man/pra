@@ -18,8 +18,9 @@ export default {
     return {
       directoryStructure: [
         { name: 'ホーム', path: '/' },
-        { name: 'プロファイル', path: '/inspire' },
+        { name: 'グループセレクション', path: '/group-selection' },
         { name: '価格', path: '/price' },
+        { name: 'プロファイル', path: '/inspire' },
         { name: 'ダイアログ', path: '/dialog' },
         { name: 'ポップアップ', path: '/popup' },
         { name: 'ポップアップPRD', path: '/popup-prd' },
