@@ -9,7 +9,6 @@
         グループ一覧
       </v-card-title>
 
-
       <v-card-text>
         <v-alert
           v-if="showError"
@@ -19,12 +18,33 @@
         >
           グループの取得に失敗しました
         </v-alert>
+
+          <v-row>
+          <v-col cols="6">
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="グループ情報を入力してください"
+              single-line
+              hide-details
+              class="mb-4"
+            ></v-text-field>
+          </v-col>
+        </v-row>
+
         <v-data-table
           v-model="selected"
+          :search="search"
+          :custom-filter="customFilter"
           :headers="headers"
           :items="groups"
+          :single-select="true"
+          :items-per-page="10"
+          :footer-props="{
+            'items-per-page-options': [10, 20, 50, 100],
+            'items-per-page-text': '表示件数'
+          }"
           item-key="groupId"
-          show-select
         ></v-data-table>
       </v-card-text>
 
@@ -80,12 +100,24 @@ export default {
       ],
       groups: [],
       selected: [],     // 選択されたアイテム
-      showError: false  // エラーメッセージの表示制御用
+      showError: false, // エラーメッセージの表示制御用
+      search: '',       // 検索フィルター文字列
     }
   },
-  async created() {
-    // コンポーネントが作成されたタイミングでデータを取得
-    await this.fetchGroups()
+  watch: {
+    /**
+     * ダイアログの表示状態監視
+     * ダイアログが開かれたときにグループ情報を取得する
+     */
+    isOpen(newValue) {
+      if (newValue) {
+        this.fetchGroups()
+      } else {
+        // ダイアログが閉じられた時の処理
+        this.groups = []  // 例：データをクリア
+        this.search = ''  // 例：検索条件をリセット
+      }
+    }
   },
   methods: {
     async fetchGroups() {
@@ -102,6 +134,23 @@ export default {
       } catch (error) {
         this.showError = true  // エラー表示をON
       }
+    },
+    /**
+     * グループ名，備考，人数に対して検索を行う
+     * 検索フィールドの入力値が変更された時に発火
+     * @param {any} value 現在の列の値（headers[].valueに対応する値）
+     * @param {string} search 検索文字列
+     * @param {Object} item 検索対象のグループデータ
+     */
+    customFilter(value, search, item) {
+      if (!search) return true
+
+      const searchLower = search.toString().toLowerCase()
+
+      // 最も検索されそうなフィールドから順番にチェック
+      return item.groupName.toString().toLowerCase().includes(searchLower) ||
+            item.remarks.toString().toLowerCase().includes(searchLower) ||
+            item.memberCount.toString().includes(searchLower)
     },
     close() {
       this.$emit('close')
