@@ -49,12 +49,15 @@
           :headers="headers"
           :items="groups"
           :single-select="true"
+          :show-select="true"
           :items-per-page="5"
           :footer-props="{
             'items-per-page-options': [5, 20, 50, 100],
             'items-per-page-text': '表示件数'
           }"
           item-key="groupId"
+          class="cursor-pointer"
+          @click:row="handleRowClick"
         ></v-data-table>
       </v-card-text>
 
@@ -166,6 +169,15 @@ export default {
             item.remarks.toString().toLowerCase().includes(searchLower) ||
             item.memberCount.toString().includes(searchLower)
     },
+    handleRowClick(item) {
+    // 既に選択されている行をクリックした場合は選択解除
+    if (this.selected.length && this.selected[0].groupId === item.groupId) {
+      this.selected = []
+    } else {
+      // それ以外の場合は選択
+      this.selected = [item]
+    }
+  },
     close() {
       this.$emit('close')
       this.selected = [] // ダイアログを閉じる時に選択をクリア
@@ -178,3 +190,9 @@ export default {
   }
 }
 </script>
+<style scoped>
+
+>>> .v-data-table tbody tr {
+  cursor: pointer;
+}
+</style>
