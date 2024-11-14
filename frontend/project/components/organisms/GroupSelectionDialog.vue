@@ -9,7 +9,7 @@
         グループ一覧
       </v-card-title>
 
-      <v-card-text>
+      <v-card-text class="mb-10" style="height: 400px;">
         <v-alert
           v-if="showError"
           type="error"
@@ -19,7 +19,7 @@
           グループの取得に失敗しました
         </v-alert>
 
-          <v-row>
+        <v-row>
           <v-col cols="6">
             <v-text-field
               v-model="search"
@@ -32,16 +32,26 @@
           </v-col>
         </v-row>
 
+        <div v-if="loading" class="text-center mt-16">
+          <v-progress-circular
+            :size="70"
+            indeterminate
+            color="primary"
+            class="my-4"
+          ></v-progress-circular>
+        </div>
+
         <v-data-table
+          v-else
           v-model="selected"
           :search="search"
           :custom-filter="customFilter"
           :headers="headers"
           :items="groups"
           :single-select="true"
-          :items-per-page="10"
+          :items-per-page="5"
           :footer-props="{
-            'items-per-page-options': [10, 20, 50, 100],
+            'items-per-page-options': [5, 20, 50, 100],
             'items-per-page-text': '表示件数'
           }"
           item-key="groupId"
@@ -102,6 +112,7 @@ export default {
       selected: [],     // 選択されたアイテム
       showError: false, // エラーメッセージの表示制御用
       search: '',       // 検索フィルター文字列
+      loading: false,
     }
   },
   watch: {
@@ -121,6 +132,7 @@ export default {
   },
   methods: {
     async fetchGroups() {
+      this.loading = true
       try {
         const response = await fetch('http://localhost:80/api/groups')
         const data = await response.json()
@@ -133,6 +145,8 @@ export default {
         this.showError = false  // 成功したらエラー表示をクリア
       } catch (error) {
         this.showError = true  // エラー表示をON
+      } finally {
+        this.loading = false
       }
     },
     /**

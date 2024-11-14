@@ -17,6 +17,7 @@ class GroupController extends Controller
                 'remarks' => '50文字入る備考50文字入る備考50文字入る備考50文字入る備考50文字入る備考50文字入る備考５０'
             ];
         }
+        // sleep(1);
 
         return response()->json($groups);
     }
