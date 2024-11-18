@@ -18,6 +18,8 @@ export default {
     return {
       directoryStructure: [
         { name: 'ホーム', path: '/' },
+        { name: '見積もり印刷', path: '/print' },
+        { name: '印刷・プレビュー', path: '/preview' },
         { name: 'グループセレクション', path: '/group-selection' },
         { name: '価格', path: '/price' },
         { name: 'プロファイル', path: '/inspire' },
