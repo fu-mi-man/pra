@@ -2,40 +2,36 @@
   <v-container fluid>
     <v-row justify="center">
       <v-col cols="10">
-        <v-btn color="primary" @click="print" class="no-print">
+        <v-btn color="primary" @click="print" class="d-print-none">
           <v-icon left>mdi-printer</v-icon>
           印刷
         </v-btn>
 
-        <h1 class="text-h4 text-center mb-4">御見積書</h1>
+        <h1 class="text-h4 text-center mb-4">見積書</h1>
 
-        <div class="company-name mb-4">
-          {{ companyName }}様
-          <div class="underline"></div>
-        </div>
-
-        <!-- 見積日付と見積番号 -->
-        <div class="d-flex justify-end mb-6">
-          <div class="text-right">
-            <p>見積日：{{ estimateDate }}</p>
-            <p>見積番号：{{ estimateNumber }}</p>
+        <!-- 見積もり依頼先名 -->
+        <div class="d-flex">
+          <span class="estimate__client estimate__client-name">{{ companyName }}</span>
+          <div class="">
+            <span class="estimate__client-suffix">様</span>
           </div>
         </div>
 
-        <!-- 自社情報 -->
-        <div class="company-info text-right mb-6">
-          <p>{{ ourCompanyName }}</p>
-          <p>〒{{ ourPostalCode }}</p>
-          <p>{{ ourAddress }}</p>
-          <p>TEL: {{ ourTel }}</p>
-          <p>FAX: {{ ourFax }}</p>
+        <!-- 見積日付と見積番号 / 自社情報 -->
+        <div class="text-right justify-end mb-2 text-body-2 estimate-header__info">
+          <span class="estimate-header__date">見積日付：{{ estimateDate }}</span>
+          <span class="estimate-header__number mb-4">見積番号：{{ estimateNumber }}</span>
+          <span class="estimate-header__company">{{ ourCompanyName }}</span>
+          <span class="estimate-header__postal">〒{{ ourPostalCode }}</span>
+          <span class="estimate-header__address">{{ ourAddress }}</span>
+          <span class="estimate-header__tel">TEL: {{ ourTel }}</span>
         </div>
 
         <!-- 見積金額合計 -->
-        <div class="total-amount mb-6">
-          <div class="total-box pa-4">
-            <span class="text-h6">御見積金額合計（税込）</span>
-            <span class="text-h5 ml-4">￥{{ totalAmount.toLocaleString() }}―</span>
+        <div class="mb-2">
+          <div class="total-box pa-3">
+            <span class="text-body-2">お見積金額合計（税込）</span>
+            <span class="text-body-1 ml-4 font-weight-bold">￥{{ totalAmount.toLocaleString() }} -</span>
           </div>
         </div>
 
@@ -44,10 +40,10 @@
           <template v-slot:default>
             <thead>
               <tr>
-                <th>項目</th>
+                <th>商品名</th>
                 <th class="text-right">数量</th>
                 <th class="text-right">単価</th>
-                <th class="text-right">金額</th>
+                <th class="text-right">金額(税別)</th>
               </tr>
             </thead>
             <tbody>
@@ -71,8 +67,8 @@
         </div>
 
         <!-- 備考 -->
+        <span class="font-weight-bold">備考</span>
         <div class="remarks mb-6">
-          <p class="font-weight-bold">備考</p>
           <p>{{ remarks }}</p>
         </div>
       </v-col>
@@ -84,20 +80,19 @@
 export default {
   data() {
     return {
-      companyName: '株式会社サンプル',
+      companyName: '株式会社テスト株式会社テスト株式会社テスト株式会社',
       estimateDate: '2024年11月19日',
       estimateNumber: 'EST-2024-001',
-      ourCompanyName: '株式会社テスト',
+      ourCompanyName: '株式会社テスト株式会社テスト株式会社テスト株式会社',
       ourPostalCode: '123-4567',
       ourAddress: '東京都新宿区サンプル1-2-3',
       ourTel: '03-1234-5678',
-      ourFax: '03-1234-5679',
       items: [
-        { name: '商品A', quantity: 1, price: 100000 },
-        { name: '商品B', quantity: 2, price: 50000 },
-        { name: '商品C', quantity: 3, price: 30000 },
+        { name: '商品A', quantity: 1, price: 1000000000 },
+        { name: '商品B', quantity: 2, price: 5000000 },
+        { name: '商品C', quantity: 3, price: 3000000 },
       ],
-      remarks: '有効期限：発行日より30日間\n支払条件：月末締め翌月末払い',
+      remarks: '見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。',
     }
   },
   computed: {
@@ -119,26 +114,24 @@ export default {
 }
 </script>
 
-<style>
+
+<style lang="scss">
 @media print {
-  .no-print {
-    display: none !important;
+  .estimate {
+    &__client {
+      border-bottom: 1px solid black;
+      font-size: 16px;
+      font-weight: bold;
+      text-align: left;
+      width: 420px;
+    }
   }
-  .v-container {
-    max-width: 100% !important;
-    width: 100% !important;
+
+  .estimate-header {
+    &__info {
+      display: grid;
+    }
   }
-}
-
-.company-name {
-  width: 300px;
-  text-align: left;
-  font-size: 16px;
-}
-
-.underline {
-  border-bottom: 1px solid black;
-  margin-top: 4px;
 }
 
 .total-box {
