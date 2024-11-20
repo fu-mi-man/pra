@@ -38,14 +38,14 @@
         </div>
 
         <!-- 見積明細テーブル -->
-        <v-simple-table class="mb-6">
+        <v-simple-table class="mb-6 estimate-detail__table">
           <template v-slot:default>
             <thead>
               <tr>
-                <th class="text-center">商品名</th>
-                <th class="text-center">数量</th>
-                <th class="text-center">単価</th>
-                <th class="text-center">金額(税別)</th>
+                <th class="text-center estimate-detail__header">商品名</th>
+                <th class="text-center estimate-detail__header">数量</th>
+                <th class="text-center estimate-detail__header">単価</th>
+                <th class="text-center estimate-detail__header">金額(税別)</th>
               </tr>
             </thead>
             <tbody>
@@ -90,9 +90,9 @@ export default {
       ourAddress: '東京都新宿区サンプル1-2-3',
       ourTel: '03-1234-5678',
       items: [
-        { name: '株式会社テスト株式会社テスト株式会社テスト株式会社テスト株式会社株式会社テスト株式会社テスト株式５０', quantity: 999, price: 1000000000 },
-        { name: '株式会社テスト株式会社テスト株式会社テスト株式会社テスト株式会社株式会社テスト株式会社テスト株式５０', quantity: 999, price: 5000000 },
-        { name: '株式会社テスト株式会社テスト株式会社テスト株式会社テスト株式会社株式会社テスト株式会社テスト株式５０', quantity: 8888, price: 3000000 },
+        { name: '株式会社テスト株式会社テスト株式会社テスト株式会社テスト株式会社株式会社テスト株式会社テスト株式５０', quantity: 9999, price: 1000 },
+        { name: '株式会社テスト株式会社テスト株式会社テスト株式会社テスト株式会社株式会社テスト株式会社テスト株式５０', quantity: 9999, price: 5000 },
+        { name: '株式会社テスト株式会社テスト株式会社テスト株式会社テスト株式会社株式会社テスト株式会社テスト株式５０', quantity: 9, price: 100000000 },
       ],
       remarks: '見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。',
     }
@@ -141,6 +141,15 @@ export default {
     &__box {
       border: 2px solid #000;
       display: inline-block;
+    }
+  }
+  // 見積もり明細
+  .estimate-detail {
+    &__table {
+      th:nth-child(1), td:nth-child(1) { width: 70%; } // 商品
+      th:nth-child(2), td:nth-child(2) { width: 10%; } // 数量
+      th:nth-child(3), td:nth-child(3) { width: 10%; } // 単価
+      th:nth-child(4), td:nth-child(4) { width: 10%; } // 金額
     }
   }
 }
