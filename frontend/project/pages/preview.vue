@@ -19,7 +19,7 @@
         </div>
 
         <!-- 見積日付と見積番号 / 自社情報 -->
-        <div class="mb-2 justify-end text-right text-caption estimate-header__info">
+        <div class="mb-2 justify-end text-right estimate-header__info">
           <span class="estimate-header__date">見積日付：{{ estimateDate }}</span>
           <span class="estimate-header__number mb-4">見積番号：{{ estimateNumber }}</span>
           <span class="estimate-header__company">{{ ourCompanyName }}</span>
@@ -28,7 +28,7 @@
         </div>
 
         <!-- 見積金額合計 -->
-        <div class="mb-2 estimate-total__wrapper">
+        <div class="mb-5 estimate-total__wrapper">
           <div class="pa-2 estimate-total__box">
             <span class="text-body-2 estimate-total__label">お見積金額合計（税込）</span>
             <span class="ml-4 text-body-1 font-weight-bold estimate-total__amount">
@@ -38,26 +38,24 @@
         </div>
 
         <!-- 見積明細テーブル -->
-        <v-simple-table class="mb-6 estimate-detail__table">
-          <template v-slot:default>
-            <thead>
-              <tr>
-                <th class="text-center estimate-detail__header">商品名</th>
-                <th class="text-center estimate-detail__header">数量</th>
-                <th class="text-center estimate-detail__header">単価</th>
-                <th class="text-center estimate-detail__header">金額(税別)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(item, index) in items" :key="index">
-                <td>{{ item.name }}</td>
-                <td class="text-right">{{ item.quantity }}</td>
-                <td class="text-right">￥{{ item.price.toLocaleString() }}</td>
-                <td class="text-right">￥{{ (item.quantity * item.price).toLocaleString() }}</td>
-              </tr>
-            </tbody>
-          </template>
-        </v-simple-table>
+        <table class="mb-6 estimate-detail__table">
+          <thead>
+            <tr>
+              <th class="text-center estimate-detail__header">商品名</th>
+              <th class="text-center estimate-detail__header">数量</th>
+              <th class="text-center estimate-detail__header">単価</th>
+              <th class="text-center estimate-detail__header">金額</th>
+            </tr>
+          </thead>
+          <tbody class="estimate-detail__body">
+            <tr v-for="(item, index) in items" :key="index">
+              <td class="estimate-detail__cell">{{ item.name }}</td>
+              <td class="pl-2 text-right estimate-detail__cell">{{ item.quantity.toLocaleString() }}</td>
+              <td class="pl-2 text-right estimate-detail__cell">{{ item.price.toLocaleString() }}</td>
+              <td class="pl-2 text-right estimate-detail__cell">{{ (item.quantity * item.price).toLocaleString() }}</td>
+            </tr>
+          </tbody>
+        </table>
 
         <!-- 小計・消費税・合計 -->
         <div class="d-flex flex-column align-end mb-6">
@@ -90,9 +88,9 @@ export default {
       ourAddress: '東京都新宿区サンプル1-2-3',
       ourTel: '03-1234-5678',
       items: [
-        { name: '株式会社テスト株式会社テスト株式会社テスト株式会社テスト株式会社株式会社テスト株式会社テスト株式５０', quantity: 9999, price: 1000 },
-        { name: '株式会社テスト株式会社テスト株式会社テスト株式会社テスト株式会社株式会社テスト株式会社テスト株式５０', quantity: 9999, price: 5000 },
-        { name: '株式会社テスト株式会社テスト株式会社テスト株式会社テスト株式会社株式会社テスト株式会社テスト株式５０', quantity: 9, price: 100000000 },
+        { name: '株式会社テスト株式会社テスト株式会社テスト株式会社テスト株式会社株式会社テスト株式会社テスト株式５０', quantity: 9999, price: 1000000000 },
+        { name: '株式会社テスト株式会社テスト株', quantity: 10, price: 5000 },
+        { name: '株式会社テスト株式会社テスト株社テスト株式会社テスト株式５０', quantity: 9, price: 1000 },
       ],
       remarks: '見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。',
     }
@@ -118,6 +116,62 @@ export default {
 
 
 <style lang="scss">
+// 見積もり依頼先
+.estimate {
+  &__client {
+    border-bottom: 1px solid black;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: left;
+    width: 420px;
+  }
+}
+// 見積日付と見積番号 / 自社情報
+.estimate-header {
+  &__info {
+    display: grid;
+    font-size: 12px;
+  }
+}
+// 見積金額合計
+.estimate-total {
+  &__box {
+    border: 2px solid #000;
+    display: inline-block;
+  }
+}
+
+// 見積もり明細
+.estimate-detail {
+  &__table {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-collapse: collapse;
+    font-size: 12px;
+    width: 100%;
+
+    th:nth-child(1), td:nth-child(1) { width: 75%; } // 商品
+    th:nth-child(2), td:nth-child(2) { width: 5%; } // 数量
+    th:nth-child(3), td:nth-child(3) { width: 10%; } // 単価
+    th:nth-child(4), td:nth-child(4) { width: 10%; } // 金額
+
+    th, td {
+      border: 1px solid rgba(0, 0, 0, 0.12);
+    }
+  }
+  &__cell {
+    padding: 0 2px;
+  }
+}
+.subtotal-box {
+  width: 300px;
+}
+
+.remarks {
+  border: 1px solid #ccc;
+  padding: 16px;
+}
+
+
 // 印刷用表示
 @media print {
   // 見積もり依頼先
@@ -134,6 +188,7 @@ export default {
   .estimate-header {
     &__info {
       display: grid;
+      font-size: 10px;
     }
   }
   // 見積金額合計
@@ -146,44 +201,16 @@ export default {
   // 見積もり明細
   .estimate-detail {
     &__table {
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-collapse: collapse;
+      font-size: 10px;
+      width: 100%;
+
       th:nth-child(1), td:nth-child(1) { width: 70%; } // 商品
       th:nth-child(2), td:nth-child(2) { width: 10%; } // 数量
       th:nth-child(3), td:nth-child(3) { width: 10%; } // 単価
       th:nth-child(4), td:nth-child(4) { width: 10%; } // 金額
     }
   }
-}
-
-// 見積もり依頼先
-.estimate {
-  &__client {
-    border-bottom: 1px solid black;
-    font-size: 16px;
-    font-weight: bold;
-    text-align: left;
-    width: 420px;
-  }
-}
-// 見積日付と見積番号 / 自社情報
-.estimate-header {
-  &__info {
-    display: grid;
-  }
-}
-// 見積金額合計
-.estimate-total {
-  &__box {
-    border: 2px solid #000;
-    display: inline-block;
-  }
-}
-
-.subtotal-box {
-  width: 300px;
-}
-
-.remarks {
-  border: 1px solid #ccc;
-  padding: 16px;
 }
 </style>
