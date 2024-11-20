@@ -7,7 +7,8 @@
           印刷
         </v-btn>
 
-        <h1 class="text-h4 text-center mb-4">見積書</h1>
+        <!-- 見積もりタイトル -->
+        <h1 class="mb-4 text-center text-h5 estimate__title">見積書</h1>
 
         <!-- 見積もり依頼先名 -->
         <div class="d-flex">
