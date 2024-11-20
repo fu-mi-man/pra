@@ -18,20 +18,21 @@
         </div>
 
         <!-- 見積日付と見積番号 / 自社情報 -->
-        <div class="text-right justify-end mb-2 text-body-2 estimate-header__info">
+        <div class="mb-2 justify-end text-right text-caption estimate-header__info">
           <span class="estimate-header__date">見積日付：{{ estimateDate }}</span>
           <span class="estimate-header__number mb-4">見積番号：{{ estimateNumber }}</span>
           <span class="estimate-header__company">{{ ourCompanyName }}</span>
-          <span class="estimate-header__postal">〒{{ ourPostalCode }}</span>
-          <span class="estimate-header__address">{{ ourAddress }}</span>
+          <span class="estimate-header__address">〒{{ ourPostalCode }}  {{ ourAddress }}</span>
           <span class="estimate-header__tel">TEL: {{ ourTel }}</span>
         </div>
 
         <!-- 見積金額合計 -->
-        <div class="mb-2">
-          <div class="total-box pa-3">
-            <span class="text-body-2">お見積金額合計（税込）</span>
-            <span class="text-body-1 ml-4 font-weight-bold">￥{{ totalAmount.toLocaleString() }} -</span>
+        <div class="mb-2 estimate-total__wrapper">
+          <div class="pa-2 estimate-total__box">
+            <span class="text-body-2 estimate-total__label">お見積金額合計（税込）</span>
+            <span class="ml-4 text-body-1 font-weight-bold estimate-total__amount">
+              ￥{{ totalAmount.toLocaleString() }} -
+            </span>
           </div>
         </div>
 
@@ -40,10 +41,10 @@
           <template v-slot:default>
             <thead>
               <tr>
-                <th>商品名</th>
-                <th class="text-right">数量</th>
-                <th class="text-right">単価</th>
-                <th class="text-right">金額(税別)</th>
+                <th class="text-center">商品名</th>
+                <th class="text-center">数量</th>
+                <th class="text-center">単価</th>
+                <th class="text-center">金額(税別)</th>
               </tr>
             </thead>
             <tbody>
@@ -88,9 +89,9 @@ export default {
       ourAddress: '東京都新宿区サンプル1-2-3',
       ourTel: '03-1234-5678',
       items: [
-        { name: '商品A', quantity: 1, price: 1000000000 },
-        { name: '商品B', quantity: 2, price: 5000000 },
-        { name: '商品C', quantity: 3, price: 3000000 },
+        { name: '株式会社テスト株式会社テスト株式会社テスト株式会社テスト株式会社株式会社テスト株式会社テスト株式５０', quantity: 999, price: 1000000000 },
+        { name: '株式会社テスト株式会社テスト株式会社テスト株式会社テスト株式会社株式会社テスト株式会社テスト株式５０', quantity: 999, price: 5000000 },
+        { name: '株式会社テスト株式会社テスト株式会社テスト株式会社テスト株式会社株式会社テスト株式会社テスト株式５０', quantity: 8888, price: 3000000 },
       ],
       remarks: '見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。見積もりの備考が入ります。。。。',
     }
@@ -116,7 +117,9 @@ export default {
 
 
 <style lang="scss">
+// 印刷用表示
 @media print {
+  // 見積もり依頼先
   .estimate {
     &__client {
       border-bottom: 1px solid black;
@@ -126,17 +129,43 @@ export default {
       width: 420px;
     }
   }
-
+  // 見積日付と見積番号 / 自社情報
   .estimate-header {
     &__info {
       display: grid;
     }
   }
+  // 見積金額合計
+  .estimate-total {
+    &__box {
+      border: 2px solid #000;
+      display: inline-block;
+    }
+  }
 }
 
-.total-box {
-  border: 2px solid #000;
-  display: inline-block;
+// 見積もり依頼先
+.estimate {
+  &__client {
+    border-bottom: 1px solid black;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: left;
+    width: 420px;
+  }
+}
+// 見積日付と見積番号 / 自社情報
+.estimate-header {
+  &__info {
+    display: grid;
+  }
+}
+// 見積金額合計
+.estimate-total {
+  &__box {
+    border: 2px solid #000;
+    display: inline-block;
+  }
 }
 
 .subtotal-box {
