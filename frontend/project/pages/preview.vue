@@ -38,7 +38,7 @@
         </div>
 
         <!-- 見積明細テーブル -->
-        <table class="mb-6 estimate-detail__table">
+        <table class="estimate-detail__table">
           <thead>
             <tr>
               <th class="text-center estimate-detail__header">商品名</th>
@@ -57,13 +57,22 @@
           </tbody>
         </table>
 
-        <!-- 小計・消費税・合計 -->
-        <div class="d-flex flex-column align-end mb-6">
-          <div class="subtotal-box">
-            <p>小計：￥{{ subtotal.toLocaleString() }}</p>
-            <p>消費税（10%）：￥{{ tax.toLocaleString() }}</p>
-            <p class="font-weight-bold">合計：￥{{ totalAmount.toLocaleString() }}</p>
-          </div>
+        <!-- 合計テーブル -->
+        <div class="d-flex justify-end">
+          <table class="estimate-total__table">
+            <tr class="estimate-total__row">
+              <th class="text-center estimate-total__header">小計</th>
+              <td class="pl-2 text-right estimate-total__cell">￥{{ subtotal.toLocaleString() }}</td>
+            </tr>
+            <tr class="estimate-total__row">
+              <th class="text-center estimate-total__header">消費税（10%）</th>
+              <td class="pl-2 text-right estimate-total__cell">￥{{ tax.toLocaleString() }}</td>
+            </tr>
+            <tr class="estimate-total__row">
+              <th class="text-center estimate-total__header">合計</th>
+              <td class="pl-2 text-right estimate-total__cell">￥{{ totalAmount.toLocaleString() }}</td>
+            </tr>
+          </table>
         </div>
 
         <!-- 備考 -->
@@ -88,7 +97,7 @@ export default {
       ourAddress: '東京都新宿区サンプル1-2-3',
       ourTel: '03-1234-5678',
       items: [
-        { name: '株式会社テスト株式会社テスト株式会社テスト株式会社テスト株式会社株式会社テスト株式会社テスト株式５０', quantity: 9999, price: 1000000000 },
+        { name: '株式会社テスト株式会社テスト株式会社テスト株式会社テスト株式会社株式会社テスト株式会社テスト株式５０', quantity: 9999, price: 1000 },
         { name: '株式会社テスト株式会社テスト株', quantity: 10, price: 5000 },
         { name: '株式会社テスト株式会社テスト株社テスト株式会社テスト株式５０', quantity: 9, price: 1000 },
       ],
@@ -149,10 +158,10 @@ export default {
     font-size: 12px;
     width: 100%;
 
-    th:nth-child(1), td:nth-child(1) { width: 75%; } // 商品
+    th:nth-child(1), td:nth-child(1) { width: 65%; } // 商品
     th:nth-child(2), td:nth-child(2) { width: 5%; } // 数量
-    th:nth-child(3), td:nth-child(3) { width: 10%; } // 単価
-    th:nth-child(4), td:nth-child(4) { width: 10%; } // 金額
+    th:nth-child(3), td:nth-child(3) { width: 15%; } // 単価
+    th:nth-child(4), td:nth-child(4) { width: 15%; } // 金額
 
     th, td {
       border: 1px solid rgba(0, 0, 0, 0.12);
@@ -162,8 +171,32 @@ export default {
     padding: 0 2px;
   }
 }
-.subtotal-box {
-  width: 300px;
+
+// 合計テーブル
+.estimate-total {
+  &__table {
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-bottom: 24px;
+    width: 284px;
+
+    th, td {
+      border: 1px solid rgba(0, 0, 0, 0.12); /* 全てのセルに適用 */
+    }
+
+    tr:first-child th,
+    tr:first-child td {
+      border-top: none; /* 上線を消す */
+    }
+  }
+
+  &__header {
+    width: 50%;
+  }
+
+  &__cell {
+    width: 50%;
+  }
 }
 
 .remarks {
@@ -206,11 +239,20 @@ export default {
       font-size: 10px;
       width: 100%;
 
-      th:nth-child(1), td:nth-child(1) { width: 70%; } // 商品
-      th:nth-child(2), td:nth-child(2) { width: 10%; } // 数量
-      th:nth-child(3), td:nth-child(3) { width: 10%; } // 単価
-      th:nth-child(4), td:nth-child(4) { width: 10%; } // 金額
+      th:nth-child(1), td:nth-child(1) { width: 59%; } // 商品
+      th:nth-child(2), td:nth-child(2) { width: 7%; }  // 数量
+      th:nth-child(3), td:nth-child(3) { width: 17%; } // 単価
+      th:nth-child(4), td:nth-child(4) { width: 17%; } // 金額
     }
   }
+
+  // 合計テーブル
+  .estimate-total {
+  &__table {
+    font-size: 10px;
+    margin-bottom: 24px;
+    width: 189px;
+  }
+}
 }
 </style>
