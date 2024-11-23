@@ -40,7 +40,7 @@
             <!-- 価格入力部 -->
             <div v-if="priceDisplay === 'visible'" class="mt-4">
               <label class="mb-2 text-subtitle-2 d-block">
-                {{ taxStatus === 'excludingTax' ? '税別価格' : '税込価格' }}
+                {{ taxStatus === 'excluded' ? '税別価格' : '税込価格' }}
               </label>
               <div class="d-flex align-center mb-5">
                 <v-text-field
@@ -61,10 +61,10 @@
               <!-- 算出価格 -->
               <div class="pa-3 rounded grey lighten-4">
                 <span class="text-subtitle-2">
-                  {{ taxStatus === 'excludingTax' ? '税込価格' : '税別価格' }}:
+                  {{ taxStatus === 'excluded' ? '税込価格' : '税別価格' }}:
                 </span>
                 <span class="ml-2">
-                  ¥{{ taxStatus === 'excludingTax' ? priceIncludingTax.toLocaleString() : priceExcludingTax.toLocaleString() }}
+                  ¥{{ taxStatus === 'excluded' ? priceIncludingTax.toLocaleString() : priceExcludingTax.toLocaleString() }}
                 </span>
               </div>
             </div>
@@ -133,11 +133,11 @@
               >
                 <v-radio
                   label="税別価格で入力"
-                  value="excludingTax"
+                  value="excluded"
                 ></v-radio>
                 <v-radio
                   label="税込価格で入力"
-                  value="includingTax"
+                  value="included"
                   class="ml-4"
                 ></v-radio>
               </v-radio-group>
@@ -145,7 +145,7 @@
               <!-- 価格入力部 -->
               <div v-if="allCustomerPriceVisibility === 'visible'" class="mt-4">
                 <label class="mb-2 text-subtitle-2 d-block">
-                  {{ allCustomerPriceType === 'excludingTax' ? '税別価格' : '税込価格' }}
+                  {{ allCustomerPriceType === 'excluded' ? '税別価格' : '税込価格' }}
                 </label>
                 <div class="d-flex align-center mb-5">
                   <v-text-field
@@ -166,10 +166,10 @@
                 <!-- 算出価格 -->
                 <div class="pa-3 rounded grey lighten-4">
                   <span class="text-subtitle-2">
-                    {{ allCustomerPriceType === 'excludingTax' ? '税込価格' : '税別価格' }}:
+                    {{ allCustomerPriceType === 'excluded' ? '税込価格' : '税別価格' }}:
                   </span>
                   <span class="ml-2">
-                    ¥{{ allCustomerPriceType === 'excludingTax' ? allCustomerPriceIncludingTax.toLocaleString() : allCustomerPriceExcludingTax.toLocaleString() }}
+                    ¥{{ allCustomerPriceType === 'excluded' ? allCustomerPriceIncludingTax.toLocaleString() : allCustomerPriceExcludingTax.toLocaleString() }}
                   </span>
                 </div>
               </div>
@@ -271,11 +271,11 @@
             >
               <v-radio
                 label="税別価格で入力"
-                value="excludingTax"
+                value="excluded"
               ></v-radio>
               <v-radio
                 label="税込価格で入力"
-                value="includingTax"
+                value="included"
                 class="ml-4"
               ></v-radio>
             </v-radio-group>
@@ -283,7 +283,7 @@
             <!-- 価格入力部 -->
             <div v-if="group.isVisible" class="mt-4">
               <label class="mb-2 text-subtitle-2 d-block">
-                {{ group.taxStatus === 'excludingTax' ? '税別価格' : '税込価格' }}
+                {{ group.taxStatus === 'excluded' ? '税別価格' : '税込価格' }}
               </label>
               <div class="d-flex align-center mb-5">
                 <v-text-field
@@ -304,10 +304,10 @@
               <!-- 算出価格 -->
               <div class="pa-3 rounded grey lighten-4">
                 <span class="text-subtitle-2">
-                  {{ group.taxStatus === 'excludingTax' ? '税込価格' : '税別価格' }}:
+                  {{ group.taxStatus === 'excluded' ? '税込価格' : '税別価格' }}:
                 </span>
                 <span class="ml-2">
-                  ¥{{ group.taxStatus === 'excludingTax' ? group.priceIncludingTax.toLocaleString() : group.priceExcludingTax.toLocaleString() }}
+                  ¥{{ group.taxStatus === 'excluded' ? group.priceIncludingTax.toLocaleString() : group.priceExcludingTax.toLocaleString() }}
                 </span>
               </div>
             </div>
@@ -374,7 +374,7 @@ export default {
     return {
       taxRate: 10,                // 適用税率
       priceDisplay: 'visible', // 価格の表示/非表示
-      taxStatus: 'excludingTax',  // 税別価格/税込価格で入力
+      taxStatus: 'excluded',  // 税別価格/税込価格で入力
       inputPrice: '',             // 入力価格
       priceExcludingTax: 0,       // 税別価格
       priceIncludingTax: 0,       // 税込価格
@@ -404,7 +404,7 @@ export default {
     },
     /**
      * 税別/税込の入力方式の変更を監視し，価格を再計算
-     * @param {string} newType - 新しい価格タイプ（'excludingTax' or 'includingTax'）
+     * @param {string} newType - 新しい価格タイプ（'excluded' or 'included'）
      */
     taxStatus: {
       handler(newType) {
@@ -440,7 +440,7 @@ export default {
     calculatePrice() {
       if (!this.inputPrice) return;
 
-      if (this.taxStatus === 'excludingTax') {
+      if (this.taxStatus === 'excluded') {
         this.priceExcludingTax = this.inputPrice;
         this.priceIncludingTax = Math.round(this.inputPrice * (1 + this.taxRate / 100));
       } else {
@@ -465,7 +465,7 @@ export default {
     calculateAllCustomerPrice() {
       if (!this.allCustomerInputPrice) return;
 
-      if (this.allCustomerPriceType === 'excludingTax') {
+      if (this.allCustomerPriceType === 'excluded') {
         this.allCustomerPriceExcludingTax = this.allCustomerInputPrice;
         this.allCustomerPriceIncludingTax = Math.round(this.allCustomerInputPrice * (1 + this.taxRate / 100));
       } else {
@@ -492,7 +492,7 @@ export default {
         id: `group${this.additionalGroups.length + 1}`,
         name: `グループ${String.fromCharCode(65 + this.additionalGroups.length)}価格`,
         isVisible: true,
-        taxStatus: 'excludingTax',
+        taxStatus: 'excluded',
         inputPrice: '',
         priceExcludingTax: 0,
         priceIncludingTax: 0,
@@ -534,7 +534,7 @@ export default {
     calculateGroupPrice(group) {
       if (!group.inputPrice) return;
 
-      if (group.taxStatus === 'excludingTax') {
+      if (group.taxStatus === 'excluded') {
         group.priceExcludingTax = group.inputPrice;
         group.priceIncludingTax = Math.round(group.inputPrice * (1 + this.taxRate / 100));
       } else {
