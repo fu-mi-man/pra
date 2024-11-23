@@ -9,12 +9,10 @@
           <v-card-subtitle class="px-0 text-subtitle-1">
             適用税率
           </v-card-subtitle>
-          <div class="mb-4">
-            <consumption-tax-select
-              v-model="taxRate"
-              class="consumption-tax__select"
-            />
-          </div>
+          <consumption-tax-select
+            v-model="taxRate"
+            class="mb-4 consumption-tax__select"
+          />
 
           <!-- 基本価格 -->
           <v-card-subtitle class="px-0 text-subtitle-1">
@@ -39,7 +37,7 @@
 
             <!-- 価格入力部 -->
             <template v-if="priceDisplay === 'visible'">
-              <label class="mt-4 mb-2 text-subtitle-2 d-block">
+              <label class="d-block mt-4 mb-2 text-subtitle-2">
                 {{ priceLabel }}
               </label>
               <v-text-field
@@ -99,48 +97,24 @@
               全顧客価格
             </span>
             <!-- 価格を表示 / 価格を非表示 -->
-            <v-radio-group
-              v-model="allCustomerPriceVisibility"
-              row
+            <price-display-radio
+              v-model="allCustomerPriceDisplay"
               class="mt-4"
-              hide-details
-            >
-              <v-radio
-                label="価格を表示"
-                value="visible"
-              ></v-radio>
-              <v-radio
-                label="価格を非表示"
-                value="hidden"
-                class="ml-4"
-              ></v-radio>
-            </v-radio-group>
+            />
 
             <!-- 価格表示設定後のコンテンツ -->
-            <template v-if="allCustomerPriceVisibility">
-              <!-- 税別価格で入力 / 税込価格で入力 -->
-              <v-radio-group
-                v-if="allCustomerPriceVisibility === 'visible'"
-                v-model="allCustomerPriceType"
-                row
+            <template v-if="allCustomerPriceDisplay">
+              <!-- 税別価格/税込価格の選択（価格表示時のみ） -->
+              <tax-status-radio
+                v-if="allCustomerPriceDisplay === 'visible'"
+                v-model="allCustomerTaxStatus"
                 class="mt-4"
-                hide-details
-              >
-                <v-radio
-                  label="税別価格で入力"
-                  value="excluded"
-                ></v-radio>
-                <v-radio
-                  label="税込価格で入力"
-                  value="included"
-                  class="ml-4"
-                ></v-radio>
-              </v-radio-group>
+              />
 
               <!-- 価格入力部 -->
-              <div v-if="allCustomerPriceVisibility === 'visible'" class="mt-4">
-                <label class="mb-2 text-subtitle-2 d-block">
-                  {{ allCustomerPriceType === 'excluded' ? '税別価格' : '税込価格' }}
+              <template v-if="allCustomerPriceDisplay === 'visible'">
+                <label class="d-block mt-4 mb-2 text-subtitle-2">
+                  {{ allCustomerPriceLabel }}
                 </label>
                 <div class="d-flex align-center mb-5">
                   <v-text-field
@@ -158,20 +132,20 @@
                   </v-text-field>
                 </div>
 
-                <!-- 算出価格 -->
+                <!-- 税込価格/税別価格 -->
                 <div class="pa-3 rounded grey lighten-4">
                   <span class="text-subtitle-2">
-                    {{ allCustomerPriceType === 'excluded' ? '税込価格' : '税別価格' }}:
+                    {{ calculatedAllCustomerPriceLabel }}:
                   </span>
                   <span class="ml-2">
-                    ¥{{ allCustomerPriceType === 'excluded' ? allCustomerPriceIncludingTax.toLocaleString() : allCustomerPriceExcludingTax.toLocaleString() }}
+                    {{ formattedCalculatedAllCustomerPrice }}
                   </span>
                 </div>
-              </div>
+              </template>
 
               <!-- 価格を非表示の場合のみ表示 -->
-              <div v-if="allCustomerPriceVisibility === 'hidden'" class="mt-4">
-                <label class="mb-2 text-subtitle-2 d-block">
+              <template v-if="allCustomerPriceDisplay === 'hidden'">
+                <label class="d-block mt-4 mb-2 text-subtitle-2">
                   表示文言
                 </label>
                 <v-text-field
@@ -181,22 +155,19 @@
                   hide-details
                   placeholder="例：オープン価格"
                 ></v-text-field>
-              </div>
+              </template>
 
               <!-- 価格備考 -->
-              <div class="mt-4">
-                <label class="mb-2 text-subtitle-2 d-block">
-                  価格備考
-                </label>
-                <v-textarea
-                  v-model="allCustomerPriceNote"
-                  outlined
-                  dense
-                  hide-details
-                  placeholder="例：期間限定価格"
-                  rows="3"
-                ></v-textarea>
-              </div>
+              <label class="d-block mt-4 mb-2 text-subtitle-2">
+                価格備考
+              </label>
+              <v-text-field
+                v-model="allCustomerPriceNote"
+                outlined
+                dense
+                hide-details
+                placeholder="例：期間限定価格"
+              />
             </template>
           </v-card>
 
@@ -367,17 +338,18 @@ export default {
 
   data() {
     return {
-      taxRate: 10,                // 適用税率
-      priceDisplay: 'visible', // 価格の表示/非表示
-      taxStatus: 'excluded',  // 税別価格/税込価格で入力
-      inputPrice: '',             // 入力価格
-      priceExcludingTax: 0,       // 税別価格
-      priceIncludingTax: 0,       // 税込価格
-      priceNote: '',              // 価格備考
-      customText: '',             // 表示文言（価格非表示時）
+      taxRate: 10,             // 適用税率
 
-      allCustomerPriceVisibility: '',
-      allCustomerPriceType: '',
+      priceDisplay: 'visible', // 価格の表示/非表示
+      taxStatus: 'excluded',   // 税別価格/税込価格で入力
+      inputPrice: '',          // 入力価格
+      priceExcludingTax: 0,    // 税別価格
+      priceIncludingTax: 0,    // 税込価格
+      priceNote: '',           // 価格備考
+      customText: '',          // 表示文言（価格非表示時）
+
+      allCustomerPriceDisplay: '',
+      allCustomerTaxStatus: 'excluded',
       allCustomerInputPrice: '',
       allCustomerPriceExcludingTax: 0,
       allCustomerPriceIncludingTax: 0,
@@ -389,6 +361,7 @@ export default {
     }
   },
   computed: {
+    // 通常価格
     priceLabel() {
       return this.taxStatus === 'excluded' ? '税別価格' : '税込価格'
     },
@@ -397,6 +370,17 @@ export default {
     },
     formattedCalculatedPrice() {
       const price = this.taxStatus === 'excluded' ? this.priceIncludingTax : this.priceExcludingTax
+      return `¥${price.toLocaleString()}`
+    },
+    // 全顧客価格
+    allCustomerPriceLabel() {
+      return this.allCustomerTaxStatus === 'excluded' ? '税別価格' : '税込価格'
+    },
+    calculatedAllCustomerPriceLabel() {
+      return this.allCustomerTaxStatus === 'excluded' ? '税込価格' : '税別価格'
+    },
+    formattedCalculatedAllCustomerPrice() {
+      const price = this.allCustomerTaxStatus === 'excluded' ? this.allCustomerPriceIncludingTax : this.allCustomerPriceExcludingTax
       return `¥${price.toLocaleString()}`
     },
   },
@@ -418,8 +402,11 @@ export default {
       },
       immediate: true
     },
-
-    allCustomerPriceType: {
+    /**
+     * 税別/税込の入力方式の変更を監視し，価格を再計算
+     * @param {string} newType - 税別か税込（'excluded' or 'included'）
+     */
+    allCustomerTaxStatus: {
       handler() {
         this.calculateAllCustomerPrice();
       },
@@ -463,26 +450,25 @@ export default {
       }
     },
     /**
+     * 価格入力時のハンドラー（全顧客価格）
+     */
+    handleAllCustomerPriceInput(value) {
+      this.allCustomerInputPrice = Number(value);
+      this.calculateAllCustomerPrice();
+    },
+    /**
      * 全顧客価格の税込/税別価格を計算
      */
     calculateAllCustomerPrice() {
       if (!this.allCustomerInputPrice) return;
 
-      if (this.allCustomerPriceType === 'excluded') {
+      if (this.allCustomerTaxStatus === 'excluded') {
         this.allCustomerPriceExcludingTax = this.allCustomerInputPrice;
         this.allCustomerPriceIncludingTax = Math.round(this.allCustomerInputPrice * (1 + this.taxRate / 100));
       } else {
         this.allCustomerPriceIncludingTax = this.allCustomerInputPrice;
         this.allCustomerPriceExcludingTax = Math.round(this.allCustomerInputPrice / (1 + this.taxRate / 100));
       }
-    },
-
-    /**
-     * 全顧客価格入力時のハンドラー
-     */
-    handleAllCustomerPriceInput(value) {
-      this.allCustomerInputPrice = Number(value);
-      this.calculateAllCustomerPrice();
     },
 
     /**
