@@ -25,34 +25,22 @@
               通常価格
             </span>
             <!-- 価格を表示 / 価格を非表示 -->
-            <price-visibility-radio
-              v-model="priceVisibility"
+            <price-display-radio
+              v-model="priceDisplay"
               class="mt-4"
             />
 
             <!-- 税別価格/税込価格の選択（価格表示時のみ） -->
-            <v-radio-group
-              v-if="priceVisibility === 'visible'"
-              v-model="priceType"
-              row
+             <tax-status-radio
+              v-if="priceDisplay === 'visible'"
+              v-model="taxStatus"
               class="mt-4"
-              hide-details
-            >
-              <v-radio
-                label="税別価格で入力"
-                value="excludingTax"
-              ></v-radio>
-              <v-radio
-                label="税込価格で入力"
-                value="includingTax"
-                class="ml-4"
-              ></v-radio>
-            </v-radio-group>
+            />
 
             <!-- 価格入力部 -->
-            <div v-if="priceVisibility === 'visible'" class="mt-4">
+            <div v-if="priceDisplay === 'visible'" class="mt-4">
               <label class="mb-2 text-subtitle-2 d-block">
-                {{ priceType === 'excludingTax' ? '税別価格' : '税込価格' }}
+                {{ taxStatus === 'excludingTax' ? '税別価格' : '税込価格' }}
               </label>
               <div class="d-flex align-center mb-5">
                 <v-text-field
@@ -73,16 +61,16 @@
               <!-- 算出価格 -->
               <div class="pa-3 rounded grey lighten-4">
                 <span class="text-subtitle-2">
-                  {{ priceType === 'excludingTax' ? '税込価格' : '税別価格' }}:
+                  {{ taxStatus === 'excludingTax' ? '税込価格' : '税別価格' }}:
                 </span>
                 <span class="ml-2">
-                  ¥{{ priceType === 'excludingTax' ? priceIncludingTax.toLocaleString() : priceExcludingTax.toLocaleString() }}
+                  ¥{{ taxStatus === 'excludingTax' ? priceIncludingTax.toLocaleString() : priceExcludingTax.toLocaleString() }}
                 </span>
               </div>
             </div>
 
             <!-- 価格を非表示の場合のみ表示 -->
-            <div v-if="priceVisibility === 'hidden'" class="mt-4">
+            <div v-if="priceDisplay === 'hidden'" class="mt-4">
               <label class="mb-2 text-subtitle-2 d-block">
                 表示文言
               </label>
@@ -276,7 +264,7 @@
             <!-- 税別価格/税込価格の選択（価格表示時のみ） -->
             <v-radio-group
               v-if="group.isVisible"
-              v-model="group.priceType"
+              v-model="group.taxStatus"
               row
               class="mt-4"
               hide-details
@@ -295,7 +283,7 @@
             <!-- 価格入力部 -->
             <div v-if="group.isVisible" class="mt-4">
               <label class="mb-2 text-subtitle-2 d-block">
-                {{ group.priceType === 'excludingTax' ? '税別価格' : '税込価格' }}
+                {{ group.taxStatus === 'excludingTax' ? '税別価格' : '税込価格' }}
               </label>
               <div class="d-flex align-center mb-5">
                 <v-text-field
@@ -316,10 +304,10 @@
               <!-- 算出価格 -->
               <div class="pa-3 rounded grey lighten-4">
                 <span class="text-subtitle-2">
-                  {{ group.priceType === 'excludingTax' ? '税込価格' : '税別価格' }}:
+                  {{ group.taxStatus === 'excludingTax' ? '税込価格' : '税別価格' }}:
                 </span>
                 <span class="ml-2">
-                  ¥{{ group.priceType === 'excludingTax' ? group.priceIncludingTax.toLocaleString() : group.priceExcludingTax.toLocaleString() }}
+                  ¥{{ group.taxStatus === 'excludingTax' ? group.priceIncludingTax.toLocaleString() : group.priceExcludingTax.toLocaleString() }}
                 </span>
               </div>
             </div>
@@ -370,21 +358,23 @@
 </template>
 
 <script>
-import PriceVisibilityRadio from '@/components/atoms/radio/PriceVisibilityRadio.vue'
+import PriceDisplayRadio from '~/components/atoms/radio/PriceDisplayTypeRadio.vue'
+import TaxStatusRadio from '~/components/atoms/radio/TaxStatusRadio.vue'
 import ConsumptionTaxSelect from '@/components/atoms/selects/ConsumptionTaxSelect.vue'
 
 export default {
   name: 'PriceScreen',
   components: {
-    PriceVisibilityRadio,
+    PriceDisplayRadio,
+    TaxStatusRadio,
     ConsumptionTaxSelect,
   },
 
   data() {
     return {
       taxRate: 10,                // 適用税率
-      priceVisibility: 'visible', // 価格の表示/非表示
-      priceType: 'excludingTax',  // 税別価格/税込価格で入力
+      priceDisplay: 'visible', // 価格の表示/非表示
+      taxStatus: 'excludingTax',  // 税別価格/税込価格で入力
       inputPrice: '',             // 入力価格
       priceExcludingTax: 0,       // 税別価格
       priceIncludingTax: 0,       // 税込価格
@@ -416,7 +406,7 @@ export default {
      * 税別/税込の入力方式の変更を監視し，価格を再計算
      * @param {string} newType - 新しい価格タイプ（'excludingTax' or 'includingTax'）
      */
-    priceType: {
+    taxStatus: {
       handler(newType) {
         this.calculatePrice()
       },
@@ -450,7 +440,7 @@ export default {
     calculatePrice() {
       if (!this.inputPrice) return;
 
-      if (this.priceType === 'excludingTax') {
+      if (this.taxStatus === 'excludingTax') {
         this.priceExcludingTax = this.inputPrice;
         this.priceIncludingTax = Math.round(this.inputPrice * (1 + this.taxRate / 100));
       } else {
@@ -502,7 +492,7 @@ export default {
         id: `group${this.additionalGroups.length + 1}`,
         name: `グループ${String.fromCharCode(65 + this.additionalGroups.length)}価格`,
         isVisible: true,
-        priceType: 'excludingTax',
+        taxStatus: 'excludingTax',
         inputPrice: '',
         priceExcludingTax: 0,
         priceIncludingTax: 0,
@@ -544,7 +534,7 @@ export default {
     calculateGroupPrice(group) {
       if (!group.inputPrice) return;
 
-      if (group.priceType === 'excludingTax') {
+      if (group.taxStatus === 'excludingTax') {
         group.priceExcludingTax = group.inputPrice;
         group.priceIncludingTax = Math.round(group.inputPrice * (1 + this.taxRate / 100));
       } else {
