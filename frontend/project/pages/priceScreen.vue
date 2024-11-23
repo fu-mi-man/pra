@@ -38,8 +38,8 @@
             />
 
             <!-- 価格入力部 -->
-            <div v-if="priceDisplay === 'visible'" class="mt-4">
-              <label class="mb-2 text-subtitle-2 d-block">
+            <template v-if="priceDisplay === 'visible'">
+              <label class="mt-4 mb-2 text-subtitle-2 d-block">
                 {{ priceLabel }}
               </label>
               <v-text-field
@@ -56,20 +56,20 @@
               >
               </v-text-field>
 
-              <!-- 算出価格 -->
+              <!-- 税込価格/税別価格 -->
               <div class="pa-3 rounded grey lighten-4">
                 <span class="text-subtitle-2">
-                  {{ taxStatus === 'excluded' ? '税込価格' : '税別価格' }}:
+                  {{ calculatedPriceLabel }}:
                 </span>
                 <span class="ml-2">
-                  ¥{{ taxStatus === 'excluded' ? priceIncludingTax.toLocaleString() : priceExcludingTax.toLocaleString() }}
+                  {{ formattedCalculatedPrice }}
                 </span>
               </div>
-            </div>
+            </template>
 
             <!-- 価格を非表示の場合のみ表示 -->
             <div v-if="priceDisplay === 'hidden'" class="mt-4">
-              <label class="mb-2 text-subtitle-2 d-block">
+              <label class="d-block mb-2 text-subtitle-2">
                 表示文言
               </label>
               <v-text-field
@@ -83,7 +83,7 @@
 
             <!-- 価格備考 -->
             <div class="mt-4">
-              <label class="mb-2 text-subtitle-2 d-block">
+              <label class="d-block mb-2 text-subtitle-2">
                 価格備考
               </label>
               <v-textarea
@@ -394,7 +394,14 @@ export default {
   computed: {
     priceLabel() {
       return this.taxStatus === 'excluded' ? '税別価格' : '税込価格'
-    }
+    },
+    calculatedPriceLabel() {
+      return this.taxStatus === 'excluded' ? '税込価格' : '税別価格'
+    },
+    formattedCalculatedPrice() {
+      const price = this.taxStatus === 'excluded' ? this.priceIncludingTax : this.priceExcludingTax
+      return `¥${price.toLocaleString()}`
+    },
   },
   watch: {
     taxRate: {
