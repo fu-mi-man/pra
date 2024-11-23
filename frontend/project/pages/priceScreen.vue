@@ -25,22 +25,10 @@
               通常価格
             </span>
             <!-- 価格を表示 / 価格を非表示 -->
-            <v-radio-group
+            <price-visibility-radio
               v-model="priceVisibility"
-              row
               class="mt-4"
-              hide-details
-            >
-              <v-radio
-                label="価格を表示"
-                value="visible"
-              ></v-radio>
-              <v-radio
-                label="価格を非表示"
-                value="hidden"
-                class="ml-4"
-              ></v-radio>
-            </v-radio-group>
+            />
 
             <!-- 税別価格/税込価格の選択（価格表示時のみ） -->
             <v-radio-group
@@ -382,11 +370,13 @@
 </template>
 
 <script>
+import PriceVisibilityRadio from '@/components/atoms/radio/PriceVisibilityRadio.vue'
 import ConsumptionTaxSelect from '@/components/atoms/selects/ConsumptionTaxSelect.vue'
 
 export default {
   name: 'PriceScreen',
   components: {
+    PriceVisibilityRadio,
     ConsumptionTaxSelect,
   },
 
