@@ -40,23 +40,21 @@
             <!-- 価格入力部 -->
             <div v-if="priceDisplay === 'visible'" class="mt-4">
               <label class="mb-2 text-subtitle-2 d-block">
-                {{ taxStatus === 'excluded' ? '税別価格' : '税込価格' }}
+                {{ priceLabel }}
               </label>
-              <div class="d-flex align-center mb-5">
-                <v-text-field
-                  v-model="inputPrice"
-                  type="number"
-                  dense
-                  outlined
-                  hide-details
-                  hide-spin-buttons
-                  class="max-width-200"
-                  min=""
-                  suffix="円"
-                  @input="handlePriceInput"
-                >
-                </v-text-field>
-              </div>
+              <v-text-field
+                v-model="inputPrice"
+                type="number"
+                dense
+                outlined
+                hide-details
+                hide-spin-buttons
+                class="mb-5 price-field__input"
+                min=""
+                suffix="円"
+                @input="handlePriceInput"
+              >
+              </v-text-field>
 
               <!-- 算出価格 -->
               <div class="pa-3 rounded grey lighten-4">
@@ -393,7 +391,11 @@ export default {
       additionalGroups: []
     }
   },
-
+  computed: {
+    priceLabel() {
+      return this.taxStatus === 'excluded' ? '税別価格' : '税込価格'
+    }
+  },
   watch: {
     taxRate: {
       handler(newRate) {
@@ -434,8 +436,16 @@ export default {
   },
   methods: {
     /**
-     * 税込価格と税別価格を計算
-     * priceTypeに応じて入力価格から価格を算出
+     * 価格入力時のハンドラー
+     * 入力された価格を数値に変換し，税込/税別価格を計算
+     * @param {string|number} value - 入力された価格
+     */
+    handlePriceInput(value) {
+      this.inputPrice = Number(value)
+      this.calculatePrice();
+    },
+    /**
+     * 入力価格から税込価格と税別価格を計算し，状態を更新する
      */
     calculatePrice() {
       if (!this.inputPrice) return;
@@ -448,17 +458,6 @@ export default {
         this.priceExcludingTax = Math.round(this.inputPrice / (1 + this.taxRate / 100));
       }
     },
-
-    /**
-     * 価格入力時のハンドラー
-     * 入力された価格を数値に変換し、税込/税別価格を計算
-     * @param {string|number} value - 入力された価格
-     */
-    handlePriceInput(value) {
-      this.inputPrice = Number(value)
-      this.calculatePrice();
-    },
-
     /**
      * 全顧客価格の税込/税別価格を計算
      */
@@ -564,7 +563,7 @@ export default {
 </script>
 
 <style scoped>
-.max-width-200 {
+.price-field__input {
   max-width: 200px;
 }
 
