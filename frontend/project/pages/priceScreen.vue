@@ -68,8 +68,8 @@
             </template>
 
             <!-- 価格を非表示の場合のみ表示 -->
-            <div v-if="priceDisplay === 'hidden'" class="mt-4">
-              <label class="d-block mb-2 text-subtitle-2">
+            <template v-if="priceDisplay === 'hidden'">
+              <label class="d-block mt-4 mb-2 text-subtitle-2">
                 表示文言
               </label>
               <v-text-field
@@ -78,23 +78,20 @@
                 outlined
                 hide-details
                 placeholder="例：オープン価格"
-              ></v-text-field>
-            </div>
+              />
+            </template>
 
             <!-- 価格備考 -->
-            <div class="mt-4">
-              <label class="d-block mb-2 text-subtitle-2">
-                価格備考
-              </label>
-              <v-textarea
-                v-model="priceNote"
-                outlined
-                dense
-                hide-details
-                placeholder="例：期間限定価格"
-                rows="3"
-              ></v-textarea>
-            </div>
+            <label class="d-block mt-4 mb-2 text-subtitle-2">
+              価格備考
+            </label>
+            <v-text-field
+              v-model="priceNote"
+              outlined
+              dense
+              hide-details
+              placeholder="例：期間限定価格"
+            />
           </v-card>
 
           <v-card outlined class="pa-6 mb-6">
