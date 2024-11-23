@@ -28,7 +28,7 @@
                   適用税率
                 </v-card-subtitle>
                 <div class="mb-4">
-                  <tax-rate-select
+                  <consumption-tax-select
                     v-model="taxRate"
                   />
                 </div>
@@ -414,12 +414,12 @@
 </template>
 
 <script>
-import TaxRateSelect from '~/components/atoms/selects/TaxRateSelect.vue'
+import ConsumptionTaxSelect from '~/components/atoms/selects/ConsumptionTaxSelect.vue'
 
 export default {
   name: 'PriceSettingDialog',
   components: {
-    TaxRateSelect,
+    ConsumptionTaxSelect,
   },
 
   data() {

@@ -6,8 +6,7 @@
       dense
       outlined
       hide-details
-      class="tax-rate-select"
-      style="max-width: 150px"
+      class="consumption-tax__select"
       @input="$emit('input', $event)"
     />
   </div>
@@ -15,7 +14,7 @@
 
 <script>
 export default {
-  name: 'TaxRateSelect',
+  name: 'ConsumptionTaxSelect',
   props: {
     value: {
       type: Number,
