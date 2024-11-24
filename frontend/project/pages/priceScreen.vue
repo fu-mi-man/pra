@@ -10,7 +10,7 @@
             適用税率
           </v-card-subtitle>
           <consumption-tax-select
-            v-model="taxRate"
+            v-model="consumptionTaxRate"
             class="mb-4 consumption-tax__select"
           />
 
@@ -24,24 +24,24 @@
             </span>
             <!-- 価格を表示 / 価格を非表示 -->
             <price-display-radio
-              v-model="priceDisplay"
+              v-model="generalPriceDisplay"
               class="mt-4"
             />
 
             <!-- 税別価格/税込価格の選択（価格表示時のみ） -->
              <tax-status-radio
-              v-if="priceDisplay === 'visible'"
-              v-model="taxStatus"
+              v-if="generalPriceDisplay === 'visible'"
+              v-model="generalTaxStatus"
               class="mt-4"
             />
 
             <!-- 価格入力部 -->
-            <template v-if="priceDisplay === 'visible'">
+            <template v-if="generalPriceDisplay === 'visible'">
               <label class="d-block mt-4 mb-2 text-subtitle-2">
                 {{ priceLabel }}
               </label>
               <v-text-field
-                v-model="inputPrice"
+                v-model="generalInputPrice"
                 type="number"
                 dense
                 outlined
@@ -66,12 +66,12 @@
             </template>
 
             <!-- 価格を非表示の場合のみ表示 -->
-            <template v-if="priceDisplay === 'hidden'">
+            <template v-if="generalPriceDisplay === 'hidden'">
               <label class="d-block mt-4 mb-2 text-subtitle-2">
                 表示文言
               </label>
               <v-text-field
-                v-model="customText"
+                v-model="generalCustomText"
                 dense
                 outlined
                 hide-details
@@ -84,7 +84,7 @@
               価格備考
             </label>
             <v-text-field
-              v-model="priceNote"
+              v-model="generalPriceNote"
               outlined
               dense
               hide-details
@@ -116,21 +116,19 @@
                 <label class="d-block mt-4 mb-2 text-subtitle-2">
                   {{ allCustomerPriceLabel }}
                 </label>
-                <div class="d-flex align-center mb-5">
-                  <v-text-field
-                    v-model="allCustomerInputPrice"
-                    type="number"
-                    dense
-                    outlined
-                    hide-details
-                    hide-spin-buttons
-                    class="max-width-200"
-                    min="0"
-                    suffix="円"
-                    @input="handlePriceInput($event, 'allCustomer')"
-                  >
-                  </v-text-field>
-                </div>
+                <v-text-field
+                  v-model="allCustomerInputPrice"
+                  type="number"
+                  dense
+                  outlined
+                  hide-details
+                  hide-spin-buttons
+                  class="mb-5 price-field__input"
+                  min="0"
+                  suffix="円"
+                  @input="handlePriceInput($event, 'allCustomer')"
+                >
+                </v-text-field>
 
                 <!-- 税込価格/税別価格 -->
                 <div class="pa-3 rounded grey lighten-4">
@@ -324,8 +322,8 @@
 </template>
 
 <script>
-import PriceDisplayRadio from '~/components/atoms/radio/PriceDisplayTypeRadio.vue'
-import TaxStatusRadio from '~/components/atoms/radio/TaxStatusRadio.vue'
+import PriceDisplayRadio from '@/components/atoms/radio/PriceDisplayTypeRadio.vue'
+import TaxStatusRadio from '@/components/atoms/radio/TaxStatusRadio.vue'
 import ConsumptionTaxSelect from '@/components/atoms/selects/ConsumptionTaxSelect.vue'
 
 export default {
@@ -338,16 +336,16 @@ export default {
 
   data() {
     return {
-      taxRate: 10,             // 適用税率
-
-      priceDisplay: 'visible', // 価格の表示/非表示
-      taxStatus: 'excluded',   // 税別価格/税込価格で入力
-      inputPrice: '',          // 入力価格
-      priceExcludingTax: 0,    // 税別価格
-      priceIncludingTax: 0,    // 税込価格
-      priceNote: '',           // 価格備考
-      customText: '',          // 表示文言（価格非表示時）
-
+      consumptionTaxRate: 10,         // 適用税率
+      // 通常価格
+      generalPriceDisplay: 'visible', // 価格の表示/非表示
+      generalTaxStatus: 'excluded',   // 税別価格/税込価格で入力
+      generalInputPrice: '',          // 入力価格
+      generalPriceExcludingTax: 0,    // 税別価格
+      generalPriceIncludingTax: 0,    // 税込価格
+      generalPriceNote: '',           // 価格備考
+      generalCustomText: '',          // 表示文言（価格非表示時）
+      // 全顧客価格
       allCustomerPriceDisplay: '',
       allCustomerTaxStatus: 'excluded',
       allCustomerInputPrice: '',
@@ -363,17 +361,17 @@ export default {
   computed: {
     // 入力価格のラベル（通常価格）
     priceLabel() {
-      return this.getPriceLabel(this.taxStatus);
+      return this.getPriceLabel(this.generalTaxStatus);
     },
     // 表示価格のラベル（通常価格）
     calculatedPriceLabel() {
-      return this.getCalculatedPriceLabel(this.taxStatus)
+      return this.getCalculatedPriceLabel(this.generalTaxStatus)
     },
     formattedCalculatedPrice() {
       const price = this.getDisplayPrice(
-        this.taxStatus,
-        this.priceIncludingTax,
-        this.priceExcludingTax
+        this.generalTaxStatus,
+        this.generalPriceIncludingTax,
+        this.generalPriceExcludingTax
       )
       return `¥${price.toLocaleString()}`
     },
@@ -395,30 +393,37 @@ export default {
     },
   },
   watch: {
-    taxRate: {
-      handler(newRate) {
-        this.calculatePrice();
-        this.calculateAllCustomerPrice();
+    /**
+     * 適用税率の変更を監視し、すべての価格を再計算
+     * @param {number} newRate - 新しい税率（例: 8, 10）
+     * @param {number} oldRate - 以前の税率
+     */
+    consumptionTaxRate: {
+      handler(newRate, oldRate) {
+        this.calculatePrices('general');
+        this.calculatePrices('allCustomer');
         this.recalculateGroupPrices();
       }
     },
     /**
-     * 税別/税込の入力方式の変更を監視し，価格を再計算
-     * @param {string} newType - 新しい価格タイプ（'excluded' or 'included'）
+     * 全顧客価格の税別/税込入力方式の変更を監視し，価格を再計算
+     * @param {'excluded'|'included'} newType - 新しい税率ステータス
+     * @param {'excluded'|'included'} oldType - 以前の税率ステータス
      */
-    taxStatus: {
-      handler(newType) {
-        this.calculatePrice()
+    generalTaxStatus: {
+      handler(newType, oldType) {
+        this.calculatePrices('general')
       },
       immediate: true
     },
     /**
-     * 税別/税込の入力方式の変更を監視し，価格を再計算
-     * @param {string} newType - 税別か税込（'excluded' or 'included'）
+     * 全顧客価格の税別/税込入力方式の変更を監視し，価格を再計算
+     * @param {'excluded'|'included'} newType - 新しい税率ステータス
+     * @param {'excluded'|'included'} oldType - 以前の税率ステータス
      */
     allCustomerTaxStatus: {
-      handler() {
-        this.calculateAllCustomerPrice();
+      handler(newType, oldType) {
+        this.calculatePrices('allCustomer');
       },
       immediate: true
     },
@@ -472,44 +477,80 @@ export default {
 
       switch (priceType) {
         case 'general':
-          this.inputPrice = numericValue;
-          this.calculatePrice();
+          this.generalInputPrice = numericValue;
+          // this.calculatePrices(priceType)
           break;
-        case 'allCustomer':
-          this.allCustomerInputPrice = numericValue;
-          this.calculateAllCustomerPrice();
+          case 'allCustomer':
+            this.allCustomerInputPrice = numericValue;
+            // this.calculateAllCustomerPrice();
+            break;
+      }
+
+      this.calculatePrices(priceType);
+    },
+    /**
+     * 価格計算を実行する
+     * @param {'general'|'allCustomer'|'group'} priceType - 価格タイプ
+     * @param {Object} [group] - グループ価格の場合のグループオブジェクト
+     */
+    calculatePrices(priceType, group = null) {
+      switch (priceType) {
+        case 'general': {
+          const { excludingTax, includingTax } = this.calculateTaxPrices(
+            this.generalInputPrice,
+            this.generalTaxStatus,
+            this.consumptionTaxRate
+          );
+          this.generalPriceExcludingTax = excludingTax;
+          this.generalPriceIncludingTax = includingTax;
           break;
+        }
+        case 'allCustomer': {
+          const { excludingTax, includingTax } = this.calculateTaxPrices(
+            this.allCustomerInputPrice,
+            this.allCustomerTaxStatus,
+            this.consumptionTaxRate
+          );
+          this.allCustomerPriceExcludingTax = excludingTax;
+          this.allCustomerPriceIncludingTax = includingTax;
+          break;
+        }
+        case 'group': {
+          if (!group) return;
+          const { excludingTax, includingTax } = this.calculateTaxPrices(
+            group.inputPrice,
+            group.taxStatus,
+            this.consumptionTaxRate
+          );
+          group.priceExcludingTax = excludingTax;
+          group.priceIncludingTax = includingTax;
+          break;
+        }
       }
     },
     /**
-     * 入力価格から税込価格と税別価格を計算し，状態を更新する
+     * 価格を計算する共通関数
+     * @param {number} inputPrice - 入力価格
+     * @param {string} taxStatus - 税率ステータス ('excluded' or 'included')
+     * @param {number} consumptionTaxRate - 適用税率
+     * @returns {{excludingTax: number, includingTax: number}} 計算された税込・税別価格
      */
-    calculatePrice() {
-      if (!this.inputPrice) return;
+    calculateTaxPrices(inputPrice, taxStatus, consumptionTaxRate) {
+      if (!inputPrice) return { excludingTax: 0, includingTax: 0 };
 
-      if (this.taxStatus === 'excluded') {
-        this.priceExcludingTax = this.inputPrice;
-        this.priceIncludingTax = Math.round(this.inputPrice * (1 + this.taxRate / 100));
+      const rate = 1 + consumptionTaxRate / 100;
+      if (taxStatus === 'excluded') {
+        return {
+          excludingTax: inputPrice,
+          includingTax: Math.round(inputPrice * rate)
+        };
       } else {
-        this.priceIncludingTax = this.inputPrice;
-        this.priceExcludingTax = Math.round(this.inputPrice / (1 + this.taxRate / 100));
+        return {
+          includingTax: inputPrice,
+          excludingTax: Math.round(inputPrice / rate)
+        };
       }
     },
-    /**
-     * 全顧客価格の税込/税別価格を計算
-     */
-    calculateAllCustomerPrice() {
-      if (!this.allCustomerInputPrice) return;
-
-      if (this.allCustomerTaxStatus === 'excluded') {
-        this.allCustomerPriceExcludingTax = this.allCustomerInputPrice;
-        this.allCustomerPriceIncludingTax = Math.round(this.allCustomerInputPrice * (1 + this.taxRate / 100));
-      } else {
-        this.allCustomerPriceIncludingTax = this.allCustomerInputPrice;
-        this.allCustomerPriceExcludingTax = Math.round(this.allCustomerInputPrice / (1 + this.taxRate / 100));
-      }
-    },
-
     /**
      * 新しい価格グループを追加
      */
@@ -564,10 +605,10 @@ export default {
 
       if (group.taxStatus === 'excluded') {
         group.priceExcludingTax = group.inputPrice;
-        group.priceIncludingTax = Math.round(group.inputPrice * (1 + this.taxRate / 100));
+        group.priceIncludingTax = Math.round(group.inputPrice * (1 + this.consumptionTaxRate / 100));
       } else {
         group.priceIncludingTax = group.inputPrice;
-        group.priceExcludingTax = Math.round(group.inputPrice / (1 + this.taxRate / 100));
+        group.priceExcludingTax = Math.round(group.inputPrice / (1 + this.consumptionTaxRate / 100));
       }
     },
 
