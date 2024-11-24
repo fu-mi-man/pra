@@ -50,7 +50,7 @@
                 class="mb-5 price-field__input"
                 min=""
                 suffix="円"
-                @input="handlePriceInput"
+                @input="handlePriceInput($event, 'general')"
               >
               </v-text-field>
 
@@ -127,7 +127,7 @@
                     class="max-width-200"
                     min="0"
                     suffix="円"
-                    @input="handleAllCustomerPriceInput"
+                    @input="handlePriceInput($event, 'allCustomer')"
                   >
                   </v-text-field>
                 </div>
@@ -361,26 +361,36 @@ export default {
     }
   },
   computed: {
-    // 通常価格
+    // 入力価格のラベル（通常価格）
     priceLabel() {
-      return this.taxStatus === 'excluded' ? '税別価格' : '税込価格'
+      return this.getPriceLabel(this.taxStatus);
     },
+    // 表示価格のラベル（通常価格）
     calculatedPriceLabel() {
-      return this.taxStatus === 'excluded' ? '税込価格' : '税別価格'
+      return this.getCalculatedPriceLabel(this.taxStatus)
     },
     formattedCalculatedPrice() {
-      const price = this.taxStatus === 'excluded' ? this.priceIncludingTax : this.priceExcludingTax
+      const price = this.getDisplayPrice(
+        this.taxStatus,
+        this.priceIncludingTax,
+        this.priceExcludingTax
+      )
       return `¥${price.toLocaleString()}`
     },
-    // 全顧客価格
+    // 入力価格のラベル（全顧客価格）
     allCustomerPriceLabel() {
-      return this.allCustomerTaxStatus === 'excluded' ? '税別価格' : '税込価格'
+      return this.getPriceLabel(this.allCustomerTaxStatus);
     },
+    // 表示価格のラベル（全顧客価格）
     calculatedAllCustomerPriceLabel() {
-      return this.allCustomerTaxStatus === 'excluded' ? '税込価格' : '税別価格'
+      return this.getCalculatedPriceLabel(this.allCustomerTaxStatus)
     },
     formattedCalculatedAllCustomerPrice() {
-      const price = this.allCustomerTaxStatus === 'excluded' ? this.allCustomerPriceIncludingTax : this.allCustomerPriceExcludingTax
+      const price = this.getDisplayPrice(
+        this.allCustomerTaxStatus,
+        this.allCustomerPriceIncludingTax,
+        this.allCustomerPriceExcludingTax
+      )
       return `¥${price.toLocaleString()}`
     },
   },
@@ -427,13 +437,49 @@ export default {
   },
   methods: {
     /**
-     * 価格入力時のハンドラー
-     * 入力された価格を数値に変換し，税込/税別価格を計算
-     * @param {string|number} value - 入力された価格
+     * 入力価格のラベルを取得する
+     * @param {string} taxStatus - 税率ステータス ('excluded' or 'included')
+     * @returns {string} 表示用の価格ラベル ('税別価格' or '税込価格')
      */
-    handlePriceInput(value) {
-      this.inputPrice = Number(value)
-      this.calculatePrice();
+    getPriceLabel(taxStatus) {
+      return taxStatus === 'excluded' ? '税別価格' : '税込価格'
+    },
+    /**
+     * 表示価格のラベルを取得する
+     * @param {string} taxStatus - 税率ステータス ('excluded' or 'included')
+     * @returns {string} 表示用の価格ラベル ('税別価格' or '税込価格')
+     */
+    getCalculatedPriceLabel(taxStatus) {
+      return taxStatus === 'excluded' ? '税込価格' : '税別価格'
+    },
+    /**
+     * 税込/税別に応じた価格を取得する
+     * @param {string} taxStatus - 税率ステータス ('excluded' or 'included')
+     * @param {number} includingTax - 税込価格
+     * @param {number} excludingTax - 税別価格
+     * @returns {number} 表示すべき価格
+     */
+    getDisplayPrice(taxStatus, includingTax, excludingTax) {
+      return taxStatus === 'excluded' ? includingTax : excludingTax
+    },
+    /**
+     * 価格入力時の共通ハンドラー
+     * @param {string|number} value - 入力された価格
+     * @param {'general'|'allCustomer'} priceType - 価格タイプ
+     */
+    handlePriceInput(value, priceType) {
+      const numericValue = Number(value);
+
+      switch (priceType) {
+        case 'general':
+          this.inputPrice = numericValue;
+          this.calculatePrice();
+          break;
+        case 'allCustomer':
+          this.allCustomerInputPrice = numericValue;
+          this.calculateAllCustomerPrice();
+          break;
+      }
     },
     /**
      * 入力価格から税込価格と税別価格を計算し，状態を更新する
@@ -448,13 +494,6 @@ export default {
         this.priceIncludingTax = this.inputPrice;
         this.priceExcludingTax = Math.round(this.inputPrice / (1 + this.taxRate / 100));
       }
-    },
-    /**
-     * 価格入力時のハンドラー（全顧客価格）
-     */
-    handleAllCustomerPriceInput(value) {
-      this.allCustomerInputPrice = Number(value);
-      this.calculateAllCustomerPrice();
     },
     /**
      * 全顧客価格の税込/税別価格を計算
