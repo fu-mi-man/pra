@@ -92,7 +92,19 @@
             />
           </v-card>
 
-          <v-card outlined class="pa-6 mb-6">
+          <!-- 全顧客価格の有効/無効を切り替えるトグル -->
+          <v-card-subtitle class="px-0 text-subtitle-1 d-flex align-center">
+            <span>全顧客価格</span>
+            <v-switch
+              v-model="enableAllCustomerPrice"
+              class="ml-4 mt-0"
+              hide-details
+              dense
+              inset
+            />
+          </v-card-subtitle>
+
+          <v-card v-if="enableAllCustomerPrice" outlined class="pa-6 mb-6">
             <span class="pa-3 rounded grey lighten-4 font-weight-bold">
               全顧客価格
             </span>
@@ -170,15 +182,15 @@
           </v-card>
 
           <!-- 追加グループ価格 -->
-          <v-card-subtitle class="px-0 text-subtitle-1 d-flex justify-space-between align-center">
-            <span>グループ価格</span>
+          <v-card-subtitle class="d-flex align-center px-0 text-subtitle-1">
+            <span class="mr-5">グループ価格</span>
             <v-btn
               v-if="additionalGroups.length < 5"
               color="primary"
               text
-              @click="addPriceGroup"
+              @click="showGroupSelectionDialog = true"
             >
-              <v-icon left>mdi-plus-circle</v-icon>
+              <v-icon>mdi-plus-circle</v-icon>
               グループを追加
             </v-btn>
           </v-card-subtitle>
@@ -318,6 +330,10 @@
         </v-col>
       </v-row>
     </v-container>
+
+    <group-selection-dialog
+      v-model="showGroupSelectionDialog"
+    />
   </div>
 </template>
 
@@ -325,6 +341,7 @@
 import PriceDisplayRadio from '@/components/atoms/radio/PriceDisplayTypeRadio.vue'
 import TaxStatusRadio from '@/components/atoms/radio/TaxStatusRadio.vue'
 import ConsumptionTaxSelect from '@/components/atoms/selects/ConsumptionTaxSelect.vue'
+import GroupSelectionDialog from '@/components/organisms/GroupSelectionDialog.vue'
 
 export default {
   name: 'PriceScreen',
@@ -332,10 +349,12 @@ export default {
     PriceDisplayRadio,
     TaxStatusRadio,
     ConsumptionTaxSelect,
+    GroupSelectionDialog,
   },
 
   data() {
     return {
+      enableAllCustomerPrice: false,  // 全顧客価格の有効/無効を制御
       consumptionTaxRate: 10,         // 適用税率
       // 通常価格
       generalPriceDisplay: 'visible', // 価格の表示/非表示
@@ -346,7 +365,7 @@ export default {
       generalPriceNote: '',           // 価格備考
       generalCustomText: '',          // 表示文言（価格非表示時）
       // 全顧客価格
-      allCustomerPriceDisplay: '',
+      allCustomerPriceDisplay: 'visible',
       allCustomerTaxStatus: 'excluded',
       allCustomerInputPrice: '',
       allCustomerPriceExcludingTax: 0,
@@ -355,7 +374,8 @@ export default {
       allCustomerCustomText: '',
 
       // 追加グループ価格の状態
-      additionalGroups: []
+      additionalGroups: [],
+      showGroupSelectionDialog: false
     }
   },
   computed: {

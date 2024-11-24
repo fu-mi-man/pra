@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     max-width="1000px"
-    :value="isOpen"
+    :value="value"
     @input="close"
   >
     <v-card>
@@ -86,7 +86,7 @@
 export default {
   name: 'GroupSelectionDialog',
   props: {
-    isOpen: {
+    value: {
       type: Boolean,
       required: true
     }
