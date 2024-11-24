@@ -2,7 +2,7 @@
   <v-dialog
     max-width="1000px"
     :value="value"
-    @input="close"
+    @input="$emit('input', $event)"
   >
     <v-card>
       <v-card-title>
@@ -32,6 +32,7 @@
           </v-col>
         </v-row>
 
+        <!-- ローディング -->
         <div v-if="loading" class="text-center mt-16">
           <v-progress-circular
             :size="70"
@@ -41,6 +42,7 @@
           ></v-progress-circular>
         </div>
 
+        <!-- 顧客グループ情報 -->
         <v-data-table
           v-else
           v-model="selected"
@@ -58,9 +60,8 @@
           item-key="groupId"
           class="cursor-pointer"
           @click:row="handleRowClick"
-        ></v-data-table>
+        />
       </v-card-text>
-
 
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -120,17 +121,30 @@ export default {
   },
   watch: {
     /**
-     * ダイアログの表示状態監視
-     * ダイアログが開かれたときにグループ情報を取得する
+     * ダイアログの表示状態を監視し，表示・非表示に応じた処理を実行する
+     *
+     * @watch value
+     * @param {boolean} newValue - 新しいダイアログの表示状態
+     * @property {boolean} immediate - コンポーネントの初期化時にも実行する
+     *
+     * @description
+     * - ダイアログが表示される（true）: グループ情報を非同期で取得
+     * - ダイアログが非表示になる（false）: 表示データをクリアしてリセット
+     *   - groups配列を空にする
+     *   - 検索文字列をクリア
+     *   - 選択状態をリセット
      */
-    isOpen(newValue) {
-      if (newValue) {
-        this.fetchGroups()
-      } else {
-        // ダイアログが閉じられた時の処理
-        this.groups = []  // 例：データをクリア
-        this.search = ''  // 例：検索条件をリセット
-      }
+    value: {
+      handler(newValue) {
+        if (newValue) {
+          this.fetchGroups()
+        } else {
+          this.groups = []
+          this.search = ''
+          this.selected = []
+        }
+      },
+      immediate: true,
     }
   },
   methods: {
@@ -170,23 +184,25 @@ export default {
             item.memberCount.toString().includes(searchLower)
     },
     handleRowClick(item) {
-    // 既に選択されている行をクリックした場合は選択解除
-    if (this.selected.length && this.selected[0].groupId === item.groupId) {
-      this.selected = []
-    } else {
-      // それ以外の場合は選択
-      this.selected = [item]
-    }
-  },
+      // 既に選択されている行をクリックした場合は選択解除
+      if (this.selected.length && this.selected[0].groupId === item.groupId) {
+        this.selected = []
+      } else {
+        // それ以外の場合は選択
+        this.selected = [item]
+      }
+    },
     close() {
-      this.$emit('close')
-      this.selected = [] // ダイアログを閉じる時に選択をクリア
+      this.$emit('input', false)
+      this.selected = []
     },
     onSet() {
-      this.$emit('close')
-      // 後で実装：選択したデータを親コンポーネントに渡す
-      this.selected = [] // 選択をクリア
-    }
+      if (this.selected.length > 0) {
+        this.$emit('group-selected', this.selected[0])
+      }
+      this.$emit('input', false)
+      this.selected = []
+    },
   }
 }
 </script>
