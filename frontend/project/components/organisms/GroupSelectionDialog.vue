@@ -3,6 +3,7 @@
     max-width="1000px"
     :value="value"
     @input="$emit('input', $event)"
+    @click:outside="close"
   >
     <v-card>
       <v-card-title>
@@ -17,6 +18,14 @@
           class="mb-4"
         >
           グループの取得に失敗しました
+        </v-alert>
+        <v-alert
+          v-if="showSelectionError"
+          type="error"
+          dense
+          class="mb-4"
+        >
+          グループを1件選択してください
         </v-alert>
 
         <v-row>
@@ -46,21 +55,25 @@
         <v-data-table
           v-else
           v-model="selected"
-          :search="search"
-          :custom-filter="customFilter"
           :headers="headers"
           :items="groups"
+          :items-per-page="5"
+          :search="search"
+          :custom-filter="customFilter"
           :single-select="true"
           :show-select="true"
-          :items-per-page="5"
+          item-key="groupId"
           :footer-props="{
             'items-per-page-options': [5, 20, 50, 100],
             'items-per-page-text': '表示件数'
           }"
-          item-key="groupId"
           class="cursor-pointer"
           @click:row="handleRowClick"
         />
+        <!-- <v-pagination
+          v-model="page"
+          :length="'3'"
+        ></v-pagination> -->
       </v-card-text>
 
       <v-card-actions>
@@ -74,7 +87,7 @@
         </v-btn>
         <v-btn
           color="primary"
-          @click="onSet"
+          @click="handleSetGroup"
         >
           設定する
         </v-btn>
@@ -97,7 +110,7 @@ export default {
       // テーブルのヘッダー定義
       headers: [
         {
-          text: 'グループ名',
+          text: '顧客グループ名',
           value: 'groupName',
           align: 'start',
         },
@@ -106,17 +119,14 @@ export default {
           value: 'memberCount',
           align: 'start',
         },
-        {
-          text: '備考',
-          value: 'remarks',
-          align: 'center',
-        }
       ],
       groups: [],
       selected: [],     // 選択されたアイテム
-      showError: false, // エラーメッセージの表示制御用
       search: '',       // 検索フィルター文字列
       loading: false,
+
+      showError: false, // エラーメッセージの表示制御用
+      showSelectionError: false, // 選択エラー表示制御用
     }
   },
   watch: {
@@ -157,7 +167,6 @@ export default {
           groupId: item.id,
           groupName: item.groupName,
           memberCount: item.memberCount,
-          remarks: item.remarks
         }))
         this.showError = false  // 成功したらエラー表示をクリア
       } catch (error) {
@@ -180,7 +189,6 @@ export default {
 
       // 最も検索されそうなフィールドから順番にチェック
       return item.groupName.toString().toLowerCase().includes(searchLower) ||
-            item.remarks.toString().toLowerCase().includes(searchLower) ||
             item.memberCount.toString().includes(searchLower)
     },
     handleRowClick(item) {
@@ -192,16 +200,37 @@ export default {
         this.selected = [item]
       }
     },
+    /**
+     * ダイアログを閉じるメソッド
+     * @description
+     * - キャンセルボタン押下時
+     * - ダイアログ外クリック時
+     * @emits {boolean} input - ダイアログの表示状態を制御する値（false）
+     */
     close() {
-      this.$emit('input', false)
-      this.selected = []
+      this.resetDialog()
     },
-    onSet() {
-      if (this.selected.length > 0) {
-        this.$emit('group-selected', this.selected[0])
+    /**
+     * グループ選択を確定し、親コンポーネントに通知するメソッド
+     * @emits {Object} group-selected - 選択されたグループオブジェクト
+     * @emits {boolean} input - ダイアログの表示状態を制御する値（false）
+     */
+    handleSetGroup() {
+      if (this.selected.length === 0) {
+        // 選択しないで設定ボタンを押下した場合
+        this.showSelectionError = true
+        return
       }
-      this.$emit('input', false)
+      this.$emit('group-selected', this.selected[0])
+      this.resetDialog()
+    },
+    /**
+     * ダイアログの状態をリセットするメソッド
+     */
+    resetDialog() {
       this.selected = []
+      this.showSelectionError = false
+      this.$emit('input', false)
     },
   }
 }
