@@ -209,6 +209,7 @@
                 outlined
                 hide-details
                 class="max-width-200"
+                readonly
               ></v-text-field>
               <v-btn
                 icon
@@ -333,6 +334,7 @@
 
     <group-selection-dialog
       v-model="showGroupSelectionDialog"
+      @group-selected="handleGroupSelected"
     />
   </div>
 </template>
@@ -375,7 +377,8 @@ export default {
 
       // 追加グループ価格の状態
       additionalGroups: [],
-      showGroupSelectionDialog: false
+      showGroupSelectionDialog: false,
+      selectedGroups: [] // 選択されたグループを保持する配列
     }
   },
   computed: {
@@ -639,6 +642,26 @@ export default {
       this.additionalGroups.forEach(group => {
         this.calculateGroupPrice(group);
       });
+    },
+    // グループ選択ダイアログでグループが選択された時のハンドラーを追加
+    handleGroupSelected(group) {
+      console.log('Selected group:', group);
+      if (this.additionalGroups.length >= 5) return;
+
+      const newGroup = {
+        id: `group${this.additionalGroups.length + 1}`,
+        name: group.groupName,
+        isVisible: true,
+        taxStatus: 'excluded',
+        inputPrice: '',
+        priceExcludingTax: 0,
+        priceIncludingTax: 0,
+        customText: '',
+        priceNote: ''
+      };
+
+      this.additionalGroups.push(newGroup);
+      this.showGroupSelectionDialog = false;
     },
 
     /**
