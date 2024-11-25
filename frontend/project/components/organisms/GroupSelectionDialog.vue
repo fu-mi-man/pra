@@ -37,7 +37,7 @@
               single-line
               hide-details
               class="mb-4"
-            ></v-text-field>
+            />
           </v-col>
         </v-row>
 
@@ -48,7 +48,7 @@
             indeterminate
             color="primary"
             class="my-4"
-          ></v-progress-circular>
+          />
         </div>
 
         <!-- 顧客グループ情報 -->
@@ -121,7 +121,7 @@ export default {
         },
       ],
       groups: [],
-      selected: [],     // 選択されたアイテム
+      selected: [],     // 選択されたグループ
       search: '',       // 検索フィルター文字列
       loading: false,
 
@@ -132,26 +132,15 @@ export default {
   watch: {
     /**
      * ダイアログの表示状態を監視し，表示・非表示に応じた処理を実行する
-     *
-     * @watch value
-     * @param {boolean} newValue - 新しいダイアログの表示状態
+     * @param {boolean} newValue - ダイアログの開閉状態（true, false）
      * @property {boolean} immediate - コンポーネントの初期化時にも実行する
-     *
-     * @description
-     * - ダイアログが表示される（true）: グループ情報を非同期で取得
-     * - ダイアログが非表示になる（false）: 表示データをクリアしてリセット
-     *   - groups配列を空にする
-     *   - 検索文字列をクリア
-     *   - 選択状態をリセット
      */
     value: {
       handler(newValue) {
         if (newValue) {
           this.fetchGroups()
         } else {
-          this.groups = []
-          this.search = ''
-          this.selected = []
+          this.resetState()
         }
       },
       immediate: true,
@@ -191,14 +180,23 @@ export default {
       return item.groupName.toString().toLowerCase().includes(searchLower) ||
             item.memberCount.toString().includes(searchLower)
     },
+    /**
+     * データテーブルの行クリック時のハンドラー
+     * 行をクリックすると選択/選択解除を切り替える
+     * @param {Object} item - クリックされた行のデータ
+     * @property {string} item.groupId - グループID
+     * @property {string} item.groupName - グループ名
+     * @property {number} item.memberCount - グループメンバー数
+     * @example
+     * // itemの形式
+     * {
+     *   groupId: "group_123",
+     *   groupName: "開発チーム",
+     *   memberCount: 5
+     * }
+     */
     handleRowClick(item) {
-      // 既に選択されている行をクリックした場合は選択解除
-      if (this.selected.length && this.selected[0].groupId === item.groupId) {
-        this.selected = []
-      } else {
-        // それ以外の場合は選択
-        this.selected = [item]
-      }
+      this.selected = this.selected.length ? [] : [item]
     },
     /**
      * ダイアログを閉じるメソッド
@@ -208,7 +206,7 @@ export default {
      * @emits {boolean} input - ダイアログの表示状態を制御する値（false）
      */
     close() {
-      this.resetDialog()
+      this.closeDialog()
     },
     /**
      * グループ選択を確定し、親コンポーネントに通知するメソッド
@@ -222,16 +220,21 @@ export default {
         return
       }
       this.$emit('group-selected', this.selected[0])
-      this.resetDialog()
+      this.closeDialog()
     },
     /**
      * ダイアログの状態をリセットするメソッド
      */
-    resetDialog() {
-      this.selected = []
-      this.showSelectionError = false
+    closeDialog() {
+      this.resetState()
       this.$emit('input', false)
     },
+    resetState() {
+      this.selected = []
+      this.showSelectionError = false
+      this.groups = []
+      this.search = ''
+    }
   }
 }
 </script>
