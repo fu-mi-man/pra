@@ -28,6 +28,7 @@
           グループを1件選択してください
         </v-alert>
 
+        <!-- 検索フィルター -->
         <v-row>
           <v-col cols="6">
             <v-text-field
@@ -67,7 +68,6 @@
             'items-per-page-options': [5, 20, 50, 100],
             'items-per-page-text': '表示件数'
           }"
-          class="cursor-pointer"
           @click:row="handleRowClick"
         />
         <!-- <v-pagination
@@ -100,6 +100,11 @@
 export default {
   name: 'GroupSelectionDialog',
   props: {
+    /**
+     * ダイアログの表示状態を制御するプロパティ
+     * - 親コンポーネントから`v-model`として渡される値
+     * @type {Boolean}
+     */
     value: {
       type: Boolean,
       required: true
@@ -107,7 +112,6 @@ export default {
   },
   data() {
     return {
-      // テーブルのヘッダー定義
       headers: [
         {
           text: '顧客グループ名',
@@ -120,13 +124,13 @@ export default {
           align: 'start',
         },
       ],
-      groups: [],
-      selected: [],     // 選択されたグループ
-      search: '',       // 検索フィルター文字列
+      groups: [],       // 顧客グループデータのリスト
+      search: '',       // 検索フィルターの入力値（フィルタリングに使用）
+      selected: [],     // データテーブルで選択された行のデータ（v-data-table の選択機能に使用）
       loading: false,
 
-      showError: false, // エラーメッセージの表示制御用
-      showSelectionError: false, // 選択エラー表示制御用
+      showError: false, // API取得エラー
+      showSelectionError: false, // グループ未選択エラー
     }
   },
   watch: {
@@ -167,12 +171,13 @@ export default {
     /**
      * グループ名，備考，人数に対して検索を行う
      * 検索フィールドの入力値が変更された時に発火
-     * @param {any} value 現在の列の値（headers[].valueに対応する値）
-     * @param {string} search 検索文字列
-     * @param {Object} item 検索対象のグループデータ
+     * @param {any} value 現在の列に表示されているデータ
+     * @param {string} search ユーザが入力した検索文字列
+     * @param {Object} item テーブル内の1行分のデータ
      */
-    customFilter(value, search, item) {
-      if (!search) return true
+    customFilter(_, search, item) {
+      // 検索文字列が空の場合、すべての行を表示する
+      if (search === '' || search === null || search === undefined) return true
 
       const searchLower = search.toString().toLowerCase()
 
@@ -196,7 +201,12 @@ export default {
      * }
      */
     handleRowClick(item) {
-      this.selected = this.selected.length ? [] : [item]
+      // 既に選択されている行をクリックした場合、選択を解除する
+      if (this.selected.length && this.selected[0].groupId === item.groupId) {
+        this.selected = []
+      } else {
+        this.selected = [item]
+      }
     },
     /**
      * ダイアログを閉じるメソッド
@@ -239,8 +249,8 @@ export default {
 }
 </script>
 <style scoped>
-
->>> .v-data-table tbody tr {
+/* テーブル行にマウスホバー時にカーソルを設定 */
+::v-deep(.v-data-table tbody tr:hover) {
   cursor: pointer;
 }
 </style>
