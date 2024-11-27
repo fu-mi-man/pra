@@ -236,7 +236,7 @@
             <!-- 価格入力部 -->
             <template v-if="group.priceDisplay === 'visible'">
               <label class="d-block mt-4 mb-2 text-subtitle-2">
-                {{ group.taxStatus === 'excluded' ? '税別価格' : '税込価格' }}
+                {{ getPriceLabel(group.taxStatus) }}
               </label>
               <v-text-field
                 v-model="group.inputPrice"
@@ -254,10 +254,10 @@
               <!-- 税込価格/税別価格 -->
               <div class="pa-3 rounded grey lighten-4">
                 <span class="text-subtitle-2">
-                  {{ group.taxStatus === 'excluded' ? '税込価格' : '税別価格' }}:
+                  {{ getCalculatedPriceLabel(group.taxStatus) }}:
                 </span>
                 <span class="ml-2">
-                  ¥{{ group.taxStatus === 'excluded' ? group.priceIncludingTax.toLocaleString() : group.priceExcludingTax.toLocaleString() }}
+                  {{ formatPrice(getDisplayPrice(group.taxStatus, group.priceIncludingTax, group.priceExcludingTax)) }}
                 </span>
               </div>
             </template>
@@ -367,7 +367,7 @@ export default {
         this.generalPriceIncludingTax,
         this.generalPriceExcludingTax
       )
-      return `¥${price.toLocaleString()}`
+      return this.formatPrice(price)
     },
     // 入力価格のラベル（全顧客価格）
     allCustomerPriceLabel() {
@@ -383,7 +383,7 @@ export default {
         this.allCustomerPriceIncludingTax,
         this.allCustomerPriceExcludingTax
       )
-      return `¥${price.toLocaleString()}`
+      return this.formatPrice(price)
     },
   },
   watch: {
@@ -460,6 +460,12 @@ export default {
      */
     getDisplayPrice(taxStatus, includingTax, excludingTax) {
       return taxStatus === 'excluded' ? includingTax : excludingTax
+    },
+    /**
+     * 価格を通貨フォーマットに変換する
+     */
+    formatPrice(price) {
+      return `¥${price.toLocaleString()}`
     },
     /**
      * 価格入力時の共通ハンドラー
@@ -554,7 +560,7 @@ export default {
       const newGroup = {
         id: `group${this.additionalGroups.length + 1}`,
         name: `グループ${String.fromCharCode(65 + this.additionalGroups.length)}価格`,
-        isVisible: true,
+        priceDisplay: true,
         taxStatus: 'excluded',
         inputPrice: '',
         priceExcludingTax: 0,
