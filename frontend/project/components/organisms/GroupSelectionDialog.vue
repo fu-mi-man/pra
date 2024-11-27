@@ -125,9 +125,11 @@ export default {
           align: 'start',
         },
       ],
-      groups: [],       // 顧客グループデータのリスト
-      search: '',       // 検索フィルターの入力値（フィルタリングに使用）
-      selected: [],     // データテーブルで選択された行のデータ（v-data-table の選択機能に使用）
+      groups: [],             // 顧客グループデータのリスト
+      hasLoadedGroups: false, // グループデータの初期ロード完了フラグ
+      search: '',             // 検索フィルターの入力値（フィルタリングに使用）
+      selected: [],           // データテーブルで選択された行のデータ（v-data-table の選択機能に使用）
+
       loading: false,   // データ取得中のフラグ
       errorMessage: '', // エラーメッセージ
     }
@@ -151,6 +153,11 @@ export default {
   },
   methods: {
     async fetchGroups() {
+      // すでにグループデータがあれば再取得しない
+      if (this.hasLoadedGroups) {
+        return
+      }
+
       this.errorMessage = '' // エラーをリセット
       this.loading = true
       try {
@@ -161,6 +168,7 @@ export default {
           groupName: item.groupName,
           memberCount: item.memberCount,
         }))
+        this.hasLoadedGroups = true // データ取得完了をマーク
       } catch (error) {
         this.errorMessage = 'グループの取得に失敗しました'
       } finally {
@@ -249,7 +257,6 @@ export default {
     */
     resetState() {
       this.selected = []     // 選択グループをクリア
-      this.groups = []       // グループ一覧をクリア
       this.search = ''       // 検索文字列をクリア
       this.errorMessage = '' // エラーメッセージをクリア
     }
