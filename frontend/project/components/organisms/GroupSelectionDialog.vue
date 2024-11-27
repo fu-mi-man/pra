@@ -1,6 +1,6 @@
 <template>
   <v-dialog
-    max-width="1000px"
+    max-width="1000"
     :value="value"
     @input="$emit('input', $event)"
     @click:outside="close"
@@ -10,7 +10,7 @@
         グループ一覧
       </v-card-title>
 
-      <v-card-text class="mb-10" style="height: 400px;">
+      <v-card-text class="mb-10 group-dialog__content">
         <v-alert
           v-if="errorMessage"
           type="error"
@@ -267,5 +267,12 @@ export default {
 /* テーブル行にマウスホバー時にカーソルを設定 */
 ::v-deep(.v-data-table tbody tr:hover) {
   cursor: pointer;
+}
+
+/* コンテンツエリアのスタイル */
+.group-dialog__content {
+  height: 400px;
+  overflow-y: auto;
+  position: relative;
 }
 </style>
