@@ -305,6 +305,7 @@
 
     <group-selection-dialog
       v-model="showGroupSelectionDialog"
+      :existing-group-ids="additionalGroups.map(g => g.id)"
       @group-selected="handleGroupSelected"
     />
   </div>

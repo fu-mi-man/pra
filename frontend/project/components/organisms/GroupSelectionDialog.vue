@@ -12,7 +12,7 @@
 
       <v-card-text class="mb-10" style="height: 400px;">
         <v-alert
-          v-if="showError"
+          v-if="showFetchError"
           type="error"
           dense
           class="mb-4"
@@ -26,6 +26,14 @@
           class="mb-4"
         >
           グループを1件選択してください
+        </v-alert>
+        <v-alert
+          v-if="showDuplicateError"
+          type="error"
+          dense
+          class="mb-4"
+        >
+          既に追加されているグループです
         </v-alert>
 
         <!-- 検索フィルター -->
@@ -108,6 +116,15 @@ export default {
     value: {
       type: Boolean,
       required: true
+    },
+    /**
+     * 既に追加されているグループIDの配列
+     * - 親コンポーネントから渡された既存グループのIDリスト
+     * @type {Array<string>}
+     */
+    existingGroupIds: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -129,8 +146,9 @@ export default {
       selected: [],     // データテーブルで選択された行のデータ（v-data-table の選択機能に使用）
       loading: false,
 
-      showError: false, // API取得エラー
+      showFetchError: false, // API取得エラー
       showSelectionError: false, // グループ未選択エラー
+      showDuplicateError: false, // グループ重複エラー
     }
   },
   watch: {
@@ -161,9 +179,9 @@ export default {
           groupName: item.groupName,
           memberCount: item.memberCount,
         }))
-        this.showError = false  // 成功したらエラー表示をクリア
+        this.showFetchError = false  // 成功したらエラー表示をクリア
       } catch (error) {
-        this.showError = true  // エラー表示をON
+        this.showFetchError = true  // エラー表示をON
       } finally {
         this.loading = false
       }
@@ -224,26 +242,37 @@ export default {
      * @emits {boolean} input - ダイアログの表示状態を制御する値（false）
      */
     handleSetGroup() {
+      // 1件以上選択しているかチェック
       if (this.selected.length === 0) {
-        // 選択しないで設定ボタンを押下した場合
         this.showSelectionError = true
         return
       }
+      // 選択したグループが既に追加済みかチェック
+      if (this.existingGroupIds.includes(this.selected[0].groupId)) {
+        this.showDuplicateError = true
+        return
+      }
+
       this.$emit('group-selected', this.selected[0])
       this.closeDialog()
     },
     /**
-     * ダイアログの状態をリセットするメソッド
+     * ダイアログを閉じる
      */
     closeDialog() {
       this.resetState()
       this.$emit('input', false)
     },
+    /**
+    * ダイアログの状態を初期状態にリセットする
+    */
     resetState() {
-      this.selected = []
-      this.showSelectionError = false
-      this.groups = []
-      this.search = ''
+      this.selected = []              // 選択グループをクリア
+      this.groups = []                // グループ一覧をクリア
+      this.search = ''                // 検索文字列をクリア
+      this.showFetchError = false     // APIエラー表示をクリア
+      this.showSelectionError = false // 選択エラー表示をクリア
+      this.showDuplicateError = false // 重複エラー表示をクリア
     }
   }
 }
