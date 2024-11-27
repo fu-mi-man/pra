@@ -248,7 +248,7 @@
                 class="mb-5 price-field__input"
                 min="0"
                 suffix="円"
-                @input="(value) => handleGroupPriceInput(group.id, value)"
+                @input="handlePriceInput($event, 'group', group.id)"
               />
 
               <!-- 税込価格/税別価格 -->
@@ -470,23 +470,33 @@ export default {
     /**
      * 価格入力時の共通ハンドラー
      * @param {string|number} value - 入力された価格
-     * @param {'general'|'allCustomer'} priceType - 価格タイプ
+     * @param {'general'|'allCustomer'|'group'} priceType - 価格タイプ
+     * @param {string} [groupId] - グループ価格の場合のグループID
      */
-    handlePriceInput(value, priceType) {
+    handlePriceInput(value, priceType, groupId = null) {
       const numericValue = Number(value);
+      let targetGroup = null; // グループ価格用の変数
+
+      if (priceType === 'group') {
+        // 指定されたgroupIdと一致するidを持つグループを検索し，条件に一致したグループオブジェクトを格納
+        targetGroup = this.additionalGroups.find(g => g.id === groupId);
+        if (!targetGroup) return; // 見つからない場合はundefinedを返す
+      }
 
       switch (priceType) {
         case 'general':
           this.generalInputPrice = numericValue;
-          // this.calculatePrices(priceType)
           break;
-          case 'allCustomer':
-            this.allCustomerInputPrice = numericValue;
-            // this.calculateAllCustomerPrice();
-            break;
+        case 'allCustomer':
+          this.allCustomerInputPrice = numericValue;
+          break
+        case 'group': {
+          targetGroup.inputPrice = numericValue;
+          break;
+        }
       }
 
-      this.calculatePrices(priceType);
+      this.calculatePrices(priceType, targetGroup);
     },
     /**
      * 価格計算を実行する
@@ -552,27 +562,6 @@ export default {
       }
     },
     /**
-     * 新しい価格グループを追加
-     */
-    addPriceGroup() {
-      if (this.additionalGroups.length >= 5) return;
-
-      const newGroup = {
-        id: `group${this.additionalGroups.length + 1}`,
-        name: `グループ${String.fromCharCode(65 + this.additionalGroups.length)}価格`,
-        priceDisplay: true,
-        taxStatus: 'excluded',
-        inputPrice: '',
-        priceExcludingTax: 0,
-        priceIncludingTax: 0,
-        customText: '',
-        priceNote: ''
-      };
-
-      this.additionalGroups.push(newGroup);
-    },
-
-    /**
      * 価格グループを削除
      * @param {string} groupId - 削除するグループのID
      */
@@ -582,20 +571,6 @@ export default {
         this.additionalGroups.splice(index, 1);
       }
     },
-
-    /**
-     * グループ価格入力時のハンドラー
-     * @param {string} groupId - グループID
-     * @param {string|number} value - 入力価格
-     */
-    handleGroupPriceInput(groupId, value) {
-      const group = this.additionalGroups.find(g => g.id === groupId);
-      if (!group) return;
-
-      group.inputPrice = Number(value);
-      this.calculateGroupPrice(group);
-    },
-
     /**
      * グループの税込/税別価格を計算
      * @param {Object} group - 価格グループオブジェクト
