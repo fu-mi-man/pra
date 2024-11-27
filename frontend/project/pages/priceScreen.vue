@@ -562,31 +562,6 @@ export default {
       }
     },
     /**
-     * 価格グループを削除
-     * @param {string} groupId - 削除するグループのID
-     */
-    removePriceGroup(groupId) {
-      const index = this.additionalGroups.findIndex(group => group.id === groupId);
-      if (index !== -1) {
-        this.additionalGroups.splice(index, 1);
-      }
-    },
-    /**
-     * グループの税込/税別価格を計算
-     * @param {Object} group - 価格グループオブジェクト
-     */
-    calculateGroupPrice(group) {
-      if (!group.inputPrice) return;
-
-      if (group.taxStatus === 'excluded') {
-        group.priceExcludingTax = group.inputPrice;
-        group.priceIncludingTax = Math.round(group.inputPrice * (1 + this.consumptionTaxRate / 100));
-      } else {
-        group.priceIncludingTax = group.inputPrice;
-        group.priceExcludingTax = Math.round(group.inputPrice / (1 + this.consumptionTaxRate / 100));
-      }
-    },
-    /**
      * すべてのグループの価格を再計算
      */
     recalculateGroupPrices() {
@@ -599,7 +574,7 @@ export default {
       if (this.additionalGroups.length >= 5) return;
 
       const newGroup = {
-        id: `group${this.additionalGroups.length + 1}`,
+        id: group.groupId,
         name: group.groupName,
         priceDisplay: 'visible',
         taxStatus: 'excluded',
@@ -612,6 +587,16 @@ export default {
 
       this.additionalGroups.push(newGroup);
       this.showGroupSelectionDialog = false;
+    },
+    /**
+     * 価格グループを削除
+     * @param {string} groupId - 削除するグループのID
+     */
+    removePriceGroup(groupId) {
+      const index = this.additionalGroups.findIndex(group => group.id === groupId);
+      if (index !== -1) {
+        this.additionalGroups.splice(index, 1);
+      }
     },
 
     /**
