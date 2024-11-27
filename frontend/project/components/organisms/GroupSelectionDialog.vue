@@ -12,28 +12,12 @@
 
       <v-card-text class="mb-10" style="height: 400px;">
         <v-alert
-          v-if="showFetchError"
+          v-if="errorMessage"
           type="error"
           dense
           class="mb-4"
         >
-          グループの取得に失敗しました
-        </v-alert>
-        <v-alert
-          v-if="showSelectionError"
-          type="error"
-          dense
-          class="mb-4"
-        >
-          グループを1件選択してください
-        </v-alert>
-        <v-alert
-          v-if="showDuplicateError"
-          type="error"
-          dense
-          class="mb-4"
-        >
-          既に追加されているグループです
+          {{ errorMessage }}
         </v-alert>
 
         <!-- 検索フィルター -->
@@ -144,11 +128,8 @@ export default {
       groups: [],       // 顧客グループデータのリスト
       search: '',       // 検索フィルターの入力値（フィルタリングに使用）
       selected: [],     // データテーブルで選択された行のデータ（v-data-table の選択機能に使用）
-      loading: false,
-
-      showFetchError: false, // API取得エラー
-      showSelectionError: false, // グループ未選択エラー
-      showDuplicateError: false, // グループ重複エラー
+      loading: false,   // データ取得中のフラグ
+      errorMessage: '', // エラーメッセージ
     }
   },
   watch: {
@@ -170,6 +151,7 @@ export default {
   },
   methods: {
     async fetchGroups() {
+      this.errorMessage = '' // エラーをリセット
       this.loading = true
       try {
         const response = await fetch('http://localhost:80/api/groups')
@@ -179,9 +161,8 @@ export default {
           groupName: item.groupName,
           memberCount: item.memberCount,
         }))
-        this.showFetchError = false  // 成功したらエラー表示をクリア
       } catch (error) {
-        this.showFetchError = true  // エラー表示をON
+        this.errorMessage = 'グループの取得に失敗しました'
       } finally {
         this.loading = false
       }
@@ -244,12 +225,12 @@ export default {
     handleSetGroup() {
       // 1件以上選択しているかチェック
       if (this.selected.length === 0) {
-        this.showSelectionError = true
+        this.errorMessage = 'グループを1件選択してください'
         return
       }
       // 選択したグループが既に追加済みかチェック
       if (this.existingGroupIds.includes(this.selected[0].groupId)) {
-        this.showDuplicateError = true
+        this.errorMessage = '既に追加されているグループです'
         return
       }
 
@@ -267,12 +248,10 @@ export default {
     * ダイアログの状態を初期状態にリセットする
     */
     resetState() {
-      this.selected = []              // 選択グループをクリア
-      this.groups = []                // グループ一覧をクリア
-      this.search = ''                // 検索文字列をクリア
-      this.showFetchError = false     // APIエラー表示をクリア
-      this.showSelectionError = false // 選択エラー表示をクリア
-      this.showDuplicateError = false // 重複エラー表示をクリア
+      this.selected = []     // 選択グループをクリア
+      this.groups = []       // グループ一覧をクリア
+      this.search = ''       // 検索文字列をクリア
+      this.errorMessage = '' // エラーメッセージをクリア
     }
   }
 }
