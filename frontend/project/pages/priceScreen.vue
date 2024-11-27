@@ -428,7 +428,7 @@ export default {
       handler(newGroups) {
         newGroups.forEach(group => {
           if (group.inputPrice) {
-            this.calculateGroupPrice(group);
+            this.calculatePrices('group', group);
           }
         });
       }
@@ -586,18 +586,16 @@ export default {
         group.priceExcludingTax = Math.round(group.inputPrice / (1 + this.consumptionTaxRate / 100));
       }
     },
-
     /**
      * すべてのグループの価格を再計算
      */
     recalculateGroupPrices() {
       this.additionalGroups.forEach(group => {
-        this.calculateGroupPrice(group);
+        this.calculatePrices('group', group);
       });
     },
     // グループ選択ダイアログでグループが選択された時のハンドラーを追加
     handleGroupSelected(group) {
-      console.log('Selected group:', group);
       if (this.additionalGroups.length >= 5) return;
 
       const newGroup = {
