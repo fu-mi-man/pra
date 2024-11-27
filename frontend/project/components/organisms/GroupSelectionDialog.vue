@@ -271,7 +271,7 @@ export default {
 
 /* コンテンツエリアのスタイル */
 .group-dialog__content {
-  height: 400px;
+  height: 440px;
   overflow-y: auto;
   position: relative;
 }
