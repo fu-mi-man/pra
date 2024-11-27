@@ -234,27 +234,24 @@
             />
 
             <!-- 価格入力部 -->
-            <div v-if="group.priceDisplay === 'visible'" class="mt-4">
-              <label class="mb-2 text-subtitle-2 d-block">
+            <template v-if="group.priceDisplay === 'visible'">
+              <label class="d-block mt-4 mb-2 text-subtitle-2">
                 {{ group.taxStatus === 'excluded' ? '税別価格' : '税込価格' }}
               </label>
-              <div class="d-flex align-center mb-5">
-                <v-text-field
-                  v-model="group.inputPrice"
-                  type="number"
-                  dense
-                  outlined
-                  hide-details
-                  hide-spin-buttons
-                  class="max-width-200"
-                  min="0"
-                  suffix="円"
-                  @input="(value) => handleGroupPriceInput(group.id, value)"
-                >
-                </v-text-field>
-              </div>
+              <v-text-field
+                v-model="group.inputPrice"
+                type="number"
+                dense
+                outlined
+                hide-details
+                hide-spin-buttons
+                class="mb-5 price-field__input"
+                min="0"
+                suffix="円"
+                @input="(value) => handleGroupPriceInput(group.id, value)"
+              />
 
-              <!-- 算出価格 -->
+              <!-- 税込価格/税別価格 -->
               <div class="pa-3 rounded grey lighten-4">
                 <span class="text-subtitle-2">
                   {{ group.taxStatus === 'excluded' ? '税込価格' : '税別価格' }}:
@@ -263,11 +260,11 @@
                   ¥{{ group.taxStatus === 'excluded' ? group.priceIncludingTax.toLocaleString() : group.priceExcludingTax.toLocaleString() }}
                 </span>
               </div>
-            </div>
+            </template>
 
             <!-- 価格を非表示の場合のみ表示 -->
-            <div v-if="group.priceDisplay === 'hidden'" class="mt-4">
-              <label class="d-block mb-2 text-subtitle-2">
+            <template v-if="group.priceDisplay === 'hidden'">
+              <label class="d-block mt-4 mb-2 text-subtitle-2">
                 表示文言
               </label>
               <v-text-field
@@ -277,22 +274,20 @@
                 hide-details
                 placeholder="例：オープン価格"
               />
-            </div>
+            </template>
 
             <!-- 価格備考 -->
-            <div class="mt-4">
-              <label class="d-block mb-2 text-subtitle-2">
-                価格備考
-              </label>
-              <v-textarea
-                v-model="group.priceNote"
-                outlined
-                dense
-                hide-details
-                placeholder="例：期間限定価格"
-                rows="1"
-              />
-            </div>
+            <label class="d-block mt-4 mb-2 text-subtitle-2">
+              価格備考
+            </label>
+            <v-textarea
+              v-model="group.priceNote"
+              outlined
+              dense
+              hide-details
+              placeholder="例：期間限定価格"
+              rows="1"
+            />
           </v-card>
 
           <!-- 保存ボタン -->
