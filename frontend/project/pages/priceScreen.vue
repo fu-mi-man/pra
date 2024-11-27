@@ -221,44 +221,20 @@
             </div>
 
             <!-- 価格を表示 / 価格を非表示 -->
-            <v-radio-group
-              v-model="group.isVisible"
-              row
+            <price-display-radio
+              v-model="group.priceDisplay"
               class="mt-4"
-              hide-details
-            >
-              <v-radio
-                label="価格を表示"
-                :value="true"
-              ></v-radio>
-              <v-radio
-                label="価格を非表示"
-                :value="false"
-                class="ml-4"
-              ></v-radio>
-            </v-radio-group>
+            />
 
             <!-- 税別価格/税込価格の選択（価格表示時のみ） -->
-            <v-radio-group
-              v-if="group.isVisible"
+            <tax-status-radio
+              v-if="group.priceDisplay === 'visible'"
               v-model="group.taxStatus"
-              row
               class="mt-4"
-              hide-details
-            >
-              <v-radio
-                label="税別価格で入力"
-                value="excluded"
-              ></v-radio>
-              <v-radio
-                label="税込価格で入力"
-                value="included"
-                class="ml-4"
-              ></v-radio>
-            </v-radio-group>
+            />
 
             <!-- 価格入力部 -->
-            <div v-if="group.isVisible" class="mt-4">
+            <div v-if="group.priceDisplay === 'visible'" class="mt-4">
               <label class="mb-2 text-subtitle-2 d-block">
                 {{ group.taxStatus === 'excluded' ? '税別価格' : '税込価格' }}
               </label>
@@ -290,8 +266,8 @@
             </div>
 
             <!-- 価格を非表示の場合のみ表示 -->
-            <div v-if="!group.isVisible" class="mt-4">
-              <label class="mb-2 text-subtitle-2 d-block">
+            <div v-if="group.priceDisplay === 'hidden'" class="mt-4">
+              <label class="d-block mb-2 text-subtitle-2">
                 表示文言
               </label>
               <v-text-field
@@ -300,12 +276,12 @@
                 outlined
                 hide-details
                 placeholder="例：オープン価格"
-              ></v-text-field>
+              />
             </div>
 
             <!-- 価格備考 -->
             <div class="mt-4">
-              <label class="mb-2 text-subtitle-2 d-block">
+              <label class="d-block mb-2 text-subtitle-2">
                 価格備考
               </label>
               <v-textarea
@@ -314,8 +290,8 @@
                 dense
                 hide-details
                 placeholder="例：期間限定価格"
-                rows="3"
-              ></v-textarea>
+                rows="1"
+              />
             </div>
           </v-card>
 
@@ -651,7 +627,7 @@ export default {
       const newGroup = {
         id: `group${this.additionalGroups.length + 1}`,
         name: group.groupName,
-        isVisible: true,
+        priceDisplay: 'visible',
         taxStatus: 'excluded',
         inputPrice: '',
         priceExcludingTax: 0,
