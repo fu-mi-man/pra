@@ -202,22 +202,20 @@
             outlined
             class="pa-6 mb-6"
           >
-            <div class="d-flex justify-space-between align-center mb-4">
-              <v-text-field
-                v-model="group.name"
-                dense
-                outlined
-                hide-details
-                class="max-width-200"
-                readonly
-              ></v-text-field>
-              <v-btn
-                icon
-                color="red"
-                @click="removePriceGroup(group.id)"
-              >
-                <v-icon>mdi-minus-circle</v-icon>
-              </v-btn>
+            <div class="d-flex mb-4">
+              <div class="d-flex justify-space-between align-center flex-grow-1">
+                <div class="pa-3 grey lighten-4 rounded text-body-2 group-name">
+                  {{ group.name }}
+                </div>
+                <v-btn
+                  icon
+                  x-large
+                  color="red"
+                  @click="removePriceGroup(group.id)"
+                >
+                  <v-icon>mdi-minus-circle</v-icon>
+                </v-btn>
+              </div>
             </div>
 
             <!-- 価格を表示 / 価格を非表示 -->
@@ -616,4 +614,8 @@ export default {
   max-width: 200px;
 }
 
+.group-name {
+  min-width: 200px;
+  word-break: break-all; /* 英数字を含む全ての文字列を、文字単位で強制的に折り返す */
+}
 </style>

@@ -12,7 +12,7 @@ class GroupController extends Controller
         for ($i = 1; $i <= 100; $i++) {
             $groups[] = [
                 'id' => $i,
-                'groupName' => 'グループ' . $i,
+                'groupName' => 'グループテスト30文字グループテスト30文字グループテス30' . $i,
                 'memberCount' => $i,  // 1-10人でランダム
                 'remarks' => '50文字入る備考50文字入る備考50文字入る備考50文字入る備考50文字入る備考50文字入る備考５０'
             ];
