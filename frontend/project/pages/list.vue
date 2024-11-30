@@ -30,6 +30,7 @@ export default {
         { name: 'ポップアップURL', path: '/popup-url' },
         { name: 'S3', path: '/s3' },
         { name: 'csvアップロード', path: '/upload' },
+        { name: 'csvダウンロード', path: '/csvDownload' },
         { name: 'csv&imageアップロード', path: '/uploadpage' },
         { name: 'zipアップロード', path: '/zipuploadpage' },
       ]
