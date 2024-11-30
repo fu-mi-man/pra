@@ -50,22 +50,39 @@
       <v-data-table
         v-else
         v-model="selected"
+        class="mt-4"
         :headers="headers"
         :items="sharedEnterprises"
-        :items-per-page="5"
+        item-key="id"
         :search="search"
         :custom-filter="customFilter"
-        :single-select="true"
-        :show-select="true"
-        item-key="id"
-        :footer-props="{
-          'items-per-page-options': [5, 25, 50],
-          'items-per-page-text': '表示件数'
-        }"
+        :page="page"
+        :items-per-page="itemsPerPage"
+        hide-default-footer
+        single-select
+        show-select
         no-data-text="表示するアイテムがありません"
-        class="mt-4"
+        no-results-text="検索条件に一致する出展者は見つかりませんでした"
         @click:row="handleRowClick"
+        @update:page="handlePageChange"
+        @page-count="handlePageCountChange"
       />
+      <!-- ページネーション -->
+      <div class="text-center pt-4">
+        <v-pagination
+          v-if="showPagination"
+          v-model="page"
+          :length="pageCount"
+          :total-visible="7"
+        />
+        <!-- <v-select
+          v-model="itemsPerPage"
+          :items="[5, 25, 50]"
+          label="表示件数"
+          class="mt-4"
+          style="max-width: 150px; margin: auto;"
+        /> -->
+      </div>
     </template>
 
     <v-row justify="center" class="mt-4">
@@ -96,6 +113,20 @@ export default {
       search: '', // 検索用の文字列
       sharedEnterprises: [],
       loading: false,
+
+      // ページネーション用のプロパティ
+      page: 1,        // 現在のページ番号（1から開始）
+      pageCount: 0,   // 総ページ数（データ取得前は0，データ取得後にv-data-tableが自動計算して設定）
+      itemsPerPage: 5 // 1ページあたりの表示件数
+    }
+  },
+  computed: {
+    /**
+     * ページネーションの表示/非表示を制御する
+     */
+    showPagination() {
+      // 表示が0件の時とローディング時はページネーションを非表示
+      return this.sharedEnterprises.length > 0 && !this.loading
     }
   },
   watch: {
@@ -113,13 +144,12 @@ export default {
             this.fetchExhibitors()
             break
           default:
-            console.warn('予期しない選択値です:', newValue)
             this.exhibitors = []
             this.selected = []
         }
       },
       immediate: true, // コンポーネントの初期化時にも実行
-    }
+    },
   },
   methods: {
     async fetchExhibitors() {
@@ -194,6 +224,22 @@ export default {
       } else {
         this.selected = [item]
       }
+    },
+    /**
+     * ページ番号が変更された時の処理
+     * :page.sync="page" この書き方でもOK
+     * @param {number} newPage - 新しいページ番号
+     */
+    handlePageChange(newPage) {
+      this.page = newPage
+    },
+    /**
+     * 総ページ数が変更された時のハンドラー
+     * @page-count="pageCount = $event" この書き方でもOK
+     * @param {number} totalPages - 計算された総ページ数
+     */
+    handlePageCountChange(totalPages) {
+      this.pageCount = totalPages
     },
   }
 }

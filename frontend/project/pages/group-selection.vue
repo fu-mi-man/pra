@@ -29,7 +29,6 @@ export default {
   },
   methods: {
     handleGroupSelected(group) {
-      console.log('Selected group:', group)
       // 選択されたグループの処理をここに実装
     }
   }
