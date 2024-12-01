@@ -39,41 +39,40 @@
         </v-col>
       </v-row>
 
-      <!-- ローディング -->
-      <div v-if="loading" class="d-flex justify-center align-center py-4">
-        <v-progress-circular
+      <div class="mb-5 table__container">
+        <!-- ローディング -->
+        <div v-if="loading" class="d-flex pt-10 justify-center align-center">
+          <v-progress-circular
           :size="70"
           indeterminate
           color="primary"
-          class="my-4"
+          />
+        </div>
+
+        <!-- 共有元出展者情報 -->
+        <v-data-table
+          v-else
+          v-model="selected"
+          :headers="headers"
+          :items="sharedEnterprises"
+          item-key="id"
+          :search="search"
+          :custom-filter="customFilter"
+          :page="page"
+          :items-per-page="itemsPerPage"
+          hide-default-footer
+          single-select
+          show-select
+          no-data-text="表示するアイテムがありません"
+          no-results-text="検索条件に一致する出展者は見つかりませんでした"
+          @click:row="handleRowClick"
+          @update:page="handlePageChange"
+          @page-count="handlePageCountChange"
         />
       </div>
-
-      <!-- 共有元出展者情報 -->
-      <v-data-table
-        v-else
-        v-model="selected"
-        class="mb-5"
-        :headers="headers"
-        :items="sharedEnterprises"
-        item-key="id"
-        :search="search"
-        :custom-filter="customFilter"
-        :page="page"
-        :items-per-page="itemsPerPage"
-        hide-default-footer
-        single-select
-        show-select
-        no-data-text="表示するアイテムがありません"
-        no-results-text="検索条件に一致する出展者は見つかりませんでした"
-        @click:row="handleRowClick"
-        @update:page="handlePageChange"
-        @page-count="handlePageCountChange"
-      />
       <!-- ページネーション -->
-      <div class="d-flex justify-center align-center">
+      <div v-if="showPagination" class="d-flex justify-center align-center">
         <v-select
-          v-if="showPagination"
           v-model="itemsPerPage"
           class="pagination__select"
           :items="[5, 25, 50]"
@@ -84,7 +83,6 @@
           :min-width="120"
         />
         <v-pagination
-          v-if="showPagination"
           v-model="page"
           :length="pageCount"
           :total-visible="7"
@@ -132,7 +130,7 @@ export default {
      * ページネーションの表示/非表示を制御する
      */
     showPagination() {
-      // 表示が0件の時とローディング時はページネーションを非表示
+      // 表示が0件の時とローディング時はページネーションを非表示（検索結果が0件のケースは非対応）
       return this.sharedEnterprises.length > 0 && !this.loading
     }
   },
@@ -148,7 +146,7 @@ export default {
             this.selected = []
             break
           case 3:
-            this.fetchExhibitors()
+            this.fetchSharedEnterprises()
             break
           default:
             this.exhibitors = []
@@ -159,7 +157,7 @@ export default {
     },
   },
   methods: {
-    async fetchExhibitors() {
+    async fetchSharedEnterprises() {
       // すでにデータがある場合は何もしない
       if (this.sharedEnterprises.length > 0) return
 
@@ -252,6 +250,13 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.table {
+  &__container {
+    height: 288px;    // header + 5行分の高さ(1行あたり48px×5行 =240px)
+    overflow-y: auto; // 垂直方向のスクロールを有効化
+  }
+}
+
 /* テーブル行にマウスホバー時にカーソルを設定 */
 ::v-deep(.v-data-table tbody tr:hover) {
   cursor: pointer;
@@ -259,8 +264,8 @@ export default {
 
 .pagination {
   &__select {
-    min-width: 120px;
     max-width: 150px;
+    min-width: 120px;
   }
 }
 </style>
