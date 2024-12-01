@@ -34,11 +34,12 @@
             label="共有元出展者名を入力してください"
             single-line
             hide-details
-            class="mb-4"
+            class="mb-5"
           />
         </v-col>
       </v-row>
-      <!-- ローディング中の表示 -->
+
+      <!-- ローディング -->
       <div v-if="loading" class="d-flex justify-center align-center py-4">
         <v-progress-circular
           :size="70"
@@ -47,10 +48,12 @@
           class="my-4"
         />
       </div>
+
+      <!-- 共有元出展者情報 -->
       <v-data-table
         v-else
         v-model="selected"
-        class="mt-4"
+        class="mb-5"
         :headers="headers"
         :items="sharedEnterprises"
         item-key="id"
@@ -68,20 +71,24 @@
         @page-count="handlePageCountChange"
       />
       <!-- ページネーション -->
-      <div class="text-center pt-4">
+      <div class="d-flex justify-center align-center">
+        <v-select
+          v-if="showPagination"
+          v-model="itemsPerPage"
+          class="pagination__select"
+          :items="[5, 25, 50]"
+          label="表示件数"
+          dense
+          outlined
+          hide-details
+          :min-width="120"
+        />
         <v-pagination
           v-if="showPagination"
           v-model="page"
           :length="pageCount"
           :total-visible="7"
         />
-        <!-- <v-select
-          v-model="itemsPerPage"
-          :items="[5, 25, 50]"
-          label="表示件数"
-          class="mt-4"
-          style="max-width: 150px; margin: auto;"
-        /> -->
       </div>
     </template>
 
@@ -244,16 +251,16 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
 /* テーブル行にマウスホバー時にカーソルを設定 */
 ::v-deep(.v-data-table tbody tr:hover) {
   cursor: pointer;
 }
 
-/* コンテンツエリアのスタイル */
-/* .group-dialog__content {
-  height: 440px;
-  overflow-y: auto;
-  position: relative;
-} */
+.pagination {
+  &__select {
+    min-width: 120px;
+    max-width: 150px;
+  }
+}
 </style>
