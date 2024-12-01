@@ -292,6 +292,7 @@
           <div class="d-flex justify-end mt-6">
             <v-btn
               color="primary"
+              :disabled="isSaveButtonDisabled"
               @click="handleSave"
             >
               保存する
@@ -383,6 +384,50 @@ export default {
         this.allCustomerPriceExcludingTax
       )
       return this.formatPrice(price)
+    },
+    /**
+     * 通常価格の入力が有効かどうかを判定
+     */
+    isGeneralPriceValid() {
+      if (this.generalPriceDisplay === 'visible') {
+        // 価格表示の場合、価格の入力が必須
+        return !!this.generalInputPrice && Number(this.generalInputPrice) > 0;
+      } else {
+        // 価格非表示の場合、表示文言が必須
+        return !!this.generalCustomText && this.generalCustomText.trim() !== '';
+      }
+    },
+    // 全顧客価格の検証を追加
+    isAllCustomerPriceValid() {
+      // トグルがオフの場合は常にtrue
+      if (!this.enableAllCustomerPrice) {
+        return true;
+      }
+
+      // トグルがオンの場合は通常価格と同様の検証
+      if (this.allCustomerPriceDisplay === 'visible') {
+        return !!this.allCustomerInputPrice && Number(this.allCustomerInputPrice) > 0;
+      } else {
+        return !!this.allCustomerCustomText && this.allCustomerCustomText.trim() !== '';
+      }
+    },
+    // 追加グループ価格の検証を追加
+    areGroupPricesValid() {
+      return this.additionalGroups.every(group => {
+        if (group.priceDisplay === 'visible') {
+          return !!group.inputPrice && Number(group.inputPrice) > 0;
+        } else {
+          return !!group.customText && group.customText.trim() !== '';
+        }
+      });
+    },
+    /**
+     * 保存ボタンの有効/無効を制御
+     */
+    isSaveButtonDisabled() {
+      return !this.isGeneralPriceValid ||
+        !this.isAllCustomerPriceValid ||
+        !this.areGroupPricesValid
     },
   },
   watch: {
