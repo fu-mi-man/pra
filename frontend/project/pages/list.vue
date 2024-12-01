@@ -31,6 +31,7 @@ export default {
         { name: 'S3', path: '/s3' },
         { name: 'csvアップロード', path: '/upload' },
         { name: 'csvダウンロード', path: '/csvDownload' },
+        { name: 'csvアップロード2', path: '/csvUpload' },
         { name: 'csv&imageアップロード', path: '/uploadpage' },
         { name: 'zipアップロード', path: '/zipuploadpage' },
       ]
