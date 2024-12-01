@@ -390,11 +390,11 @@ export default {
      */
     isGeneralPriceValid() {
       if (this.generalPriceDisplay === 'visible') {
-        // 価格表示の場合、価格の入力が必須
-        return !!this.generalInputPrice && Number(this.generalInputPrice) > 0;
+        // 価格が0より大きいかチェック
+        return Number(this.generalInputPrice) > 0;
       } else {
-        // 価格非表示の場合、表示文言が必須
-        return !!this.generalCustomText && this.generalCustomText.trim() !== '';
+        // 表示文言が空白だけではないかチェック
+        return this.generalCustomText.trim() !== '';
       }
     },
     // 全顧客価格の検証を追加
