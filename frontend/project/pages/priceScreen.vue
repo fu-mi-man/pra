@@ -70,13 +70,7 @@
               <label class="d-block mt-4 mb-2 text-subtitle-2">
                 表示文言
               </label>
-              <v-text-field
-                v-model="generalCustomText"
-                dense
-                outlined
-                hide-details
-                placeholder="例：オープン価格"
-              />
+              <price-text-text-field v-model="generalCustomText"/>
             </template>
 
             <!-- 価格備考 -->
@@ -87,7 +81,10 @@
               v-model="generalPriceNote"
               outlined
               dense
-              hide-details
+              hide-details="auto"
+              :maxlength="10"
+              counter
+              :rules="validationRules"
               placeholder="例：期間限定価格"
             />
           </v-card>
@@ -311,6 +308,7 @@
 </template>
 
 <script>
+import PriceTextTextField from '@/components/atoms/inputs/PriceTextTextField.vue'
 import PriceDisplayRadio from '@/components/atoms/radio/PriceDisplayTypeRadio.vue'
 import TaxStatusRadio from '@/components/atoms/radio/TaxStatusRadio.vue'
 import ConsumptionTaxSelect from '@/components/atoms/selects/ConsumptionTaxSelect.vue'
@@ -319,6 +317,7 @@ import GroupSelectionDialog from '@/components/organisms/GroupSelectionDialog.vu
 export default {
   name: 'PriceScreen',
   components: {
+    PriceTextTextField,
     PriceDisplayRadio,
     TaxStatusRadio,
     ConsumptionTaxSelect,
