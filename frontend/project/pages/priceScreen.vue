@@ -18,14 +18,14 @@
           <v-card-subtitle class="px-0 text-subtitle-1">
             基本価格
           </v-card-subtitle>
-          <v-card outlined class="pa-6 mb-6">
-            <span class="pa-3 rounded grey lighten-4 font-weight-bold">
+          <v-card outlined class="pa-4 pa-sm-6 mb-6">
+            <span class="d-inline-block pa-3 rounded grey lighten-4 font-weight-bold">
               通常価格
             </span>
             <!-- 価格を表示 / 価格を非表示 -->
             <price-display-radio
               v-model="generalPriceDisplay"
-              class="mt-4"
+              :row="$vuetify.breakpoint.smAndUp"
             />
 
             <!-- 税別価格/税込価格の選択（価格表示時のみ） -->
