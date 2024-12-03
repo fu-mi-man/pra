@@ -70,7 +70,9 @@
               <label class="d-block mt-4 mb-2 text-subtitle-2">
                 表示文言
               </label>
-              <price-text-text-field v-model="generalCustomText"/>
+              <price-text-text-field
+                v-model="generalCustomText"
+              />
             </template>
 
             <!-- 価格備考 -->

@@ -1,3 +1,4 @@
+<!-- @/components/atoms/inputs/base/ValidatedTextField.vue -->
 <template>
   <v-text-field
     v-bind="$attrs"
@@ -17,7 +18,11 @@ export default {
       type: String,
       default: ''
     },
-    maxlength: {
+    required: {
+      type: Boolean,
+      default: false
+    },
+    inputMaxLength: {
       type: Number,
       default: null
     },
@@ -29,10 +34,6 @@ export default {
       type: Boolean,
       default: false
     },
-    required: {
-      type: Boolean,
-      default: false
-    }
   },
 
   computed: {
@@ -43,10 +44,10 @@ export default {
         rules.push(v => !!v?.trim() || '入力は必須です')
       }
 
-      if (this.maxlength) {
+      if (this.inputMaxLength) {
         rules.push(v => {
           if (!v) return true
-          return v.trim().length <= this.maxlength || `${this.maxlength}文字以内で入力してください`
+          return v.trim().length <= this.inputMaxLength || `${this.inputMaxLength}文字以内で入力してください`
         })
       }
 

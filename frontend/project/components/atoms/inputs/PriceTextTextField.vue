@@ -1,11 +1,14 @@
-<!-- @/components/atoms/PriceTextTextField.vue -->
+<!-- @/components/atoms/inputs/PriceTextTextField.vue -->
 <template>
   <validated-text-field
+    v-bind="$attrs"
     :value="value"
+    :required="true"
+    :input-max-length="10"
     dense
     outlined
-    maxlength="10"
     counter
+    maxlength="10"
     hide-details="auto"
     placeholder="例：オープン価格"
   />
