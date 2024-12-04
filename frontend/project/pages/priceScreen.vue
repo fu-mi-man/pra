@@ -86,7 +86,6 @@
               hide-details="auto"
               :maxlength="10"
               counter
-              :rules="validationRules"
               placeholder="例：期間限定価格"
             />
           </v-card>

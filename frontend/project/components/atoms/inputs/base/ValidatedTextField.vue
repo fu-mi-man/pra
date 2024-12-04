@@ -11,17 +11,25 @@
 <script>
 export default {
   name: 'ValidatedTextField',
-  inheritAttrs: false, // falseに設定することで，v-bind="$attrs"で明示的に属性を渡す必要がある
+  inheritAttrs: false, // 親から渡された属性がroot要素に自動適用されるのを防ぐ
 
   props: {
+    /** 入力値 */
     value: {
       type: String,
       default: ''
     },
+    /** 必須入力チェックを有効にする */
     required: {
       type: Boolean,
       default: false
     },
+    // メッセージカスタマイズ用のprops
+    requiredMessage: {
+      type: String,
+      default: '入力は必須です'
+    },
+    /** 最大文字数 */
     inputMaxLength: {
       type: Number,
       default: null
@@ -37,11 +45,15 @@ export default {
   },
 
   computed: {
+    /**
+     * バリデーションルールを生成
+     * @returns {Array<Function>} バリデーション関数の配列
+     */
     rules() {
       const rules = []
 
       if (this.required) {
-        rules.push(v => !!v?.trim() || '入力は必須です')
+        rules.push(v => !!v?.trim() || this.requiredMessage)
       }
 
       if (this.inputMaxLength) {
