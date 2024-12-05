@@ -40,19 +40,11 @@
               <label class="d-block mt-4 mb-2 text-subtitle-2">
                 {{ priceLabel }}
               </label>
-              <v-text-field
+              <price-text-field
                 v-model="generalInputPrice"
-                type="number"
-                dense
-                outlined
-                hide-details
-                hide-spin-buttons
-                class="mb-5 price-field__input"
-                min=""
-                suffix="円"
+                class="mb-5"
                 @input="handlePriceInput($event, 'general')"
-              >
-              </v-text-field>
+              />
 
               <!-- 税込価格/税別価格 -->
               <div class="pa-3 rounded grey lighten-4">
@@ -304,6 +296,7 @@
 
 <script>
 import PriceNoteTextField from '@/components/atoms/inputs/PriceNoteTextField.vue'
+import PriceTextField from '@/components/atoms/inputs/PriceTextField.vue'
 import PriceTextTextField from '@/components/atoms/inputs/PriceTextTextField.vue'
 import PriceDisplayRadio from '@/components/atoms/radio/PriceDisplayTypeRadio.vue'
 import TaxStatusRadio from '@/components/atoms/radio/TaxStatusRadio.vue'
@@ -314,6 +307,7 @@ export default {
   name: 'PriceScreen',
   components: {
     PriceNoteTextField,
+    PriceTextField,
     PriceTextTextField,
     PriceDisplayRadio,
     TaxStatusRadio,
