@@ -3,6 +3,7 @@
     v-bind="$attrs"
     :value="value"
     :rules="rules"
+    type="number"
     @input="$emit('input', $event)"
   />
 </template>
@@ -16,7 +17,7 @@ export default {
      * 入力フィールドの値
      */
     value: {
-      type: String,
+      type: [String, Number],
       default: ''
     },
     /**
@@ -25,6 +26,13 @@ export default {
     required: {
       type: Boolean,
       default: false
+    },
+    /**
+     * 最小値
+     */
+    inputMaxlength: {
+      type: Number,
+      default: null
     },
     /**
      * 最小値
@@ -54,19 +62,21 @@ export default {
         min: '{min}以上の値を入力してください',
         max: '{max}以下の値を入力してください',
         number: '数値を入力してください',
-        negative: 'マイナスの値は入力できません'
+        negative: 'マイナスの値は入力できません',
+        maxlength: '{maxlength}桁以内で入力してください',
       })
     }
   },
   computed: {
-    sanitizedValue() {
-      return this.value.replace(/\D/g, '')
-    },
     rules() {
       const rules = []
 
       if (this.required) {
-        rules.push(v => !!v?.trim() || this.messages.required)
+        rules.push(v => {
+          if (v === null || v === undefined) return this.messages.required
+          const strValue = String(v)
+          return !!strValue.trim() || this.messages.required
+        })
       }
 
       rules.push(v => {
@@ -86,6 +96,11 @@ export default {
           if (!v) return true
           return Number(v) >= this.min || this.messages.min.replace('{min}', this.min)
         })
+      }
+
+      if (this.inputMaxlength) {
+        rules.push(v => !v || String(v).length <= this.inputMaxlength ||
+          this.messages.maxlength.replace('{maxlength}', this.inputMaxlength))
       }
 
       if (this.max !== null) {

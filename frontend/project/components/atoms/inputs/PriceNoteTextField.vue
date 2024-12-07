@@ -7,6 +7,7 @@
     counter
     dense
     outlined
+    clearable
     hide-details="auto"
     placeholder="例：期間限定価格"
   />

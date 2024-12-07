@@ -1,49 +1,57 @@
 <!-- components/atoms/inputs/PriceTextField.vue -->
 <template>
-  <validated-string-number-field
+  <validated-number-field
     :value="value"
-    :required="true"
+    :required="required"
     :min="min"
-    :max="max"
-    class=""
+    :input-maxlength="inputMaxlength"
     dense
     outlined
     suffix="円"
-    maxlength="9"
+    clearable
+    hide-spin-buttons
     hide-details="auto"
+    @input="$emit('input', $event)"
   />
 </template>
 
 <script>
-import ValidatedStringNumberField from '@/components/atoms/inputs/base/ValidatedStringNumberField.vue'
+import ValidatedNumberField from '@/components/atoms/inputs/base/ValidatedNumberField.vue'
 
+/**
+ * 価格入力用のテキストフィールドコンポーネント
+ * 金額の入力に特化した機能を提供します
+ *
+ * @example 使用例
+ * - 商品登録フォーム
+ * - 価格設定画面
+ * - 見積作成画面
+ */
 export default {
   name: 'PriceTextField',
   components: {
-    ValidatedStringNumberField
-  },
-  data() {
-    return {
-      localValue: this.value,
-    }
-  },
-  watch: {
-    value(newValue) {
-      this.localValue = newValue
-    }
+    ValidatedNumberField
   },
   props: {
+    // 入力値
     value: {
-      type: String,
+      type: [String, Number],
       default: ''
     },
+     // 必須
+    required: {
+      type: Boolean,
+      default: true,
+    },
+     // 最小値（0は許容しない）
     min: {
       type: Number,
-      default: 1
+      default: 1,
     },
-    max: {
+    // 入力可能な最大桁数（1億桁まで）
+    inputMaxlength: {
       type: Number,
-      default: 999999999
+      default: 9,
     },
   },
 }
