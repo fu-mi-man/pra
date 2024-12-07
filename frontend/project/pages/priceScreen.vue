@@ -170,7 +170,7 @@
           <v-card-subtitle class="d-flex align-center px-0 text-subtitle-1">
             <span class="mr-5">グループ価格</span>
             <v-btn
-              v-if="additionalGroups.length < 5"
+              v-if="groupPrices.length < 5"
               color="primary"
               text
               @click="showGroupSelectionDialog = true"
@@ -182,7 +182,7 @@
 
           <!-- 追加グループのカード -->
           <v-card
-            v-for="(group) in additionalGroups"
+            v-for="(group) in groupPrices"
             :key="group.id"
             outlined
             class="pa-6 mb-6"
@@ -222,7 +222,7 @@
                 {{ getPriceLabel(group.taxStatus) }}
               </label>
               <v-text-field
-                v-model="group.inputPrice"
+                v-model="group.price"
                 type="number"
                 dense
                 outlined
@@ -251,7 +251,7 @@
                 表示文言
               </label>
               <v-text-field
-                v-model="group.customText"
+                v-model="group.priceText"
                 dense
                 outlined
                 hide-details
@@ -264,7 +264,7 @@
               価格備考
             </label>
             <v-textarea
-              v-model="group.priceNote"
+              v-model="group.note"
               outlined
               dense
               hide-details
@@ -289,7 +289,7 @@
 
     <group-selection-dialog
       v-model="showGroupSelectionDialog"
-      :existing-group-ids="additionalGroups.map(g => g.id)"
+      :existing-group-ids="groupPrices.map(g => g.id)"
       @group-selected="handleGroupSelected"
     />
   </div>
@@ -342,7 +342,7 @@ export default {
       },
 
       // 追加グループ価格の状態
-      additionalGroups: [],
+      groupPrices: [],
       showGroupSelectionDialog: false,
       selectedGroups: [], // 選択されたグループを保持する配列
 
@@ -426,11 +426,11 @@ export default {
     },
     // 追加グループ価格の検証を追加
     areGroupPricesValid() {
-      return this.additionalGroups.every(group => {
+      return this.groupPrices.every(group => {
         if (group.priceDisplay === 'visible') {
-          return !!group.inputPrice && Number(group.inputPrice) > 0;
+          return !!group.price && Number(group.price) > 0;
         } else {
-          return !!group.customText && group.customText.trim() !== '';
+          return !!group.priceText && group.priceText.trim() !== '';
         }
       });
     },
@@ -480,11 +480,11 @@ export default {
     },
 
     // グループの価格タイプが変更されたときの処理を追加
-    'additionalGroups': {
+    'groupPrices': {
       deep: true,
       handler(newGroups) {
         newGroups.forEach(group => {
-          if (group.inputPrice) {
+          if (group.price) {
             this.calculatePrices('group', group);
           }
         });
@@ -536,7 +536,7 @@ export default {
 
       if (priceType === 'group') {
         // 指定されたgroupIdと一致するidを持つグループを検索し，条件に一致したグループオブジェクトを格納
-        targetGroup = this.additionalGroups.find(g => g.id === groupId);
+        targetGroup = this.groupPrices.find(g => g.id === groupId);
         if (!targetGroup) return; // 見つからない場合はundefinedを返す
       }
 
@@ -548,7 +548,7 @@ export default {
           this.allCustomerPrice.price = numericValue;
           break
         case 'group': {
-          targetGroup.inputPrice = numericValue;
+          targetGroup.price = numericValue;
           break;
         }
       }
@@ -585,7 +585,7 @@ export default {
         case 'group': {
           if (!group) return;
           const { excludingTax, includingTax } = this.calculateTaxPrices(
-            group.inputPrice,
+            group.price,
             group.taxStatus,
             this.consumptionTaxRate
           );
@@ -597,24 +597,24 @@ export default {
     },
     /**
      * 価格を計算する共通関数
-     * @param {number} inputPrice - 入力価格
+     * @param {number} price - 入力価格
      * @param {string} taxStatus - 税率ステータス ('excluded' or 'included')
      * @param {number} consumptionTaxRate - 適用税率
      * @returns {{excludingTax: number, includingTax: number}} 計算された税込・税別価格
      */
-    calculateTaxPrices(inputPrice, taxStatus, consumptionTaxRate) {
-      if (!inputPrice) return { excludingTax: 0, includingTax: 0 };
+    calculateTaxPrices(price, taxStatus, consumptionTaxRate) {
+      if (!price) return { excludingTax: 0, includingTax: 0 };
 
       const rate = 1 + consumptionTaxRate / 100;
       if (taxStatus === 'excluded') {
         return {
-          excludingTax: inputPrice,
-          includingTax: Math.round(inputPrice * rate)
+          excludingTax: price,
+          includingTax: Math.round(price * rate)
         };
       } else {
         return {
-          includingTax: inputPrice,
-          excludingTax: Math.round(inputPrice / rate)
+          includingTax: price,
+          excludingTax: Math.round(price / rate)
         };
       }
     },
@@ -622,27 +622,27 @@ export default {
      * すべてのグループの価格を再計算
      */
     recalculateGroupPrices() {
-      this.additionalGroups.forEach(group => {
+      this.groupPrices.forEach(group => {
         this.calculatePrices('group', group);
       });
     },
     // グループ選択ダイアログでグループが選択された時のハンドラーを追加
     handleGroupSelected(group) {
-      if (this.additionalGroups.length >= 5) return;
+      if (this.groupPrices.length >= 5) return;
 
       const newGroup = {
         id: group.groupId,
         name: group.groupName,
         priceDisplay: 'visible',
         taxStatus: 'excluded',
-        inputPrice: '',
+        price: '',
         priceExcludingTax: 0,
         priceIncludingTax: 0,
-        customText: '',
-        priceNote: ''
+        priceText: '',
+        note: ''
       };
 
-      this.additionalGroups.push(newGroup);
+      this.groupPrices.push(newGroup);
       this.showGroupSelectionDialog = false;
     },
     /**
@@ -650,9 +650,9 @@ export default {
      * @param {string} groupId - 削除するグループのID
      */
     removePriceGroup(groupId) {
-      const index = this.additionalGroups.findIndex(group => group.id === groupId);
+      const index = this.groupPrices.findIndex(group => group.id === groupId);
       if (index !== -1) {
-        this.additionalGroups.splice(index, 1);
+        this.groupPrices.splice(index, 1);
       }
     },
 
