@@ -4,7 +4,7 @@
     :value="value"
     :required="required"
     :min="min"
-    :input-maxlength="inputMaxlength"
+    :input-max-length="inputMaxLength"
     dense
     outlined
     suffix="円"
@@ -49,7 +49,7 @@ export default {
       default: 1,
     },
     // 入力可能な最大桁数（1億桁まで）
-    inputMaxlength: {
+    inputMaxLength: {
       type: Number,
       default: 9,
     },
