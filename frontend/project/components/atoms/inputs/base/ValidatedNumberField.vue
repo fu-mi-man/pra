@@ -1,3 +1,4 @@
+<!-- components/atoms/inputs/base/ValidatedNumberField.vue -->
 <template>
   <v-text-field
     v-bind="$attrs"
@@ -10,7 +11,7 @@
 
 <script>
 export default {
-  name: 'ValidatedStringNumberField',
+  name: 'ValidatedNumberField',
   inheritAttrs: false,
   props: {
     /**
@@ -30,7 +31,7 @@ export default {
     /**
      * 最小値
      */
-    inputMaxlength: {
+    inputMaxLength: {
       type: Number,
       default: null
     },
@@ -98,9 +99,9 @@ export default {
         })
       }
 
-      if (this.inputMaxlength) {
-        rules.push(v => !v || String(v).length <= this.inputMaxlength ||
-          this.messages.maxlength.replace('{maxlength}', this.inputMaxlength))
+      if (this.inputMaxLength) {
+        rules.push(v => !v || String(v).length <= this.inputMaxLength ||
+          this.messages.maxlength.replace('{maxlength}', this.inputMaxLength))
       }
 
       if (this.max !== null) {
