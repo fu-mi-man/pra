@@ -4,6 +4,7 @@
     v-bind="$attrs"
     :value="value"
     :rules="rules"
+    type="text"
     @input="$emit('input', $event)"
   />
 </template>
@@ -24,11 +25,6 @@ export default {
       type: Boolean,
       default: false
     },
-    // メッセージカスタマイズ用のprops
-    requiredMessage: {
-      type: String,
-      default: '入力は必須です'
-    },
     /** 最大文字数 */
     inputMaxLength: {
       type: Number,
@@ -38,9 +34,18 @@ export default {
       type: Boolean,
       default: false
     },
-    disableFullWidthNums: {
+    disableFullWidthNum: {
       type: Boolean,
       default: false
+    },
+    messages: {
+      type: Object,
+      default: () => ({
+        required: '入力は必須です',
+        inputMaxLength: '{inputMaxLength}文字以内で入力してください',
+        specialChars: '特殊文字は使用できません',
+        fullWidthNum: '全角数字は使用できません'
+      })
     },
   },
 
@@ -59,21 +64,22 @@ export default {
       if (this.inputMaxLength) {
         rules.push(v => {
           if (!v) return true
-          return v.trim().length <= this.inputMaxLength || `${this.inputMaxLength}文字以内で入力してください`
+          return v.trim().length <= this.inputMaxLength ||
+            this.messages.inputMaxLength.replace('{inputMaxLength}', this.inputMaxLength)
         })
       }
 
       if (this.disableSpecialChars) {
         rules.push(v => {
           if (!v) return true
-          return !/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/.test(v) || '特殊文字は使用できません'
+          return !/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/.test(v) || this.messages.specialChars
         })
       }
 
-      if (this.disableFullWidthNums) {
+      if (this.disableFullWidthNum) {
         rules.push(v => {
           if (!v) return true
-          return !/[０-９]/.test(v) || '全角数字は使用できません'
+          return !/[０-９]/.test(v) || this.messages.fullWidthNum
         })
       }
 

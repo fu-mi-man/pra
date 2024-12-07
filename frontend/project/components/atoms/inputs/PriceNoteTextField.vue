@@ -2,7 +2,7 @@
 <template>
   <validated-text-field
     :value="value"
-    :input-max-length="30"
+    :input-max-length="inputMaxLength"
     maxlength="30"
     counter
     dense
@@ -26,6 +26,11 @@ export default {
     value: {
       type: String,
       default: ''
+    },
+    // 入力可能な最大文字数
+    inputMaxLength: {
+      type: Number,
+      default: 30,
     },
   },
 }
