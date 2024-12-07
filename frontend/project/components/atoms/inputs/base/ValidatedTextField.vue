@@ -6,6 +6,7 @@
     :rules="rules"
     type="text"
     @input="$emit('input', $event)"
+    @update:error="$emit('update:error', $event)"
   />
 </template>
 

@@ -3,6 +3,7 @@
   <validated-text-field
     :value="value"
     :input-max-length="inputMaxLength"
+    :error="error"
     maxlength="30"
     counter
     dense
@@ -10,6 +11,7 @@
     clearable
     hide-details="auto"
     placeholder="例：期間限定価格"
+    @update:error="$emit('update:error', $event)"
   />
 </template>
 
@@ -30,7 +32,15 @@ export default {
     // 入力可能な最大文字数
     inputMaxLength: {
       type: Number,
-      default: 30,
+      default: 2,
+    },
+    /**
+     * バリデーションエラーの有無
+     * エラーがある場合はtrue，ない場合はfalse
+     */
+    error: {
+      type: Boolean,
+      default: false
     },
   },
 }

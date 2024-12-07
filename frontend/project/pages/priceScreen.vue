@@ -73,6 +73,7 @@
             </label>
             <price-note-text-field
               v-model="generalPriceNote"
+              :error.sync="validationErrors.generalPriceNote"
             />
           </v-card>
 
@@ -339,7 +340,15 @@ export default {
       // 追加グループ価格の状態
       additionalGroups: [],
       showGroupSelectionDialog: false,
-      selectedGroups: [] // 選択されたグループを保持する配列
+      selectedGroups: [], // 選択されたグループを保持する配列
+
+      // フロントバリデーションエラー
+      validationErrors: {
+        generalPrice: false,
+        allCustomerPrice: false,
+        groupPrices: {},
+        generalPriceNote: false,
+      },
     }
   },
   computed: {
@@ -374,6 +383,14 @@ export default {
         this.allCustomerPriceExcludingTax
       )
       return this.formatPrice(price)
+    },
+    hasValidationErrors() {
+      // 価格備考のエラーチェック
+      if (this.validationErrors.generalPriceNote) {
+        return true;
+      }
+
+      return false // すべてのバリデーションが通過
     },
     /**
      * 通常価格の入力が有効かどうかを判定
@@ -417,7 +434,7 @@ export default {
     isSaveButtonDisabled() {
       return !this.isGeneralPriceValid ||
         !this.isAllCustomerPriceValid ||
-        !this.areGroupPricesValid
+        !this.areGroupPricesValid || this.hasValidationErrors
     },
   },
   watch: {
