@@ -58,7 +58,7 @@ export default {
       const rules = []
 
       if (this.required) {
-        rules.push(v => !!v?.trim() || this.requiredMessage)
+        rules.push(v => !!v?.trim() || this.messages.required)
       }
 
       if (this.inputMaxLength) {
