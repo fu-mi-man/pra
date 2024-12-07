@@ -24,24 +24,24 @@
             </span>
             <!-- 価格を表示 / 価格を非表示 -->
             <price-display-radio
-              v-model="generalPriceDisplay"
+              v-model="generalPrice.priceDisplay"
               :row="$vuetify.breakpoint.smAndUp"
             />
 
             <!-- 税別価格/税込価格の選択（価格表示時のみ） -->
              <tax-status-radio
-              v-if="generalPriceDisplay === 'visible'"
-              v-model="generalTaxStatus"
+              v-if="generalPrice.priceDisplay === 'visible'"
+              v-model="generalPrice.taxStatus"
               class="mt-4"
             />
 
             <!-- 価格入力部 -->
-            <template v-if="generalPriceDisplay === 'visible'">
+            <template v-if="generalPrice.priceDisplay === 'visible'">
               <label class="d-block mt-4 mb-2 text-subtitle-2">
                 {{ priceLabel }}
               </label>
               <price-text-field
-                v-model="generalInputPrice"
+                v-model="generalPrice.price"
                 class="mb-5"
                 @input="handlePriceInput($event, 'general')"
               />
@@ -58,12 +58,12 @@
             </template>
 
             <!-- 価格を非表示の場合のみ表示 -->
-            <template v-if="generalPriceDisplay === 'hidden'">
+            <template v-if="generalPrice.priceDisplay === 'hidden'">
               <label class="d-block mt-4 mb-2 text-subtitle-2">
                 表示文言
               </label>
               <price-text-text-field
-                v-model="generalCustomText"
+                v-model="generalPrice.priceText"
               />
             </template>
 
@@ -72,8 +72,8 @@
               価格備考
             </label>
             <price-note-text-field
-              v-model="generalPriceNote"
-              :error.sync="validationErrors.generalPriceNote"
+              v-model="generalPrice.note"
+              :error.sync="validationErrors.generalPrice.note"
             />
           </v-card>
 
@@ -321,6 +321,15 @@ export default {
       enableAllCustomerPrice: false,  // 全顧客価格の有効/無効を制御
       consumptionTaxRate: 10,         // 適用税率
       // 通常価格
+      generalPrice: {
+        priceDisplay: 'visible',
+        taxStatus: 'excluded',
+        price: '',
+        priceExcludingTax: 0,
+        priceIncludingTax: 0,
+        note: '',
+        priceText: '',
+      },
       generalPriceDisplay: 'visible', // 価格の表示/非表示
       generalTaxStatus: 'excluded',   // 税別価格/税込価格で入力
       generalInputPrice: '',          // 入力価格
@@ -344,25 +353,27 @@ export default {
 
       // フロントバリデーションエラー
       validationErrors: {
-        generalPrice: false,
+        // generalPrice: false,
         allCustomerPrice: false,
         groupPrices: {},
-        generalPriceNote: false,
+        generalPrice: {
+          note: false,
+        }
       },
     }
   },
   computed: {
     // 入力価格のラベル（通常価格）
     priceLabel() {
-      return this.getPriceLabel(this.generalTaxStatus);
+      return this.getPriceLabel(this.generalPrice.taxStatus);
     },
     // 表示価格のラベル（通常価格）
     calculatedPriceLabel() {
-      return this.getCalculatedPriceLabel(this.generalTaxStatus)
+      return this.getCalculatedPriceLabel(this.generalPrice.taxStatus)
     },
     formattedCalculatedPrice() {
       const price = this.getDisplayPrice(
-        this.generalTaxStatus,
+        this.generalPrice.taxStatus,
         this.generalPriceIncludingTax,
         this.generalPriceExcludingTax
       )
@@ -386,7 +397,7 @@ export default {
     },
     hasValidationErrors() {
       // 価格備考のエラーチェック
-      if (this.validationErrors.generalPriceNote) {
+      if (this.validationErrors.generalPrice.note) {
         return true;
       }
 
@@ -396,12 +407,12 @@ export default {
      * 通常価格の入力が有効かどうかを判定
      */
     isGeneralPriceValid() {
-      if (this.generalPriceDisplay === 'visible') {
+      if (this.generalPrice.priceDisplay === 'visible') {
         // 価格が0より大きいかチェック
-        return Number(this.generalInputPrice) > 0;
+        return Number(this.generalPrice.price) > 0;
       } else {
         // 表示文言が空白だけではないかチェック
-        return this.generalCustomText.trim() !== '';
+        return this.generalPrice.priceText.trim() !== '';
       }
     },
     // 全顧客価格の検証を追加
@@ -455,7 +466,7 @@ export default {
      * @param {'excluded'|'included'} newType - 新しい税率ステータス
      * @param {'excluded'|'included'} oldType - 以前の税率ステータス
      */
-    generalTaxStatus: {
+    'generalPrice.taxStatus': {
       handler(newType, oldType) {
         this.calculatePrices('general')
       },
@@ -536,7 +547,7 @@ export default {
 
       switch (priceType) {
         case 'general':
-          this.generalInputPrice = numericValue;
+          this.generalPrice.price = numericValue;
           break;
         case 'allCustomer':
           this.allCustomerInputPrice = numericValue;
@@ -558,8 +569,8 @@ export default {
       switch (priceType) {
         case 'general': {
           const { excludingTax, includingTax } = this.calculateTaxPrices(
-            this.generalInputPrice,
-            this.generalTaxStatus,
+            this.generalPrice.price,
+            this.generalPrice.taxStatus,
             this.consumptionTaxRate
           );
           this.generalPriceExcludingTax = excludingTax;
