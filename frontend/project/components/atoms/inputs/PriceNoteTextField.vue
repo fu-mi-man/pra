@@ -2,6 +2,7 @@
 <template>
   <validated-text-field
     :value="value"
+    :required="true"
     :input-max-length="inputMaxLength"
     :error="error"
     maxlength="30"

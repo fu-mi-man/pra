@@ -5,6 +5,7 @@
     :required="required"
     :min="min"
     :input-max-length="inputMaxLength"
+    :error="error"
     dense
     outlined
     suffix="円"
@@ -12,6 +13,7 @@
     hide-spin-buttons
     hide-details="auto"
     @input="$emit('input', $event)"
+    @update:error="$emit('update:error', $event)"
   />
 </template>
 
@@ -52,6 +54,14 @@ export default {
     inputMaxLength: {
       type: Number,
       default: 9,
+    },
+    /**
+     * バリデーションエラーの有無
+     * エラーがある場合はtrue，ない場合はfalse
+     */
+    error: {
+      type: Boolean,
+      default: false
     },
   },
 }

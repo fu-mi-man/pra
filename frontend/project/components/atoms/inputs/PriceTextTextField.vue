@@ -2,15 +2,17 @@
 <template>
   <validated-text-field
     :value="value"
-    :required="true"
-    :required-message="'カスタムできる必須です！'"
+    :required="required"
     :input-max-length="50"
+    :error="error"
+    maxlength="50"
+    counter
     dense
     outlined
-    counter
-    maxlength="50"
     hide-details="auto"
     placeholder="例：オープン価格"
+    @input="$emit('input', $event)"
+    @update:error="$emit('update:error', $event)"
   />
 </template>
 
@@ -26,7 +28,19 @@ export default {
     value: {
       type: String,
       default: '',
-    }
+    },
+    required: {
+      type: Boolean,
+      default: true,
+    },
+    /**
+     * バリデーションエラーの有無
+     * エラーがある場合はtrue，ない場合はfalse
+     */
+    error: {
+      type: Boolean,
+      default: false
+    },
   },
 }
 </script>

@@ -43,6 +43,7 @@
               <price-text-field
                 v-model="generalPrice.price"
                 class="mb-5"
+                :error.sync="validationErrors.generalPrice.price"
                 @input="handlePriceInput($event, 'general')"
               />
 
@@ -64,6 +65,7 @@
               </label>
               <price-text-text-field
                 v-model="generalPrice.priceText"
+                :error.sync="validationErrors.generalPrice.priceText"
               />
             </template>
 
@@ -74,6 +76,7 @@
             <price-note-text-field
               v-model="generalPrice.note"
               :error.sync="validationErrors.generalPrice.note"
+              @update:error="handleNoteValidationError"
             />
           </v-card>
 
@@ -349,11 +352,17 @@ export default {
       // フロントバリデーションエラー
       validationErrors: {
         // generalPrice: false,
-        allCustomerPrice: false,
-        groupPrices: {},
         generalPrice: {
+          price: false,
+          priceText: false,
+          note: false
+        },
+        allCustomerPrice: {
+          price: false,
+          priceText: false,
           note: false,
-        }
+        },
+        groupPrices: {}
       },
     }
   },
@@ -391,6 +400,18 @@ export default {
       return this.formatPrice(price)
     },
     hasValidationErrors() {
+      console.log(this.validationErrors.generalPrice.price);
+      // 価格のエラーチェック
+      if (this.generalPrice.priceDisplay === 'visible') {
+        console.log(this.validationErrors.generalPrice.price);
+        if (this.validationErrors.generalPrice.price) {
+          return true
+        }
+      } else if (this.validationErrors.generalPrice.priceText) {
+        return true
+      }
+
+      console.log(this.validationErrors.generalPrice.note);
       // 価格備考のエラーチェック
       if (this.validationErrors.generalPrice.note) {
         return true;
@@ -401,15 +422,15 @@ export default {
     /**
      * 通常価格の入力が有効かどうかを判定
      */
-    isGeneralPriceValid() {
-      if (this.generalPrice.priceDisplay === 'visible') {
-        // 価格が0より大きいかチェック
-        return Number(this.generalPrice.price) > 0;
-      } else {
-        // 表示文言が空白だけではないかチェック
-        return this.generalPrice.priceText.trim() !== '';
-      }
-    },
+    // isGeneralPriceValid() {
+      // if (this.generalPrice.priceDisplay === 'visible') {
+      //   // 価格が0より大きいかチェック
+      //   return Number(this.generalPrice.price) > 0;
+      // } else {
+      //   // 表示文言が空白だけではないかチェック
+      //   return this.generalPrice.priceText.trim() !== '';
+      // }
+    // },
     // 全顧客価格の検証を追加
     isAllCustomerPriceValid() {
       // トグルがオフの場合は常にtrue
@@ -438,8 +459,7 @@ export default {
      * 保存ボタンの有効/無効を制御
      */
     isSaveButtonDisabled() {
-      return !this.isGeneralPriceValid ||
-        !this.isAllCustomerPriceValid ||
+      return !this.isAllCustomerPriceValid ||
         !this.areGroupPricesValid || this.hasValidationErrors
     },
   },
@@ -655,6 +675,34 @@ export default {
         this.groupPrices.splice(index, 1);
       }
     },
+    handleValidationError(errorType, priceType, groupId = null) {
+      if (groupId) {
+        if (!this.validationErrors.groupPrices[groupId]) {
+          this.$set(this.validationErrors.groupPrices, groupId, {});
+        }
+        this.$set(this.validationErrors.groupPrices[groupId], errorType, true);
+      } else {
+        console.log('aaa');
+        this.$set(
+          this.validationErrors[priceType],
+          errorType,
+          true
+        );
+      }
+    },
+    clearValidationError(errorType, priceType, groupId = null) {
+      if (groupId) {
+        if (this.validationErrors.groupPrices[groupId]) {
+          this.$set(this.validationErrors.groupPrices[groupId], errorType, false);
+        }
+      } else {
+        this.$set(
+          this.validationErrors[priceType],
+          errorType,
+          false
+        );
+      }
+    },
 
     /**
      * 保存処理
@@ -662,7 +710,16 @@ export default {
     handleSave() {
       // TODO: APIとの連携処理を実装
       // console.log('保存処理が実行されました');
+    },
+      handleNoteValidationError(error) {
+    console.log('Error update:', error);  // デバッグ用
+    if (error) {
+      this.handleValidationError('note', 'generalPrice');
+    } else {
+      this.clearValidationError('note', 'generalPrice');
     }
+  },
+
   }
 }
 </script>
