@@ -10,17 +10,32 @@
 </template>
 
 <script>
+/**
+ * バリデーション機能付きテキストフィールドコンポーネント
+ * 必須チェック、最大文字数チェック、特殊文字チェック、全角数字チェックの機能を提供します
+ *
+ * @example
+ * <validated-text-field
+ *   v-model="inputValue"
+ *   :required="true"
+ *   :input-max-length="30"
+ *   :disable-special-chars="true"
+ * />
+ */
 export default {
   name: 'ValidatedTextField',
   inheritAttrs: false, // 親から渡された属性がroot要素に自動適用されるのを防ぐ
 
   props: {
-    /** 入力値 */
+    /**
+     * テキストフィールドの入力値
+     * v-modelと組み合わせて使用
+     */
     value: {
       type: String,
       default: ''
     },
-    /** 必須入力チェックを有効にする */
+    /** 必須入力チェックを有効にするフラグ */
     required: {
       type: Boolean,
       default: false
@@ -30,14 +45,25 @@ export default {
       type: Number,
       default: null
     },
+    /**
+     * 特殊文字の入力を禁止するフラグ
+     * trueの場合、!@#$%^&*()等の特殊文字の入力を許容しません
+     */
     disableSpecialChars: {
       type: Boolean,
       default: false
     },
+    /**
+     * 全角数字の入力を禁止するフラグ
+     * trueの場合、１２３等の全角数字の入力を許容しません
+     */
     disableFullWidthNum: {
       type: Boolean,
       default: false
     },
+    /**
+     * バリデーションエラーメッセージ
+     */
     messages: {
       type: Object,
       default: () => ({
@@ -57,10 +83,12 @@ export default {
     rules() {
       const rules = []
 
+      // 必須チェック
       if (this.required) {
         rules.push(v => !!v?.trim() || this.messages.required)
       }
 
+      // 最大文字数チェック
       if (this.inputMaxLength) {
         rules.push(v => {
           if (!v) return true
@@ -69,6 +97,7 @@ export default {
         })
       }
 
+      // 特殊文字チェック
       if (this.disableSpecialChars) {
         rules.push(v => {
           if (!v) return true
@@ -76,6 +105,7 @@ export default {
         })
       }
 
+      // 全角数字チェック
       if (this.disableFullWidthNum) {
         rules.push(v => {
           if (!v) return true
