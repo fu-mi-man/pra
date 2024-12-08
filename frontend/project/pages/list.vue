@@ -18,6 +18,7 @@ export default {
     return {
       directoryStructure: [
         { name: 'ホーム', path: '/' },
+        { name: 'ボタンのバリデーション', path: '/validateButton' },
         { name: '見積もり印刷', path: '/print' },
         { name: '印刷・プレビュー', path: '/preview' },
         { name: 'グループセレクション', path: '/group-selection' },
