@@ -61,7 +61,14 @@
             'items-per-page-text': '表示件数'
           }"
           @click:row="handleRowClick"
-        />
+        >
+          <!-- <template #[`header.${headers[0].value}`]>
+            <div class="header-content">
+              <div>顧客グループ名</div>
+              <div class="subtext">（またはグループ名称）</div>
+            </div>
+          </template> -->
+        </v-data-table>
         <!-- <v-pagination
           v-model="page"
           :length="'3'"
@@ -115,9 +122,11 @@ export default {
     return {
       headers: [
         {
-          text: '顧客グループ名',
+          text: '顧客グループ名\n　　(またはグループ名称)',
           value: 'groupName',
           align: 'start',
+          sortable: true,
+          class: 'group-name-header'
         },
         {
           text: '人数',
@@ -268,6 +277,17 @@ export default {
 ::v-deep(.v-data-table tbody tr:hover) {
   cursor: pointer;
 }
+
+/* グループ名ヘッダーのみに適用 */
+::v-deep(.group-name-header) {
+  white-space: pre-line !important;
+  text-align: center !important;
+}
+
+/* ヘッダーテキストの改行を有効にし、中央揃えを確実にする */
+/* ::v-deep(.v-data-table th) {
+  white-space: pre-line !important;
+} */
 
 /* コンテンツエリアのスタイル */
 .group-dialog__content {
