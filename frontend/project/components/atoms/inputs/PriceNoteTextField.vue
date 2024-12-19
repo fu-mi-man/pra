@@ -12,6 +12,7 @@
     clearable
     hide-details="auto"
     placeholder="例：期間限定価格"
+    @input="$emit('input', $event)"
     @update:error="$emit('update:error', $event)"
   />
 </template>
