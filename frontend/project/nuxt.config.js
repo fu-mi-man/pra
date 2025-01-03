@@ -27,7 +27,10 @@ export default {
   css: [],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: ['~/plugins/popup-timing.js'],
+  plugins: [
+    '~/plugins/popup-timing.js',
+    { src: '~/plugins/vue2-datepicker', mode: 'client' },
+  ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
