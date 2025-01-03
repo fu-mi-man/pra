@@ -53,6 +53,7 @@
                 class="announcement-form__date-picker"
                 type="datetime"
                 format="YYYY-MM-DD HH:mm:ss"
+                value-type="YYYY-MM-DD HH:mm:ss"
                 :disabled-date="date => isBeforeDate(date, new Date())"
                 placeholder="公開開始日時を選択"
               />
@@ -63,6 +64,7 @@
                 class="announcement-form__date-picker"
                 type="datetime"
                 format="YYYY-MM-DD HH:mm:ss"
+                value-type="YYYY-MM-DD HH:mm:ss"
                 :disabled-date="date => isBeforeDate(date, formData.start_at)"
                 placeholder="公開終了日時を選択"
               />
@@ -84,6 +86,7 @@
                 class="announcement-form__banner-picker"
                 type="datetime"
                 format="YYYY-MM-DD HH:mm:ss"
+                value-type="YYYY-MM-DD HH:mm:ss"
                 :disabled-date="date => isBeforeDate(date, new Date())"
                 placeholder="表示開始日時を選択"
               />
@@ -94,6 +97,7 @@
                 class="announcement-form__banner-picker"
                 type="datetime"
                 format="YYYY-MM-DD HH:mm:ss"
+                value-type="YYYY-MM-DD HH:mm:ss"
                 :disabled-date="date => isBeforeDate(date, formData.banner_start_at)"
                 placeholder="表示終了日時を選択"
               />
@@ -174,11 +178,6 @@ export default {
     },
   },
   methods: {
-    submit() {
-      if (!this.$refs.form.validate()) return
-      // ここにAPI送信処理を追加
-      console.log('送信データ:', this.formData)
-    },
     /**
      * 2つの日付を比較し，targetDateが基準日より前かどうかを判定
      * @param {Date} targetDate - 比較対象の日付
@@ -197,6 +196,20 @@ export default {
       reference.setHours(0, 0, 0, 0)
 
       return target.getTime() < reference.getTime()
+    },
+    async submit() {
+      if (!this.$refs.form.validate()) return
+
+      try {
+        const response = await this.$axios.post('/api/announcements', this.formData)
+        console.log('APIレスポンス:', response.data)
+        // 成功時の処理（例：メッセージ表示など）
+
+      } catch (error) {
+        console.error('エラー:', error.response?.data || error.message)
+        alert(error.message)
+        // エラー時の処理
+      }
     },
   },
 }
