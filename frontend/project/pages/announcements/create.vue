@@ -84,7 +84,7 @@
               <announcement-date-picker
                 v-model="formData.banner_start_at"
                 class="announcement-form__banner-picker"
-                :disabled-date="(date) => isBeforeDate(date, new Date())"
+                :disabled-date="(date) => isBeforeDate(date, formData.start_at)"
                 placeholder="表示開始日時を選択"
               />
             </v-col>
@@ -206,6 +206,10 @@ export default {
 
       return target.getTime() < reference.getTime()
     },
+    /**
+     * フォームデータの日付関連のバリデーションを行う
+     * @returns {string[]} バリデーションエラーメッセージの配列
+     */
     validateDates() {
       const errors = []
 
