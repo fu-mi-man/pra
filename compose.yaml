@@ -67,6 +67,13 @@ services:
       # ADMINER_DESIGN: flat
     depends_on:
       - db
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: project_mailhog
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    restart: unless-stopped  # コンテナの自動再起動設定
 volumes:
   db-store:
     name: db-store
