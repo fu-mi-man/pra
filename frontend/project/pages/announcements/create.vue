@@ -3,7 +3,13 @@
   <v-container>
     <v-card max-width="800" class="mx-auto">
       <v-card-title> お知らせ作成 </v-card-title>
-
+      <v-alert v-if="errors.length > 0" type="error" dense class="mb-4">
+        <ul class="mb-0 pl-4">
+          <li v-for="(error, index) in errors" :key="index">
+            {{ error }}
+          </li>
+        </ul>
+      </v-alert>
       <v-card-text>
         <v-form ref="form" v-model="valid">
           <!-- タイトル -->
@@ -53,8 +59,8 @@
                 class="announcement-form__date-picker"
                 type="datetime"
                 format="YYYY-MM-DD HH:mm:ss"
-                value-type="YYYY-MM-DD HH:mm:ss"
-                :disabled-date="date => isBeforeDate(date, new Date())"
+                value-type="format"
+                :disabled-date="(date) => isBeforeDate(date, new Date())"
                 placeholder="公開開始日時を選択"
               />
             </v-col>
@@ -64,8 +70,8 @@
                 class="announcement-form__date-picker"
                 type="datetime"
                 format="YYYY-MM-DD HH:mm:ss"
-                value-type="YYYY-MM-DD HH:mm:ss"
-                :disabled-date="date => isBeforeDate(date, formData.start_at)"
+                value-type="format"
+                :disabled-date="(date) => isBeforeDate(date, formData.start_at)"
                 placeholder="公開終了日時を選択"
               />
             </v-col>
@@ -86,8 +92,8 @@
                 class="announcement-form__banner-picker"
                 type="datetime"
                 format="YYYY-MM-DD HH:mm:ss"
-                value-type="YYYY-MM-DD HH:mm:ss"
-                :disabled-date="date => isBeforeDate(date, new Date())"
+                value-type="format"
+                :disabled-date="(date) => isBeforeDate(date, new Date())"
                 placeholder="表示開始日時を選択"
               />
             </v-col>
@@ -97,8 +103,8 @@
                 class="announcement-form__banner-picker"
                 type="datetime"
                 format="YYYY-MM-DD HH:mm:ss"
-                value-type="YYYY-MM-DD HH:mm:ss"
-                :disabled-date="date => isBeforeDate(date, formData.banner_start_at)"
+                value-type="format"
+                :disabled-date="(date) => isBeforeDate(date, formData.banner_start_at)"
                 placeholder="表示終了日時を選択"
               />
             </v-col>
@@ -132,6 +138,16 @@
         <v-btn color="primary" @click="submit"> 保存 </v-btn>
       </v-card-actions>
     </v-card>
+
+    <!-- Snackbar -->
+    <v-snackbar v-model="snackbar.show" :color="snackbar.color">
+      {{ snackbar.text }}
+      <template v-slot:action="{ attrs }">
+        <v-btn text v-bind="attrs" @click="snackbar.show = false">
+          閉じる
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -167,6 +183,12 @@ export default {
         { label: 'メンテナンス', value: 'maintenance' },
         { label: 'アップデート', value: 'update' },
       ],
+      snackbar: {
+        show: false,
+        text: '',
+        color: 'success',
+      },
+      errors: [],
     }
   },
   computed: {
@@ -197,18 +219,63 @@ export default {
 
       return target.getTime() < reference.getTime()
     },
+    validateDates() {
+      const errors = []
+
+      // 公開期間の前後関係チェック
+      if (this.formData.start_at && this.formData.end_at) {
+        if (new Date(this.formData.end_at) <= new Date(this.formData.start_at)) {
+          errors.push('公開終了日時は開始日時より後の日時を指定してください')
+        }
+      }
+
+      // バナー表示がONの場合のチェック
+      if (this.formData.show_banner) {
+        // バナー期間の前後関係チェック
+        if (this.formData.banner_start_at && this.formData.banner_end_at) {
+          if (new Date(this.formData.banner_end_at) <= new Date(this.formData.banner_start_at)) {
+            errors.push(
+              'バナー終了日時は開始日時より後の日時を指定してください'
+            )
+          }
+        }
+
+        // バナー開始日時は公開開始日時以降であること
+        if (this.formData.start_at && this.formData.banner_start_at) {
+          if (
+            new Date(this.formData.banner_start_at) <
+            new Date(this.formData.start_at)
+          ) {
+            errors.push('バナー開始日時は公開開始日時以降を指定してください')
+          }
+        }
+      }
+
+      return errors
+    },
     async submit() {
       if (!this.$refs.form.validate()) return
 
-      try {
-        const response = await this.$axios.post('/api/announcements', this.formData)
-        console.log('APIレスポンス:', response.data)
-        // 成功時の処理（例：メッセージ表示など）
+      this.errors = this.validateDates()
+      if (this.errors.length > 0) return
 
+      try {
+        await this.$axios.post('/api/announcements', this.formData)
+
+        this.snackbar = {
+          show: true,
+          text: 'お知らせを作成しました',
+          color: 'success',
+        }
+
+        this.$router.push('/list')
       } catch (error) {
         console.error('エラー:', error.response?.data || error.message)
-        alert(error.message)
-        // エラー時の処理
+        this.snackbar = {
+          show: true,
+          text: 'お知らせの作成に失敗しました',
+          color: 'error',
+        }
       }
     },
   },
