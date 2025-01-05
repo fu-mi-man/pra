@@ -54,23 +54,17 @@
           <!-- 公開開始日時と終了日時 -->
           <v-row class="mb-4">
             <v-col cols="12" sm="6">
-              <date-picker
+              <announcement-date-picker
                 v-model="formData.start_at"
                 class="announcement-form__date-picker"
-                type="datetime"
-                format="YYYY-MM-DD HH:mm:ss"
-                value-type="format"
                 :disabled-date="(date) => isBeforeDate(date, new Date())"
                 placeholder="公開開始日時を選択"
               />
             </v-col>
             <v-col cols="12" sm="6">
-              <date-picker
+              <announcement-date-picker
                 v-model="formData.end_at"
                 class="announcement-form__date-picker"
-                type="datetime"
-                format="YYYY-MM-DD HH:mm:ss"
-                value-type="format"
                 :disabled-date="(date) => isBeforeDate(date, formData.start_at)"
                 placeholder="公開終了日時を選択"
               />
@@ -87,23 +81,17 @@
           <!-- バナー表示期間 -->
           <v-row v-if="formData.show_banner" class="mb-4">
             <v-col cols="12" sm="6">
-              <date-picker
+              <announcement-date-picker
                 v-model="formData.banner_start_at"
                 class="announcement-form__banner-picker"
-                type="datetime"
-                format="YYYY-MM-DD HH:mm:ss"
-                value-type="format"
                 :disabled-date="(date) => isBeforeDate(date, new Date())"
                 placeholder="表示開始日時を選択"
               />
             </v-col>
             <v-col cols="12" sm="6">
-              <date-picker
+              <announcement-date-picker
                 v-model="formData.banner_end_at"
                 class="announcement-form__banner-picker"
-                type="datetime"
-                format="YYYY-MM-DD HH:mm:ss"
-                value-type="format"
                 :disabled-date="(date) => isBeforeDate(date, formData.banner_start_at)"
                 placeholder="表示終了日時を選択"
               />
@@ -152,12 +140,14 @@
 </template>
 
 <script>
+import AnnouncementDatePicker from '@/components/atoms/datepicker/AnnouncementDatePicker.vue'
 import ValidatedSelectField from '@/components/atoms/inputs/base/ValidatedSelectField.vue'
 import ValidatedTextareaField from '@/components/atoms/inputs/base/ValidatedTextareaField.vue'
 import ValidatedTextField from '@/components/atoms/inputs/base/ValidatedTextField.vue'
 
 export default {
   components: {
+    AnnouncementDatePicker,
     ValidatedSelectField,
     ValidatedTextareaField,
     ValidatedTextField,
