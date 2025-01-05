@@ -197,9 +197,6 @@ export default {
      * @returns {boolean} targetDateが基準日より前の場合true
      */
     isBeforeDate(targetDate, baseDate) {
-      if (!targetDate) return false
-      if (!baseDate) return false
-
       const target = new Date(targetDate)
       const reference = new Date(baseDate)
 
