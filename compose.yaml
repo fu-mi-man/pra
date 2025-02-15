@@ -59,7 +59,7 @@ services:
   adminer:
     container_name: adminer
     image: adminer
-    restart: always
+    # restart: always
     ports:
       - "8080:8080"
     environment:
@@ -67,13 +67,12 @@ services:
       # ADMINER_DESIGN: flat
     depends_on:
       - db
-  mailhog:
-    image: mailhog/mailhog:latest
-    container_name: project_mailhog
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: project_mailpit
     ports:
-      - "8025:8025"
-      - "1025:1025"
-    restart: unless-stopped  # コンテナの自動再起動設定
+      - "8025:8025"  # Webインターフェース用ポート
+      - "1025:1025"  # SMTPサーバー用ポート
 volumes:
   db-store:
     name: db-store
