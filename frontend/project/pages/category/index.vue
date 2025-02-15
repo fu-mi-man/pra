@@ -183,7 +183,6 @@ export default {
     },
     deleteCategory(item) {
       // 削除処理
-      console.log('Delete category:', item)
     },
   },
 }

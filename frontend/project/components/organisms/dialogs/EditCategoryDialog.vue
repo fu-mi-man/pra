@@ -58,9 +58,9 @@
 import ValidatedTextField from '@/components/atoms/inputs/base/ValidatedTextField.vue'
 
 /**
-　* カテゴリ編集用ダイアログコンポーネント
-　* カテゴリの新規作成・編集に使用される
-　*/
+ * カテゴリ編集用ダイアログコンポーネント
+ * カテゴリの新規作成・編集に使用される
+ */
 export default {
   components: {
     ValidatedTextField,
@@ -85,15 +85,6 @@ export default {
       required: true,
     },
   },
-  watch: {
-    /** 編集対象アイテムの変更を監視し、フォームの値を更新 */
-    item: {
-      handler(newVal) {
-        this.editedItem = { ...newVal }
-      },
-      deep: true,
-    },
-  },
   data() {
     return {
       loading: false,     // ローディング
@@ -104,6 +95,15 @@ export default {
       },
       errorMessages: [],  // エラーメッセージの配列
     }
+  },
+  watch: {
+    /** 編集対象アイテムの変更を監視し、フォームの値を更新 */
+    item: {
+      handler(newVal) {
+        this.editedItem = { ...newVal }
+      },
+      deep: true,
+    },
   },
   methods: {
     /**
