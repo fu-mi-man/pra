@@ -88,16 +88,32 @@
         </v-card>
       </v-col>
     </v-row>
+    <!-- 編集ダイアログ -->
+    <edit-category-dialog
+      v-model="editDialog"
+      :item="editedItem"
+      :category-type="activeTab === 0 ? 'document' : 'product'"
+    />
   </v-container>
 </template>
 
 <script>
+import EditCategoryDialog from '@/components/organisms/dialogs/EditCategoryDialog.vue'
+
 export default {
   name: 'CategoryManagement',
+  components: {
+    EditCategoryDialog,
+  },
+
   data() {
     return {
       activeTab: 0,
       loading: false,
+      editDialog: false,    // 編集ダイアログの表示制御
+      editedItem: {},       // 編集中のアイテム
+      editedIndex: -1,      // 編集中のアイテムのインデックス
+
       headers: [
         {
           text: 'カテゴリID',
@@ -155,8 +171,15 @@ export default {
   },
   methods: {
     editCategory(item) {
-      // 編集処理
-      console.log('Edit category:', item)
+      // 編集対象のアイテムが配列の何番目にあるかを記憶
+      // 後で保存時にこの位置のデータを更新するために使用
+      this.editedIndex = this.documentCategories.indexOf(item)
+
+      // Object.assign({}, item) で，itemオブジェクトの浅いコピーを作成
+      // 空のオブジェクト {} に item の中身をコピーする
+      // これにより、編集中のデータが元のデータに影響を与えないようにする
+      this.editedItem = Object.assign({}, item)
+      this.editDialog = true // 編集用ダイアログを表示する
     },
     deleteCategory(item) {
       // 削除処理
