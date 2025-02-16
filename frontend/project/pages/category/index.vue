@@ -3,15 +3,10 @@
   <v-container>
     <v-row justify="center">
       <v-col cols="12" lg="10" xl="8">
-        <div class="py-4 text-h5 text-center">
-          カテゴリ管理
-        </div>
+        <div class="py-4 text-h5 text-center">カテゴリ管理</div>
         <v-card>
           <div class="d-flex justify-end px-4 py-2">
-            <v-btn
-              class="mr-2"
-              color="primary"
-            >
+            <v-btn class="mr-2" color="primary">
               <span class="d-none d-sm-inline">新規カテゴリ</span>
               <v-icon class="d-sm-none">mdi-plus</v-icon>
             </v-btn>
@@ -36,20 +31,12 @@
                 dense
               >
                 <template #[`item.edit`]="{ item }">
-                  <v-btn
-                    icon
-                    small
-                    @click="editCategory(item)"
-                  >
+                  <v-btn icon small @click="editCategory(item)">
                     <v-icon small>mdi-pencil</v-icon>
                   </v-btn>
                 </template>
                 <template #[`item.delete`]="{ item }">
-                  <v-btn
-                    icon
-                    small
-                    @click="deleteCategory(item)"
-                  >
+                  <v-btn icon small @click="showDeleteDialog(item)">
                     <v-icon small>mdi-delete</v-icon>
                   </v-btn>
                 </template>
@@ -65,20 +52,12 @@
                 dense
               >
                 <template #[`item.edit`]="{ item }">
-                  <v-btn
-                    icon
-                    small
-                    @click="editCategory(item)"
-                  >
+                  <v-btn icon small @click="editCategory(item)">
                     <v-icon small>mdi-pencil</v-icon>
                   </v-btn>
                 </template>
                 <template #[`item.delete`]="{ item }">
-                  <v-btn
-                    icon
-                    small
-                    @click="deleteCategory(item)"
-                  >
+                  <v-btn icon small @click="showDeleteDialog(item)">
                     <v-icon small>mdi-delete</v-icon>
                   </v-btn>
                 </template>
@@ -91,28 +70,43 @@
     <!-- 編集ダイアログ -->
     <edit-category-dialog
       v-model="editDialog"
+      :category-type="currentCategoryType"
       :item="editedItem"
-      :category-type="activeTab === 0 ? 'document' : 'product'"
+    />
+    <!-- 削除ダイアログ -->
+    <delete-category-dialog
+      v-model="deleteDialog"
+      :category-type="currentCategoryType"
+      :item="deleteTargetItem"
+      @deleted="handleDeleteComplete"
     />
   </v-container>
 </template>
 
 <script>
 import EditCategoryDialog from '@/components/organisms/dialogs/EditCategoryDialog.vue'
+import DeleteCategoryDialog from '@/components/organisms/dialogs/DeleteCategoryDialog.vue'
 
 export default {
   name: 'CategoryManagement',
   components: {
     EditCategoryDialog,
+    DeleteCategoryDialog,
   },
 
   data() {
     return {
       activeTab: 0,
       loading: false,
-      editDialog: false,    // 編集ダイアログの表示制御
-      editedItem: {},       // 編集中のアイテム
-      editedIndex: -1,      // 編集中のアイテムのインデックス
+      editDialog: false, // 編集ダイアログの表示制御
+      deleteDialog: false, // 削除ダイアログの表示制御
+      editedItem: {}, // 編集中のアイテム
+      editedIndex: -1, // 編集中のアイテムのインデックス
+      deleteTargetItem: {}, // 削除用
+      defaultItem: {
+        id: null,
+        name: '',
+      },
 
       headers: [
         {
@@ -169,6 +163,15 @@ export default {
       ],
     }
   },
+  computed: {
+    /**
+     * 現在選択中のカテゴリタイプを返す
+     * @returns {'document' | 'product'} カテゴリタイプ
+     */
+    currentCategoryType() {
+      return this.activeTab === 0 ? 'document' : 'product'
+    }
+  },
   methods: {
     editCategory(item) {
       // 編集対象のアイテムが配列の何番目にあるかを記憶
@@ -181,8 +184,23 @@ export default {
       this.editedItem = Object.assign({}, item)
       this.editDialog = true // 編集用ダイアログを表示する
     },
-    deleteCategory(item) {
-      // 削除処理
+    /**
+     * 削除確認ダイアログを表示する
+     * @param {{id: number, name: string}} item - 削除対象のカテゴリアイテム
+     */
+    showDeleteDialog(item) {
+      this.deleteTargetItem = item
+      this.deleteDialog = true
+    },
+    handleDeleteComplete(deletedItem) {
+      // カテゴリタイプの判定は親コンポーネントで行う
+      const categories =
+        this.activeTab === 0 ? this.documentCategories : this.productCategories
+
+      const index = categories.findIndex((c) => c.id === deletedItem.id)
+      if (index > -1) {
+        categories.splice(index, 1)
+      }
     },
   },
 }
