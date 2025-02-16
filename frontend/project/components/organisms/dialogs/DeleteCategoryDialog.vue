@@ -6,6 +6,17 @@
     @input="$emit('input', $event)"
   >
     <v-card>
+      <!-- ローディングオーバーレイ -->
+      <v-overlay
+        :value="loading"
+        absolute
+      >
+        <v-progress-circular
+          indeterminate
+          size="64"
+        />
+      </v-overlay>
+
       <v-card-title>
         <span class="text-h5">
           {{ categoryTypeLabel }} の削除確認
@@ -44,7 +55,6 @@
         </v-btn>
         <v-btn
           :disabled="loading"
-          :loading="loading"
           color="error"
           text
           @click="deleteCategory"
@@ -100,16 +110,18 @@ export default {
 
   methods: {
     /** カテゴリの削除を実行 */
-    // async deleteCategory() {
-    deleteCategory() {
+    async deleteCategory() {
+    // deleteCategory() {
       try {
         this.loading = true
         this.error = null
         this.validationErrors = []
 
-        // await new Promise(resolve => setTimeout(resolve, 3000))
-
-        // バリデーションエラーテスト用コード
+        // APIをコールする処理をここに実装
+        // await this.deleteCategoryAPI(this.item.id);
+        // テスト用コード（2秒スリープ・仮API）
+        await new Promise(resolve => setTimeout(resolve, 2000))
+        // テスト用コード（バリデーションエラー）
         // const mockError = new Error('Validation Error')
         // mockError.response = {
         //   status: 422,
@@ -121,10 +133,6 @@ export default {
         //   }
         // }
         // throw mockError
-
-
-        // APIをコールする処理をここに実装
-        // await this.deleteCategoryAPI(this.item.id);
 
         // 成功時は deleted イベントを発火
         this.$emit('deleted', {
