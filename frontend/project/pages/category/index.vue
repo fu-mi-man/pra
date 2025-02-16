@@ -55,7 +55,7 @@
               >
                 <!-- 編集アイコンと削除アイコン -->
                 <template #[`item.edit`]="{ item }">
-                  <v-btn icon small @click="editCategory(item)">
+                  <v-btn icon small @click="showEditDialog(item)">
                     <v-icon small>mdi-pencil</v-icon>
                   </v-btn>
                 </template>
@@ -75,6 +75,7 @@
       v-model="editDialog"
       :category-type="currentCategoryType"
       :item="editedItem"
+      @edited="handleEditComplete"
     />
     <!-- 削除ダイアログ -->
     <delete-category-dialog
@@ -187,16 +188,52 @@ export default {
     }
   },
   methods: {
-    editCategory(item) {
-      // 編集対象のアイテムが配列の何番目にあるかを記憶
-      // 後で保存時にこの位置のデータを更新するために使用
-      this.editedIndex = this.documentCategories.indexOf(item)
+    /**
+     * 編集ダイアログを表示する
+     * @param {{id: number, name: string}} item - 編集対象のカテゴリアイテム
+     */
+    showEditDialog(item) {
+      // スプレッド構文で浅いコピーを作成
+      // 編集中のデータ変更が元のデータに影響を与えないようにする
+      // （APIでの保存が完了するまでテーブルの表示を維持するため）
+      this.editedItem = { ...item }
+      this.editDialog = true
+    },
+    /**
+     * カテゴリ編集完了時の処理
+     * 編集ダイアログからの結果を受け取り、成功時はカテゴリリストの更新とメッセージ表示、
+     * 失敗時はエラーメッセージの表示を行う
+     *
+     * @param {Object} params - 編集完了時のパラメータ
+     * @param {Object} params.item - 編集されたカテゴリ情報
+     * @param {number} params.item.id - カテゴリID
+     * @param {string} params.item.name - カテゴリ名
+     * @param {boolean} params.success - 処理の成功/失敗
+     * @param {string} params.message - 表示するメッセージ
+     */
+    handleEditComplete({ item, success, message }) {
+      if (!success) {
+        this.snackbarColor = 'error'
+        this.snackbarText = message
+        this.snackbar = true
+        return
+      }
 
-      // Object.assign({}, item) で，itemオブジェクトの浅いコピーを作成
-      // 空のオブジェクト {} に item の中身をコピーする
-      // これにより、編集中のデータが元のデータに影響を与えないようにする
-      this.editedItem = Object.assign({}, item)
-      this.editDialog = true // 編集用ダイアログを表示する
+      // カテゴリタイプに応じて更新対象の配列を選択
+      const categories =
+        this.activeTab === 0 ? this.documentCategories : this.productCategories
+
+      // 編集対象のインデックスを検索
+      const index = categories.findIndex((c) => c.id === item.id)
+      if (index > -1) {
+        // 配列内のアイテムを更新
+        categories[index] = { ...item }
+      }
+
+      // 成功メッセージを表示
+      this.snackbarColor = 'success'
+      this.snackbarText = message
+      this.snackbar = true
     },
     /**
      * 削除確認ダイアログを表示する

@@ -128,6 +128,11 @@ export default {
       errorMessages: [],    // 入力フィールドのエラーメッセージ
     }
   },
+  computed: {
+    categoryTypeLabel() {
+      return this.categoryType === 'document' ? '文書カテゴリ' : '商品カテゴリ'
+    }
+  },
   watch: {
     /** 編集対象アイテムの変更を監視し、フォームの値を更新 */
     item: {
@@ -153,7 +158,11 @@ export default {
         // テスト用コード（2秒スリープ・仮API）
         await new Promise(resolve => setTimeout(resolve, 2000))
 
-        this.$emit('saved', this.editedItem)
+        this.$emit('edited', {
+          item: this.editedItem,
+          success: true,
+          message: `${this.categoryTypeLabel}「${this.editedItem.name}」を更新しました`
+        })
         this.close()
       } catch (error) {
         if (error.response?.status === 422) {
