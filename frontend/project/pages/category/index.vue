@@ -80,6 +80,14 @@
       :item="deleteTargetItem"
       @deleted="handleDeleteComplete"
     />
+    <!-- 通知用のsnackbar -->
+    <v-snackbar
+      v-model="snackbar"
+      :color="snackbarColor"
+      :timeout="3000"
+    >
+      {{ snackbarText }}
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -107,6 +115,9 @@ export default {
         id: null,
         name: '',
       },
+      snackbar: false,
+      snackbarColor: '',
+      snackbarText: '',
 
       headers: [
         {
@@ -192,15 +203,26 @@ export default {
       this.deleteTargetItem = item
       this.deleteDialog = true
     },
-    handleDeleteComplete(deletedItem) {
+    handleDeleteComplete({ item, success, message }) {
+      if (!success) {
+        this.snackbarColor = 'error'
+        this.snackbarText = message
+        this.snackbar = true
+        return
+      }
       // カテゴリタイプの判定は親コンポーネントで行う
       const categories =
         this.activeTab === 0 ? this.documentCategories : this.productCategories
 
-      const index = categories.findIndex((c) => c.id === deletedItem.id)
+      const index = categories.findIndex((c) => c.id === item.id)
       if (index > -1) {
         categories.splice(index, 1)
       }
+
+      // 成功メッセージを表示
+      this.snackbarColor = 'success'
+      this.snackbarText = message
+      this.snackbar = true
     },
   },
 }

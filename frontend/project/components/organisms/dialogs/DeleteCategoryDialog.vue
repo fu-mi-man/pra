@@ -93,10 +93,20 @@ export default {
         // APIをコールする処理をここに実装
         // await this.deleteCategoryAPI(this.item.id);
 
-        this.$emit('deleted', this.item)
+        // 成功時は deleted イベントを発火
+        this.$emit('deleted', {
+          item: this.item,
+          success: true,
+          message: `${this.categoryTypeLabel}「${this.item.name}」を削除しました`
+        })
         this.close()
       } catch (error) {
-        // エラー処理
+        // エラー時は deleted イベントでエラー情報を渡す
+        this.$emit('deleted', {
+          item: this.item,
+          success: false,
+          message: '削除に失敗しました。再度お試しください。'
+        })
       } finally {
         this.loading = false
       }
