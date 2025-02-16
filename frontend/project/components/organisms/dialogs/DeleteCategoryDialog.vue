@@ -13,6 +13,20 @@
       </v-card-title>
 
       <v-card-text>
+        <!-- バリデーションエラーメッセージ -->
+        <v-alert
+          v-if="validationErrors.length > 0"
+          class="mb-4"
+          dense
+          type="error"
+        >
+          <ul class="mb-0 pl-4">
+            <li v-for="(error, index) in validationErrors" :key="index">
+              {{ error }}
+            </li>
+          </ul>
+        </v-alert>
+
         <p class="mb-0">
           {{ categoryTypeLabel }}「{{ item.name }}」を削除してもよろしいですか？
         </p>
@@ -70,6 +84,7 @@ export default {
     return {
       loading: false,
       error: null,
+      validationErrors: [],
     }
   },
 
@@ -90,6 +105,24 @@ export default {
       try {
         this.loading = true
         this.error = null
+        this.validationErrors = []
+
+        // await new Promise(resolve => setTimeout(resolve, 3000))
+
+        // バリデーションエラーテスト用コード
+        // const mockError = new Error('Validation Error')
+        // mockError.response = {
+        //   status: 422,
+        //   data: {
+        //     errors: {
+        //       category: ['このカテゴリは使用中のため削除できません'],
+        //       items: ['関連する商品が存在するため削除できません']
+        //     }
+        //   }
+        // }
+        // throw mockError
+
+
         // APIをコールする処理をここに実装
         // await this.deleteCategoryAPI(this.item.id);
 
@@ -101,12 +134,19 @@ export default {
         })
         this.close()
       } catch (error) {
-        // エラー時は deleted イベントでエラー情報を渡す
-        this.$emit('deleted', {
-          item: this.item,
-          success: false,
-          message: '削除に失敗しました。再度お試しください。'
-        })
+        // LaravelのValidationExceptionのエラーハンドリング
+        if (error.response?.status === 422) {
+          // バリデーションエラーメッセージの取得
+          const errors = error.response.data.errors
+          this.validationErrors = Object.values(errors).flat()
+        } else {
+          // その他のエラー
+          this.$emit('deleted', {
+            item: this.item,
+            success: false,
+            message: '削除に失敗しました。再度お試しください。'
+          })
+        }
       } finally {
         this.loading = false
       }
@@ -115,6 +155,7 @@ export default {
     close() {
       this.$emit('input', false)
       this.error = null
+      this.validationErrors = []
     },
   },
 }
