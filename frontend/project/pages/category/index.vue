@@ -7,8 +7,8 @@
         <v-card>
           <div class="d-flex justify-end px-4 py-2">
             <v-btn class="mr-2" color="primary">
-              <span class="d-none d-sm-inline">新規カテゴリ</span>
-              <v-icon class="d-sm-none">mdi-plus</v-icon>
+              <v-icon>mdi-plus</v-icon>
+              <span class="d-none d-sm-inline ml-2">新規カテゴリ</span>
             </v-btn>
             <v-btn color="secondary">
               <v-icon>mdi-sort</v-icon>
@@ -28,8 +28,10 @@
                 :headers="headers"
                 :items="documentCategories"
                 :loading="loading"
+                :no-data-text="'表示するカテゴリがありません'"
                 dense
               >
+                <!-- 編集アイコンと削除アイコン -->
                 <template #[`item.edit`]="{ item }">
                   <v-btn icon small @click="editCategory(item)">
                     <v-icon small>mdi-pencil</v-icon>
@@ -51,6 +53,7 @@
                 :loading="loading"
                 dense
               >
+                <!-- 編集アイコンと削除アイコン -->
                 <template #[`item.edit`]="{ item }">
                   <v-btn icon small @click="editCategory(item)">
                     <v-icon small>mdi-pencil</v-icon>

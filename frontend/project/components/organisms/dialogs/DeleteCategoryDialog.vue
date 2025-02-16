@@ -161,9 +161,9 @@ export default {
     },
     /** ダイアログを閉じる */
     close() {
-      this.$emit('input', false)
       this.error = null
       this.validationErrors = []
+      this.$emit('input', false)
     },
   },
 }
