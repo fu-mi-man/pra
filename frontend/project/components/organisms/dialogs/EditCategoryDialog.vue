@@ -6,6 +6,17 @@
     @input="$emit('input', $event)"
   >
     <v-card>
+      <!-- ローディングオーバーレイ -->
+      <v-overlay
+        :value="loading"
+        absolute
+      >
+        <v-progress-circular
+          indeterminate
+          size="64"
+        />
+      </v-overlay>
+
       <v-card-title>
         <span class="text-h5">
           カテゴリを編集
@@ -13,6 +24,20 @@
       </v-card-title>
 
       <v-card-text>
+        <!-- バリデーションエラーメッセージ -->
+        <v-alert
+          v-if="validationErrors.length > 0"
+          class="mb-4"
+          dense
+          type="error"
+        >
+          <ul class="mb-0 pl-4">
+            <li v-for="(error, index) in validationErrors" :key="index">
+              {{ error }}
+            </li>
+          </ul>
+        </v-alert>
+
         <v-form ref="form" v-model="isFormValid" @submit.prevent="save">
           <v-container>
             <v-row>
@@ -40,7 +65,7 @@
           キャンセル
         </v-btn>
         <v-btn
-          :disabled="!isFormValid"
+          :disabled="!isFormValid || loading"
           color="primary"
           form="categoryForm"
           text
@@ -78,11 +103,17 @@ export default {
         id: null,
         name: '',
       }),
+      // コンソールにエラーが出る程度であってもなくてもどっちでもいい
+      validator: (value) => {
+        return 'id' in value && 'name' in value
+      },
     },
     /** カテゴリの種類（document または product） */
     categoryType: {
       type: String,
       required: true,
+      // コンソールにエラーが出る程度であってもなくてもどっちでもいい
+      validator: (value) => ['document', 'product'].includes(value),
     },
   },
   data() {
@@ -93,7 +124,8 @@ export default {
         id: null,
         name: '',
       },
-      errorMessages: [],  // エラーメッセージの配列
+      validationErrors: [], // APIからのバリデーションエラーメッセージ
+      errorMessages: [],    // 入力フィールドのエラーメッセージ
     }
   },
   watch: {
@@ -110,19 +142,30 @@ export default {
      * フォームの保存処理
      * バリデーションが成功した場合のみ実行される
      */
-    // async save() {
-    save() {
+    async save() {
+    // save() {
       if (!this.isFormValid) return
 
       try {
         this.loading = true
         // APIをコールする処理をここに実装
         // await this.updateCategoryAPI(this.editedItem);
+        // テスト用コード（2秒スリープ・仮API）
+        await new Promise(resolve => setTimeout(resolve, 2000))
 
         this.$emit('saved', this.editedItem)
         this.close()
       } catch (error) {
-        this.errorMessages = ['保存中にエラーが発生しました']
+        if (error.response?.status === 422) {
+          const errors = error.response.data.errors
+          this.validationErrors = Object.values(errors).flat()
+        } else {
+          this.$emit('edited', {
+            item: this.editedItem,
+            success: false,
+            message: '保存に失敗しました。再度お試しください。'
+          })
+        }
       } finally {
         this.loading = false
       }
@@ -132,6 +175,8 @@ export default {
      * フォームの状態をリセットし，編集データをクリアする
      */
     close() {
+      this.errorMessages = []
+      this.validationErrors = []
       this.$emit('input', false) // ダイアログを閉じる
 
       // ダイアログが完全に閉じた後にリセット処理を実行
