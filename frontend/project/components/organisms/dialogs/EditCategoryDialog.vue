@@ -134,7 +134,15 @@ export default {
     }
   },
   watch: {
-    /** 編集対象アイテムの変更を監視し、フォームの値を更新 */
+    /**
+     * 編集対象アイテムの監視ハンドラ
+     * 親コンポーネントから新しいitem propを受け取った時に，
+     * ローカルの編集用データ（editedItem）を更新する
+     *
+     * @param {Object} newVal - 新しく渡されたitemの値
+     * @param {number|null} newVal.id - カテゴリID
+     * @param {string} newVal.name - カテゴリ名
+     */
     item: {
       handler(newVal) {
         this.editedItem = { ...newVal }
@@ -180,26 +188,14 @@ export default {
       }
     },
     /**
-     * ダイアログを閉じる
-     * フォームの状態をリセットし，編集データをクリアする
+     * ダイアログを閉じ，エラー状態をクリアする
+     * 編集データは親コンポーネントからの新しいitemの受け取り時にwatcherで自動的に更新される
      */
     close() {
       this.errorMessages = []
       this.validationErrors = []
+      this.loading = false
       this.$emit('input', false) // ダイアログを閉じる
-
-      // ダイアログが完全に閉じた後にリセット処理を実行
-      this.$nextTick(() => {
-        if (this.$refs.form) {
-          this.$refs.form.reset()
-        }
-        this.errorMessages = []
-        this.editedItem = {
-          id: null,
-          name: '',
-        }
-        this.loading = false
-      })
     },
   },
 }

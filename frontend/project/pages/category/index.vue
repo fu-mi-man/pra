@@ -33,7 +33,7 @@
               >
                 <!-- 編集アイコンと削除アイコン -->
                 <template #[`item.edit`]="{ item }">
-                  <v-btn icon small @click="editCategory(item)">
+                  <v-btn icon small @click="showEditDialog(item)">
                     <v-icon small>mdi-pencil</v-icon>
                   </v-btn>
                 </template>
