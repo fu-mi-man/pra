@@ -4,6 +4,22 @@
     <v-row justify="center">
       <v-col cols="12" lg="10" xl="8">
         <div class="py-4 text-h5 text-center">カテゴリ管理</div>
+
+        <v-alert
+          v-if="errorMessage"
+          class="mb-4"
+          type="error"
+        >
+          <div class="font-weight-bold">
+            {{ errorMessage }}
+          </div>
+          <div v-if="validationErrors" class="mt-1">
+            <div v-for="(errors, field) in validationErrors" :key="field">
+              {{ errors[0] }}
+            </div>
+          </div>
+        </v-alert>
+
         <v-card>
           <div class="d-flex justify-end px-4 py-2">
             <v-btn class="mr-2" color="primary">
@@ -124,58 +140,15 @@ export default {
       snackbarText: '',
 
       headers: [
-        {
-          text: 'カテゴリID',
-          align: 'start',
-          value: 'id',
-        },
-        {
-          text: 'カテゴリ名',
-          value: 'name',
-        },
-        {
-          text: '編集',
-          value: 'edit',
-          sortable: false,
-          align: 'center',
-          width: '80',
-        },
-        {
-          text: '削除',
-          value: 'delete',
-          sortable: false,
-          align: 'center',
-          width: '80',
-        },
+        {text: 'カテゴリID', align: 'start', value: 'id'},
+        {text: 'カテゴリ名', value: 'name'},
+        {text: '編集', value: 'edit', sortable: false, align: 'center', width: '80'},
+        {text: '削除', value: 'delete', sortable: false, align: 'center', width: '80'},
       ],
-      documentCategories: [
-        {
-          id: 1,
-          name: '契約書',
-        },
-        {
-          id: 2,
-          name: '報告書',
-        },
-        {
-          id: 3,
-          name: '議事録',
-        },
-      ],
-      productCategories: [
-        {
-          id: 1,
-          name: '食品',
-        },
-        {
-          id: 2,
-          name: '衣類',
-        },
-        {
-          id: 3,
-          name: '電化製品',
-        },
-      ],
+      documentCategories: [],
+      productCategories: [],
+      validationErrors: {},
+      errorMessage: '',
     }
   },
   computed: {
@@ -187,7 +160,121 @@ export default {
       return this.activeTab === 0 ? 'document' : 'product'
     }
   },
+  async mounted() {
+    await this.fetchCategories()
+  },
   methods: {
+    /**
+     * カテゴリ一覧を取得する
+     */
+    async fetchCategories() {
+      this.loading = true
+      this.error = null
+      this.validationErrors = {}
+
+      try {
+        // enterpriseIdは適切な方法で取得することを想定
+        const enterpriseId = 59665517
+        const response = await this.$axios.$get('/api/categories', {
+          params: {
+            enterprise_id: enterpriseId
+          }
+        })
+        console.log(response);
+
+        // レスポンスから各カテゴリを設定
+        this.documentCategories = response.document || []
+        this.productCategories = response.product || []
+      } catch (error) {
+        if (error.response?.status === 422) {
+          // `error.response.data`の中身↓
+          // {
+          //     "message": "指定された出展者IDは存在しません",
+          //     "errors": {
+          //         "enterprise_id": [
+          //             "指定された出展者IDは存在しません"
+          //         ]
+          //     }
+          // }
+          this.validationErrors = error.response.data.errors
+          // this.errorMessage = error.response.data.message // プライマリーメッセージ用
+          this.errorMessage = 'カテゴリの取得に失敗しました'
+        } else {
+          this.errorMessage = error.response?.data?.message || 'カテゴリの取得に失敗しました'
+        }
+      } finally {
+        this.loading = false
+      }
+    },
+    /**
+     * カテゴリ情報を更新する
+     * @param {Object} category - 更新するカテゴリ情報
+     */
+//     async updateCategory(category) {
+//       this.validationErrors = null
+//
+//       try {
+//         const response = await this.$axios.$put(`/api/categories/${category.id}`, {
+//           enterprise_id: this.enterpriseId,
+//           name: category.name,
+//           type: this.currentCategoryType
+//         })
+//
+//         // 成功時は該当するカテゴリのみを更新
+//         const categories = this.currentCategoryType === 'document'
+//           ? this.documentCategories
+//           : this.productCategories
+//
+//         const index = categories.findIndex(c => c.id === category.id)
+//         if (index !== -1) {
+//           categories[index] = response.category
+//         }
+//
+//         return { success: true, message: 'カテゴリを更新しました' }
+//       } catch (error) {
+//         if (error.response?.status === 422) {
+//           this.validationErrors = error.response.data.errors
+//           return { success: false, message: 'バリデーションエラーが発生しました' }
+//         }
+//         return {
+//           success: false,
+//           message: error.response?.data?.message || 'カテゴリの更新に失敗しました'
+//         }
+//       }
+//     },
+//     // 編集完了後にリストを再取得するように修正
+//     async handleEditComplete({ success, message }) {
+//       if (!success) {
+//         this.snackbarColor = 'error'
+//         this.snackbarText = message
+//         this.snackbar = true
+//         return
+//       }
+//       // リストを再取得
+//       await this.fetchCategories()
+//
+//       this.snackbarColor = 'success'
+//       this.snackbarText = message
+//       this.snackbar = true
+//     },
+//
+//     // 削除完了後にリストを再取得するように修正
+//     async handleDeleteComplete({ success, message }) {
+//       if (!success) {
+//         this.snackbarColor = 'error'
+//         this.snackbarText = message
+//         this.snackbar = true
+//         return
+//       }
+//
+//       // リストを再取得
+//       await this.fetchCategories()
+//
+//       this.snackbarColor = 'success'
+//       this.snackbarText = message
+//       this.snackbar = true
+//     }
+//   },
     /**
      * 編集ダイアログを表示する
      * @param {{id: number, name: string}} item - 編集対象のカテゴリアイテム
@@ -235,6 +322,20 @@ export default {
       this.snackbarText = message
       this.snackbar = true
     },
+    /**
+     * 編集ダイアログ確定時の処理
+     */
+//     async handleEditComplete({ item }) {
+//       const result = await this.updateCategory(item)
+//
+//       if (result.success) {
+//         this.editDialog = false
+//       }
+//
+//       this.snackbarColor = result.success ? 'success' : 'error'
+//       this.snackbarText = result.message
+//       this.snackbar = true
+//     },
     /**
      * 削除確認ダイアログを表示する
      * @param {{id: number, name: string}} item - 削除対象のカテゴリアイテム

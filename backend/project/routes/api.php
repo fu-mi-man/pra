@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AnnouncementController;
+use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\CSVValidationController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\UploadController;
@@ -22,3 +23,5 @@ Route::post('/upload', [UploadController::class, 'upload']);
 
 // お知らせのAPIルート
 Route::apiResource('announcements', AnnouncementController::class);
+// カテゴリのAPI
+Route::get('/categories', [CategoryController::class, 'index']);
