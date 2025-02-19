@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             EnterpriseUserSeeder::class,
             BusinessCardSeeder::class,
             EnterpriseCustomerUserSeeder::class,
+            CategorySeeder::class,
         ]);
     }
 }

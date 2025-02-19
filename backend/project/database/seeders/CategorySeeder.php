@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\Enterprise;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -23,26 +24,29 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        $enterpriseId = 1;
+        // 全件取得
+        // $enterprises = Enterprise::all();
+        // ランダムに5件の出展者を取得
+        $enterprises = Enterprise::inRandomOrder()->limit(5)->get();
+        foreach ($enterprises as $enterprise) {
+            foreach ($this->documentCategories as $index => $name) {
+                Category::factory()->create([
+                    'enterprise_id' => $enterprise->id,
+                    'type' => 'document',
+                    'name' => $name,
+                    'display_order' => $index + 1
+                ]);
+            }
 
-        foreach ($this->documentCategories as $index => $name) {
-            Category::factory()->create([
-                'enterprise_id' => $enterpriseId,
-                'type' => 'document',
-                'name' => $name,
-                'display_order' => $index + 1
-            ]);
+            foreach ($this->productCategories as $index => $name) {
+                Category::factory()->create([
+                    'enterprise_id' => $enterprise->id,
+                    'type' => 'product',
+                    'name' => $name,
+                    'display_order' => $index + 1
+                ]);
+            }
         }
-
-        foreach ($this->productCategories as $index => $name) {
-            Category::factory()->create([
-                'enterprise_id' => $enterpriseId,
-                'type' => 'product',
-                'name' => $name,
-                'display_order' => $index + 1
-            ]);
-        }
-
         // Category::factory()->count(10)->create();
     }
 }
