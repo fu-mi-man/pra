@@ -124,21 +124,11 @@ export default {
 
   data() {
     return {
+      // 状態管理
       activeTab: 0,
       loading: false,
-      editDialog: false, // 編集ダイアログの表示制御
-      deleteDialog: false, // 削除ダイアログの表示制御
-      editedItem: {}, // 編集中のアイテム
-      editedIndex: -1, // 編集中のアイテムのインデックス
-      deleteTargetItem: {}, // 削除用
-      defaultItem: {
-        id: null,
-        name: '',
-      },
-      snackbar: false,
-      snackbarColor: '',
-      snackbarText: '',
 
+      // データ表示用
       headers: [
         {text: 'カテゴリID', align: 'start', value: 'id'},
         {text: 'カテゴリ名', value: 'name'},
@@ -147,6 +137,25 @@ export default {
       ],
       documentCategories: [],
       productCategories: [],
+
+      // 編集用の初期値を明確に定義（propsのバリデーションを防げる）
+      editedItem: {
+        id: null,
+        name: '',
+      }, // 編集中のアイテム
+      editedIndex: -1, // 編集中のアイテムのインデックス
+      deleteTargetItem: {}, // 削除用
+
+      // ダイアログ表示制御
+      editDialog: false,
+      deleteDialog: false,
+
+      // スナックバー
+      snackbar: false,
+      snackbarColor: '',
+      snackbarText: '',
+
+      // エラーメッセージ
       validationErrors: {},
       errorMessage: '',
     }
@@ -180,7 +189,6 @@ export default {
             enterprise_id: enterpriseId
           }
         })
-        console.log(response);
 
         // レスポンスから各カテゴリを設定
         this.documentCategories = response.document || []
@@ -206,75 +214,6 @@ export default {
         this.loading = false
       }
     },
-    /**
-     * カテゴリ情報を更新する
-     * @param {Object} category - 更新するカテゴリ情報
-     */
-//     async updateCategory(category) {
-//       this.validationErrors = null
-//
-//       try {
-//         const response = await this.$axios.$put(`/api/categories/${category.id}`, {
-//           enterprise_id: this.enterpriseId,
-//           name: category.name,
-//           type: this.currentCategoryType
-//         })
-//
-//         // 成功時は該当するカテゴリのみを更新
-//         const categories = this.currentCategoryType === 'document'
-//           ? this.documentCategories
-//           : this.productCategories
-//
-//         const index = categories.findIndex(c => c.id === category.id)
-//         if (index !== -1) {
-//           categories[index] = response.category
-//         }
-//
-//         return { success: true, message: 'カテゴリを更新しました' }
-//       } catch (error) {
-//         if (error.response?.status === 422) {
-//           this.validationErrors = error.response.data.errors
-//           return { success: false, message: 'バリデーションエラーが発生しました' }
-//         }
-//         return {
-//           success: false,
-//           message: error.response?.data?.message || 'カテゴリの更新に失敗しました'
-//         }
-//       }
-//     },
-//     // 編集完了後にリストを再取得するように修正
-//     async handleEditComplete({ success, message }) {
-//       if (!success) {
-//         this.snackbarColor = 'error'
-//         this.snackbarText = message
-//         this.snackbar = true
-//         return
-//       }
-//       // リストを再取得
-//       await this.fetchCategories()
-//
-//       this.snackbarColor = 'success'
-//       this.snackbarText = message
-//       this.snackbar = true
-//     },
-//
-//     // 削除完了後にリストを再取得するように修正
-//     async handleDeleteComplete({ success, message }) {
-//       if (!success) {
-//         this.snackbarColor = 'error'
-//         this.snackbarText = message
-//         this.snackbar = true
-//         return
-//       }
-//
-//       // リストを再取得
-//       await this.fetchCategories()
-//
-//       this.snackbarColor = 'success'
-//       this.snackbarText = message
-//       this.snackbar = true
-//     }
-//   },
     /**
      * 編集ダイアログを表示する
      * @param {{id: number, name: string}} item - 編集対象のカテゴリアイテム
@@ -322,20 +261,6 @@ export default {
       this.snackbarText = message
       this.snackbar = true
     },
-    /**
-     * 編集ダイアログ確定時の処理
-     */
-//     async handleEditComplete({ item }) {
-//       const result = await this.updateCategory(item)
-//
-//       if (result.success) {
-//         this.editDialog = false
-//       }
-//
-//       this.snackbarColor = result.success ? 'success' : 'error'
-//       this.snackbarText = result.message
-//       this.snackbar = true
-//     },
     /**
      * 削除確認ダイアログを表示する
      * @param {{id: number, name: string}} item - 削除対象のカテゴリアイテム

@@ -25,3 +25,4 @@ Route::post('/upload', [UploadController::class, 'upload']);
 Route::apiResource('announcements', AnnouncementController::class);
 // カテゴリのAPI
 Route::get('/categories', [CategoryController::class, 'index']);
+Route::put('/categories/{id}', [CategoryController::class, 'update']);

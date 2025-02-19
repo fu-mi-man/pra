@@ -161,21 +161,27 @@ export default {
 
       try {
         this.loading = true
+        this.validationErrors = []
+
+        const response = await this.$axios.$put(`/api/categories/${this.editedItem.id}`, {
+          enterprise_id: 59665517,
+          name: this.editedItem.name,
+          type: this.categoryType
+        })
         // APIをコールする処理をここに実装
         // await this.updateCategoryAPI(this.editedItem);
         // テスト用コード（2秒スリープ・仮API）
         await new Promise(resolve => setTimeout(resolve, 2000))
 
         this.$emit('edited', {
-          item: this.editedItem,
+          item: response,
           success: true,
           message: `${this.categoryTypeLabel}「${this.editedItem.name}」を更新しました`
         })
         this.close()
       } catch (error) {
         if (error.response?.status === 422) {
-          const errors = error.response.data.errors
-          this.validationErrors = Object.values(errors).flat()
+          this.validationErrors = error.response.data.errors
         } else {
           this.$emit('edited', {
             item: this.editedItem,
