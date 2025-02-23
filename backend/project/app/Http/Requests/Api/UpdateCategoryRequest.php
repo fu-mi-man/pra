@@ -22,9 +22,28 @@ class UpdateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'enterprise_id' => 'required|integer',
-            'name' => 'required|string|max:255',
-            'type' => 'required|string|in:document,product'
+            'enterprise_id' => 'bail|required|integer|exists:enterprises,id',
+            'name' => 'bail|required|string|max:255',
+            'type' => 'bail|required|string|in:document,product'
         ];
     }
+
+    /**
+     * カスタム属性名の定義
+     */
+    public function attributes(): array
+    {
+        return [
+            'name' => 'カテゴリ名',
+            'enterprise_id' => '出展者ID',
+            'type' => 'カテゴリ種別',
+        ];
+    }
+
+    // public function messages(): array
+    // {
+    //     return [
+    //         'enterprise_id.exists' => '出展者ID は必須！'
+    //     ];
+    // }
 }

@@ -168,20 +168,43 @@ export default {
           name: this.editedItem.name,
           type: this.categoryType
         })
-        // APIをコールする処理をここに実装
-        // await this.updateCategoryAPI(this.editedItem);
+
         // テスト用コード（2秒スリープ・仮API）
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        // await new Promise(resolve => setTimeout(resolve, 2000))
 
         this.$emit('edited', {
           item: response,
           success: true,
-          message: `${this.categoryTypeLabel}「${this.editedItem.name}」を更新しました`
+          message: `${this.categoryTypeLabel}を更新しました`
         })
         this.close()
       } catch (error) {
         if (error.response?.status === 422) {
-          this.validationErrors = error.response.data.errors
+          // console.log(error.response.data)
+          // {
+          //     "message": "選択された 出展者ID は無効です。 (and 2 more errors)",
+          //     "errors": {
+          //         "enterprise_id": [
+          //             "選択された 出展者ID は無効です。",
+          //             "出展者ID は必須です。" // `bail`をつけない場合
+          //         ],
+          //         "name": [
+          //             "カテゴリ名 は必須です。"
+          //         ]
+          //     }
+          // }
+          // console.log(Object.values(error.response.data.errors))
+          // [
+          //     [
+          //         "選択された 出展者ID は無効です。",
+          //         "出展者ID は必須です。"
+          //     ],
+          //     [
+          //         "カテゴリ名 は必須です。"
+          //     ]
+          // ]
+          // PHP側で配列化されているエラーメッセージをそのままjson化しているので`[]`つきで表示されてしまう問題を解決
+          this.validationErrors = Object.values(error.response.data.errors).flat()
         } else {
           this.$emit('edited', {
             item: this.editedItem,
