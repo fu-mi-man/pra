@@ -13,11 +13,11 @@
           <div class="font-weight-bold">
             {{ errorMessage }}
           </div>
-          <div v-if="validationErrors" class="mt-1">
-            <div v-for="(errors, field) in validationErrors" :key="field">
-              {{ errors[0] }}
-            </div>
-          </div>
+          <ul v-if="validationErrors.length > 0" class="mt-1 mb-0 pl-4">
+            <li v-for="(error, index) in validationErrors" :key="index">
+              {{ error }}
+            </li>
+          </ul>
         </v-alert>
 
         <v-card>
@@ -156,7 +156,7 @@ export default {
       snackbarText: '',
 
       // エラーメッセージ
-      validationErrors: {},
+      validationErrors: [],
       errorMessage: '',
     }
   },
@@ -179,7 +179,7 @@ export default {
     async fetchCategories() {
       this.loading = true
       this.error = null
-      this.validationErrors = {}
+      this.validationErrors = []
 
       try {
         // enterpriseIdは適切な方法で取得することを想定
@@ -195,12 +195,10 @@ export default {
         this.productCategories = response.product || []
       } catch (error) {
         if (error.response?.status === 422) {
-          this.validationErrors = error.response.data.errors
-          // this.errorMessage = error.response.data.message // プライマリーメッセージ用
-          this.errorMessage = 'カテゴリの取得に失敗しました'
-        } else {
-          this.errorMessage = error.response?.data?.message || 'カテゴリの取得に失敗しました'
+          this.validationErrors = Object.values(error.response.data.errors).flat()
         }
+        // messageをそのまま入れるとスタックトレースが出力される可能性があるので
+        this.errorMessage = 'カテゴリの取得に失敗しました'
       } finally {
         this.loading = false
       }
