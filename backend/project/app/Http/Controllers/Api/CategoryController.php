@@ -19,11 +19,11 @@ class CategoryController extends Controller
      */
     public function index(IndexCategoryRequest $request): JsonResponse
     {
-        // documentとproductのカテゴリーを取得
+        // catalogとproductのカテゴリーを取得
         $categories = Category::groupByType($request->validated('enterprise_id'));
 
         return response()->json([
-            'document' => $categories['document'] ?? [],
+            'catalog' => $categories['catalog'] ?? [],
             'product' => $categories['product'] ?? [],
         ]);
     }

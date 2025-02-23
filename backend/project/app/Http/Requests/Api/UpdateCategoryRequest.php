@@ -24,7 +24,7 @@ class UpdateCategoryRequest extends FormRequest
         return [
             'enterprise_id' => 'bail|required|integer|exists:enterprises,id',
             'name' => 'bail|required|string|max:255',
-            'type' => 'bail|required|string|in:document,product'
+            'type' => 'bail|required|string|in:catalog,product'
         ];
     }
 

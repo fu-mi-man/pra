@@ -18,7 +18,7 @@ class CategoryFactory extends Factory
     {
         return [
             'enterprise_id' => 1,
-            'type' => 'document',  // デフォルト値
+            'type' => 'catalog',  // デフォルト値
             'name' => '',         // Seeder側で上書きされる
             'display_order' => 0, // Seeder側で上書きされる
         ];

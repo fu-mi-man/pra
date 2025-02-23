@@ -42,7 +42,7 @@
             <v-tab-item>
               <v-data-table
                 :headers="headers"
-                :items="documentCategories"
+                :items="catalogCategories"
                 :loading="loading"
                 :no-data-text="'表示するカテゴリがありません'"
                 dense
@@ -135,7 +135,7 @@ export default {
         {text: '編集', value: 'edit', sortable: false, align: 'center', width: '80'},
         {text: '削除', value: 'delete', sortable: false, align: 'center', width: '80'},
       ],
-      documentCategories: [],
+      catalogCategories: [],
       productCategories: [],
 
       // 編集用の初期値を明確に定義（propsのバリデーションを防げる）
@@ -163,10 +163,10 @@ export default {
   computed: {
     /**
      * 現在選択中のカテゴリタイプを返す
-     * @returns {'document' | 'product'} カテゴリタイプ
+     * @returns {'catalog' | 'product'} カテゴリタイプ
      */
     currentCategoryType() {
-      return this.activeTab === 0 ? 'document' : 'product'
+      return this.activeTab === 0 ? 'catalog' : 'product'
     }
   },
   async mounted() {
@@ -191,7 +191,7 @@ export default {
         })
 
         // レスポンスから各カテゴリを設定
-        this.documentCategories = response.document || []
+        this.catalogCategories = response.catalog || []
         this.productCategories = response.product || []
       } catch (error) {
         if (error.response?.status === 422) {
@@ -236,13 +236,13 @@ export default {
 
       // カテゴリタイプに応じて更新対象の配列を選択
       const categories =
-        this.activeTab === 0 ? this.documentCategories : this.productCategories
+        this.activeTab === 0 ? this.catalogCategories : this.productCategories
 
       // 編集対象のインデックスを検索
       const index = categories.findIndex((c) => c.id === item.id)
       if (index > -1) { // 実はそれほど必要なチェックではない
         // 配列の要素を反応的に更新（直接代入の categories[index] = item ではVueが変更を検知できない
-        // @param {Array} categories - 更新対象の配列（documentCategoriesまたはproductCategories）
+        // @param {Array} categories - 更新対象の配列（catalogCategoriesまたはproductCategories）
         // @param {number} index - 更新する配列のインデックス位置
         // @param {Object} item - 新しいカテゴリデータ（APIのレスポンス）
         this.$set(categories, index, item)
@@ -270,7 +270,7 @@ export default {
       }
       // カテゴリタイプの判定は親コンポーネントで行う
       const categories =
-        this.activeTab === 0 ? this.documentCategories : this.productCategories
+        this.activeTab === 0 ? this.catalogCategories : this.productCategories
 
       const index = categories.findIndex((c) => c.id === item.id)
       if (index > -1) {

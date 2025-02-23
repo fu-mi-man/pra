@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('enterprise_id');
-            $table->enum('type', ['document', 'product']);
+            $table->enum('type', ['catalog', 'product']);
             $table->string('name', 30);
             $table->integer('display_order')->default(0);
             $table->timestamps();

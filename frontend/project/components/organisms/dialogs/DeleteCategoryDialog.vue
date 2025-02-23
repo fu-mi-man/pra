@@ -104,7 +104,7 @@ export default {
      * @returns {string} カテゴリタイプの日本語表示
      */
     categoryTypeLabel() {
-      return this.categoryType === 'document' ? '文書カテゴリ' : '商品カテゴリ'
+      return this.categoryType === 'catalog' ? '文書カテゴリ' : '商品カテゴリ'
     }
   },
 

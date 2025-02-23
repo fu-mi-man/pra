@@ -108,12 +108,12 @@ export default {
         return 'id' in value && 'name' in value
       },
     },
-    /** カテゴリの種類（document または product） */
+    /** カテゴリの種類（catalog または product） */
     categoryType: {
       type: String,
       required: true,
       // コンソールにエラーが出る程度であってもなくてもどっちでもいい
-      validator: (value) => ['document', 'product'].includes(value),
+      validator: (value) => ['catalog', 'product'].includes(value),
     },
   },
   data() {
@@ -130,7 +130,7 @@ export default {
   },
   computed: {
     categoryTypeLabel() {
-      return this.categoryType === 'document' ? '文書カテゴリ' : '商品カテゴリ'
+      return this.categoryType === 'catalog' ? '文書カテゴリ' : '商品カテゴリ'
     }
   },
   watch: {

@@ -9,7 +9,7 @@ use Illuminate\Database\Seeder;
 
 class CategorySeeder extends Seeder
 {
-    private array $documentCategories = [
+    private array $catalogCategories = [
         '営業資料', '契約書', '請求書', '報告書',
         'マニュアル', '議事録', '企画書', '申請書'
     ];
@@ -29,10 +29,10 @@ class CategorySeeder extends Seeder
         // ランダムに5件の出展者を取得
         $enterprises = Enterprise::inRandomOrder()->limit(5)->get();
         foreach ($enterprises as $enterprise) {
-            foreach ($this->documentCategories as $index => $name) {
+            foreach ($this->catalogCategories as $index => $name) {
                 Category::factory()->create([
                     'enterprise_id' => $enterprise->id,
-                    'type' => 'document',
+                    'type' => 'catalog',
                     'name' => $name,
                     'display_order' => $index + 1
                 ]);
