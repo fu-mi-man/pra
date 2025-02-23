@@ -82,18 +82,26 @@ export default {
     item: {
       type: Object,
       required: true,
+      validator: (value) => {
+        return 'id' in value && 'name' in value
+      },
     },
-    /** カテゴリタイプ */
+    /** カテゴリの種類（catalog または product） */
     categoryType: {
       type: String,
       required: true,
+      validator: (value) => ['catalog', 'product'].includes(value),
     }
   },
 
   data() {
     return {
       loading: false,
-      error: null,
+      deletedItem: {
+        id: null,
+        name: '',
+      },
+
       validationErrors: [],
     }
   },
@@ -108,61 +116,66 @@ export default {
     }
   },
 
+  watch: {
+    /**
+     * 削除対象アイテムの監視ハンドラ
+     * 親コンポーネントから新しいitem propを受け取った時に，
+     * ローカルの編集用データ（deletedItem）を更新する
+     *
+     * @param {Object} newVal - 新しく渡されたitemの値
+     * @param {number|null} newVal.id - カテゴリID
+     * @param {string} newVal.name - カテゴリ名
+     */
+    item: {
+      handler(newVal) {
+        this.deletedItem = { ...newVal }
+      },
+      deep: true,
+    },
+  },
+
   methods: {
     /** カテゴリの削除を実行 */
     async deleteCategory() {
-    // deleteCategory() {
       try {
         this.loading = true
-        this.error = null
         this.validationErrors = []
 
         // APIをコールする処理をここに実装
-        // await this.deleteCategoryAPI(this.item.id);
+        await this.$axios.$delete(`/api/categories/${this.deletedItem.id}`)
+
         // テスト用コード（2秒スリープ・仮API）
-        await new Promise(resolve => setTimeout(resolve, 2000))
-        // テスト用コード（バリデーションエラー）
-        // const mockError = new Error('Validation Error')
-        // mockError.response = {
-        //   status: 422,
-        //   data: {
-        //     errors: {
-        //       category: ['このカテゴリは使用中のため削除できません'],
-        //       items: ['関連する商品が存在するため削除できません']
-        //     }
-        //   }
-        // }
-        // throw mockError
+        // await new Promise(resolve => setTimeout(resolve, 2000))
 
         // 成功時は deleted イベントを発火
         this.$emit('deleted', {
-          item: this.item,
+          item: this.deletedItem,
           success: true,
-          message: `${this.categoryTypeLabel}「${this.item.name}」を削除しました`
+          message: `${this.categoryTypeLabel}「${this.deletedItem.name}」を削除しました`
         })
         this.close()
       } catch (error) {
         // LaravelのValidationExceptionのエラーハンドリング
         if (error.response?.status === 422) {
-          // バリデーションエラーメッセージの取得
-          const errors = error.response.data.errors
-          this.validationErrors = Object.values(errors).flat()
-        } else {
-          // その他のエラー
-          this.$emit('deleted', {
-            item: this.item,
-            success: false,
-            message: '削除に失敗しました。再度お試しください。'
-          })
+          this.validationErrors = Object.values(error.response.data.errors).flat()
+          return
         }
+        // その他のエラー
+        this.$emit('deleted', {
+          item: this.deletedItem,
+          success: false,
+          message: '削除に失敗しました。再度お試しください。'
+        })
+
+        this.close()
       } finally {
         this.loading = false
       }
     },
     /** ダイアログを閉じる */
     close() {
-      this.error = null
       this.validationErrors = []
+      this.loading = false
       this.$emit('input', false)
     },
   },

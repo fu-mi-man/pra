@@ -97,7 +97,7 @@
     <delete-category-dialog
       v-model="deleteDialog"
       :category-type="currentCategoryType"
-      :item="deleteTargetItem"
+      :item="deletedItem"
       @deleted="handleDeleteComplete"
     />
     <!-- 通知用のsnackbar -->
@@ -144,7 +144,10 @@ export default {
         name: '',
       }, // 編集中のアイテム
       editedIndex: -1, // 編集中のアイテムのインデックス
-      deleteTargetItem: {}, // 削除用
+      deletedItem: {
+        id: null,
+        name: '',
+      },
 
       // ダイアログ表示制御
       editDialog: false,
@@ -258,7 +261,7 @@ export default {
      * @param {{id: number, name: string}} item - 削除対象のカテゴリアイテム
      */
     showDeleteDialog(item) {
-      this.deleteTargetItem = item
+      this.deletedItem = { ...item }
       this.deleteDialog = true
     },
     handleDeleteComplete({ item, success, message }) {

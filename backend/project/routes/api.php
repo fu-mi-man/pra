@@ -26,3 +26,4 @@ Route::apiResource('announcements', AnnouncementController::class);
 // カテゴリのAPI
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::put('/categories/{id}', [CategoryController::class, 'update']);
+Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);

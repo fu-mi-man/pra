@@ -44,4 +44,18 @@ class CategoryController extends Controller
 
         return response()->json($category);
     }
+
+    /**
+     * 指定されたカテゴリーを削除
+     *
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function destroy(int $id): JsonResponse
+    {
+        $category = Category::findOrFail($id);
+        $category->delete();
+
+        return response()->json(null, 204);
+    }
 }

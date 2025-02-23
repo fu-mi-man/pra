@@ -99,10 +99,7 @@ export default {
     /** 編集対象のカテゴリ情報 */
     item: {
       type: Object,
-      default: () => ({
-        id: null,
-        name: '',
-      }),
+      required: true,
       // コンソールにエラーが出る程度であってもなくてもどっちでもいい
       validator: (value) => {
         return 'id' in value && 'name' in value
@@ -156,7 +153,6 @@ export default {
      * バリデーションが成功した場合のみ実行される
      */
     async save() {
-    // save() {
       if (!this.isFormValid) return
 
       try {
