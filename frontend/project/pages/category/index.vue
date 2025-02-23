@@ -195,15 +195,6 @@ export default {
         this.productCategories = response.product || []
       } catch (error) {
         if (error.response?.status === 422) {
-          // `error.response.data`の中身↓
-          // {
-          //     "message": "指定された出展者IDは存在しません",
-          //     "errors": {
-          //         "enterprise_id": [
-          //             "指定された出展者IDは存在しません"
-          //         ]
-          //     }
-          // }
           this.validationErrors = error.response.data.errors
           // this.errorMessage = error.response.data.message // プライマリーメッセージ用
           this.errorMessage = 'カテゴリの取得に失敗しました'
@@ -251,9 +242,12 @@ export default {
 
       // 編集対象のインデックスを検索
       const index = categories.findIndex((c) => c.id === item.id)
-      if (index > -1) {
-        // 配列内のアイテムを更新
-        categories[index] = { ...item }
+      if (index > -1) { // 実はそれほど必要なチェックではない
+        // 配列の要素を反応的に更新（直接代入の categories[index] = item ではVueが変更を検知できない
+        // @param {Array} categories - 更新対象の配列（documentCategoriesまたはproductCategories）
+        // @param {number} index - 更新する配列のインデックス位置
+        // @param {Object} item - 新しいカテゴリデータ（APIのレスポンス）
+        this.$set(categories, index, item)
       }
 
       // 成功メッセージを表示

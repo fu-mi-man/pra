@@ -209,7 +209,7 @@ export default {
           this.$emit('edited', {
             item: this.editedItem,
             success: false,
-            message: '保存に失敗しました。再度お試しください。'
+            message: '更新に失敗しました。再度お試しください。'
           })
         }
       } finally {
