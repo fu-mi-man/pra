@@ -1,3 +1,4 @@
+<!-- components/organisms/dialogs/CategoryFormDialog.vue -->
 <template>
   <v-dialog
     :value="value"
@@ -7,15 +8,7 @@
   >
     <v-card>
       <!-- ローディングオーバーレイ -->
-      <v-overlay
-        :value="loading"
-        absolute
-      >
-        <v-progress-circular
-          indeterminate
-          size="64"
-        />
-      </v-overlay>
+      <loading-overlay :value="loading" />
 
       <v-card-title>
         <span class="text-h5">
@@ -81,6 +74,7 @@
 
 <script>
 import ValidatedTextField from '@/components/atoms/inputs/base/ValidatedTextField.vue'
+import LoadingOverlay from '@/components/molecules/overlays/LoadingOverlay.vue'
 
 /**
  * カテゴリ編集用ダイアログコンポーネント
@@ -89,6 +83,7 @@ import ValidatedTextField from '@/components/atoms/inputs/base/ValidatedTextFiel
 export default {
   components: {
     ValidatedTextField,
+    LoadingOverlay,
   },
   props: {
     /** ダイアログの表示/非表示を制御するフラグ */

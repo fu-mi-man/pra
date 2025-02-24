@@ -1,3 +1,4 @@
+<!-- components/organisms/dialogs/DeleteCategoryDialog.vue -->
 <template>
   <v-dialog
     :value="value"
@@ -7,15 +8,7 @@
   >
     <v-card>
       <!-- ローディングオーバーレイ -->
-      <v-overlay
-        :value="loading"
-        absolute
-      >
-        <v-progress-circular
-          indeterminate
-          size="64"
-        />
-      </v-overlay>
+      <loading-overlay :value="loading" />
 
       <v-card-title>
         <span class="text-h5">
@@ -67,11 +60,16 @@
 </template>
 
 <script>
+import LoadingOverlay from '@/components/molecules/overlays/LoadingOverlay.vue'
 /**
  * カテゴリ削除用ダイアログコンポーネント
  * カテゴリの削除前の確認に使用される
  */
 export default {
+  components: {
+    LoadingOverlay,
+  },
+
   props: {
     /** ダイアログの表示/非表示を制御するフラグ */
     value: {
