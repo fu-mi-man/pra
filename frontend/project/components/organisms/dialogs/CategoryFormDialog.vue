@@ -18,18 +18,7 @@
 
       <v-card-text>
         <!-- バリデーションエラーメッセージ -->
-        <v-alert
-          v-if="validationErrors.length > 0"
-          class="mb-4"
-          dense
-          type="error"
-        >
-          <ul class="mb-0 pl-4">
-            <li v-for="(error, index) in validationErrors" :key="index">
-              {{ error }}
-            </li>
-          </ul>
-        </v-alert>
+        <validation-error-alert :errors="validationErrors" />
 
         <v-form ref="form" v-model="isFormValid" @submit.prevent="save">
           <v-container>
@@ -74,6 +63,7 @@
 
 <script>
 import ValidatedTextField from '@/components/atoms/inputs/base/ValidatedTextField.vue'
+import ValidationErrorAlert from '@/components/molecules/alerts/ValidationErrorAlert.vue'
 import LoadingOverlay from '@/components/molecules/overlays/LoadingOverlay.vue'
 
 /**
@@ -83,6 +73,7 @@ import LoadingOverlay from '@/components/molecules/overlays/LoadingOverlay.vue'
 export default {
   components: {
     ValidatedTextField,
+    ValidationErrorAlert,
     LoadingOverlay,
   },
   props: {

@@ -18,18 +18,7 @@
 
       <v-card-text>
         <!-- バリデーションエラーメッセージ -->
-        <v-alert
-          v-if="validationErrors.length > 0"
-          class="mb-4"
-          dense
-          type="error"
-        >
-          <ul class="mb-0 pl-4">
-            <li v-for="(error, index) in validationErrors" :key="index">
-              {{ error }}
-            </li>
-          </ul>
-        </v-alert>
+        <validation-error-alert :errors="validationErrors" />
 
         <p class="mb-0">
           {{ categoryTypeLabel }}「{{ item.name }}」を削除してもよろしいですか？
@@ -60,13 +49,16 @@
 </template>
 
 <script>
+import ValidationErrorAlert from '@/components/molecules/alerts/ValidationErrorAlert.vue'
 import LoadingOverlay from '@/components/molecules/overlays/LoadingOverlay.vue'
+
 /**
  * カテゴリ削除用ダイアログコンポーネント
  * カテゴリの削除前の確認に使用される
  */
 export default {
   components: {
+    ValidationErrorAlert,
     LoadingOverlay,
   },
 
