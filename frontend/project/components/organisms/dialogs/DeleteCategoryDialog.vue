@@ -150,9 +150,6 @@ export default {
           }
         })
 
-        // テスト用コード（2秒スリープ・仮API）
-        // await new Promise(resolve => setTimeout(resolve, 2000))
-
         // 成功時は deleted イベントを発火
         this.$emit('deleted', {
           item: this.deletedItem,

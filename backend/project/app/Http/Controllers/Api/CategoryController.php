@@ -56,10 +56,7 @@ class CategoryController extends Controller
      */
     public function destroy(DeleteCategoryRequest $request, int $id): JsonResponse
     {
-        $category = Category::where('id', $id)
-            ->where('enterprise_id', $request->validated('enterprise_id'))
-            ->where('type', $request->validated('type'))
-            ->firstOrFail();
+        $category = Category::findOrFail($id);
         $category->delete();
 
         return response()->json(null, 204);
