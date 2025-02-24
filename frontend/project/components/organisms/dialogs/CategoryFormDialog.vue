@@ -19,7 +19,7 @@
 
       <v-card-title>
         <span class="text-h5">
-          カテゴリを編集
+          {{ dialogTitle }}
         </span>
       </v-card-title>
 
@@ -72,7 +72,7 @@
           type="submit"
           @click="save"
         >
-          保存
+          {{ modeActionLabel }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -95,6 +95,12 @@ export default {
     value: {
       type: Boolean,
       default: false,
+    },
+    /** モード（'create': 新規作成, 'edit': 編集） */
+    mode: {
+      type: String,
+      required: true,
+      validator: (value) => ['create', 'edit'].includes(value)
     },
     /** 編集対象のカテゴリ情報 */
     item: {
@@ -126,8 +132,17 @@ export default {
     }
   },
   computed: {
+    /** 現在のモードに応じたダイアログのタイトルを返す */
+    dialogTitle() {
+      return this.mode === 'create' ? 'カテゴリを作成' : 'カテゴリを編集'
+    },
+    /** カテゴリの種類に応じたラベルを返す */
     categoryTypeLabel() {
       return this.categoryType === 'catalog' ? '文書カテゴリ' : '商品カテゴリ'
+    },
+    /** 現在のモードに応じた保存ボタンのテキストを返す */
+    modeActionLabel() {
+      return this.mode === 'create' ? '作成' : '更新'
     }
   },
   watch: {
@@ -150,7 +165,7 @@ export default {
   methods: {
     /**
      * フォームの保存処理
-     * バリデーションが成功した場合のみ実行される
+     * モードに応じてPOSTまたはPUT APIを呼び出す
      */
     async save() {
       if (!this.isFormValid) return
@@ -159,19 +174,24 @@ export default {
         this.loading = true
         this.validationErrors = []
 
-        const response = await this.$axios.$put(`/api/categories/${this.editedItem.id}`, {
+        const payload = {
           enterprise_id: 59665517,
           name: this.editedItem.name,
           type: this.categoryType
-        })
+        }
+
+        const response = this.mode === 'create'
+          ? await this.$axios.$post('/api/categories', payload)
+          : await this.$axios.$put(`/api/categories/${this.editedItem.id}`, payload)
 
         // テスト用コード（2秒スリープ・仮API）
         // await new Promise(resolve => setTimeout(resolve, 2000))
 
-        this.$emit('edited', {
+        this.$emit('completed', {
           item: response,
+          mode: this.mode,
           success: true,
-          message: `${this.categoryTypeLabel}を更新しました`
+          message: `${this.categoryTypeLabel}を${this.modeActionLabel}しました`
         })
         this.close()
       } catch (error) {
@@ -202,10 +222,10 @@ export default {
           // PHP側で配列化されているエラーメッセージをそのままjson化しているので`[]`つきで表示されてしまう問題を解決
           this.validationErrors = Object.values(error.response.data.errors).flat()
         } else {
-          this.$emit('edited', {
+          this.$emit('completed', {
             item: this.editedItem,
             success: false,
-            message: '更新に失敗しました。再度お試しください。'
+            message: `${this.modeActionLabel}に失敗しました。再度お試しください。`
           })
         }
       } finally {

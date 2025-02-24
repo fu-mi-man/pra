@@ -25,6 +25,7 @@ Route::post('/upload', [UploadController::class, 'upload']);
 Route::apiResource('announcements', AnnouncementController::class);
 // カテゴリのAPI
 Route::get('/categories', [CategoryController::class, 'index']);
+Route::post('/categories', [CategoryController::class, 'store']);
 Route::put('/categories/{id}', [CategoryController::class, 'update']);
 Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
 // REST APIの標準的なCRUD操作との整合性

@@ -22,7 +22,7 @@
 
         <v-card>
           <div class="d-flex justify-end px-4 py-2">
-            <v-btn class="mr-2" color="primary">
+            <v-btn class="mr-2" color="primary" @click="showCreateDialog">
               <v-icon>mdi-plus</v-icon>
               <span class="d-none d-sm-inline ml-2">新規カテゴリ</span>
             </v-btn>
@@ -87,11 +87,12 @@
       </v-col>
     </v-row>
     <!-- 編集ダイアログ -->
-    <edit-category-dialog
-      v-model="editDialog"
+    <category-form-dialog
+      v-model="formDialog"
+      :mode="formItem.id ? 'edit' : 'create'"
       :category-type="currentCategoryType"
-      :item="editedItem"
-      @edited="handleEditComplete"
+      :item="formItem"
+      @completed="handleFormComplete"
     />
     <!-- 削除ダイアログ -->
     <delete-category-dialog
@@ -112,13 +113,13 @@
 </template>
 
 <script>
-import EditCategoryDialog from '@/components/organisms/dialogs/EditCategoryDialog.vue'
+import CategoryFormDialog from '@/components/organisms/dialogs/CategoryFormDialog.vue'
 import DeleteCategoryDialog from '@/components/organisms/dialogs/DeleteCategoryDialog.vue'
 
 export default {
   name: 'CategoryManagement',
   components: {
-    EditCategoryDialog,
+    CategoryFormDialog,
     DeleteCategoryDialog,
   },
 
@@ -138,19 +139,24 @@ export default {
       catalogCategories: [],
       productCategories: [],
 
-      // 編集用の初期値を明確に定義（propsのバリデーションを防げる）
-      editedItem: {
+      // 新規作成用
+      defaultItem: {
         id: null,
         name: '',
-      }, // 編集中のアイテム
-      editedIndex: -1, // 編集中のアイテムのインデックス
+      },
+
+      // 編集用の初期値を明確に定義（propsのバリデーションを防げる）
+      formItem: {
+        id: null,
+        name: '',
+      },
       deletedItem: {
         id: null,
         name: '',
       },
 
       // ダイアログ表示制御
-      editDialog: false,
+      formDialog: false,
       deleteDialog: false,
 
       // スナックバー
@@ -206,6 +212,10 @@ export default {
         this.loading = false
       }
     },
+    showCreateDialog() {
+      this.formItem = { ...this.defaultItem }
+      this.formDialog = true
+    },
     /**
      * 編集ダイアログを表示する
      * @param {{id: number, name: string}} item - 編集対象のカテゴリアイテム
@@ -214,8 +224,8 @@ export default {
       // スプレッド構文で浅いコピーを作成
       // 編集中のデータ変更が元のデータに影響を与えないようにする
       // （APIでの保存が完了するまでテーブルの表示を維持するため）
-      this.editedItem = { ...item }
-      this.editDialog = true
+      this.formItem = { ...item }
+      this.formDialog = true
     },
     /**
      * カテゴリ編集完了時の処理
@@ -226,10 +236,11 @@ export default {
      * @param {Object} params.item - 編集されたカテゴリ情報
      * @param {number} params.item.id - カテゴリID
      * @param {string} params.item.name - カテゴリ名
+     * @param {'create' | 'edit'} params.mode - モード
      * @param {boolean} params.success - 処理の成功/失敗
      * @param {string} params.message - 表示するメッセージ
      */
-    handleEditComplete({ item, success, message }) {
+    handleFormComplete({ item, mode, success, message }) {
       if (!success) {
         this.snackbarColor = 'error'
         this.snackbarText = message
@@ -241,14 +252,18 @@ export default {
       const categories =
         this.activeTab === 0 ? this.catalogCategories : this.productCategories
 
-      // 編集対象のインデックスを検索
-      const index = categories.findIndex((c) => c.id === item.id)
-      if (index > -1) { // 実はそれほど必要なチェックではない
-        // 配列の要素を反応的に更新（直接代入の categories[index] = item ではVueが変更を検知できない
-        // @param {Array} categories - 更新対象の配列（catalogCategoriesまたはproductCategories）
-        // @param {number} index - 更新する配列のインデックス位置
-        // @param {Object} item - 新しいカテゴリデータ（APIのレスポンス）
-        this.$set(categories, index, item)
+      if (mode === 'create') {
+        categories.push(item)
+      } else {
+        // 編集対象のインデックスを検索
+        const index = categories.findIndex(c => c.id === item.id)
+        if (index > -1) { // 実はそれほど必要なチェックではない
+          // 配列の要素を反応的に更新（直接代入の categories[index] = item ではVueが変更を検知できない
+          // @param {Array} categories - 更新対象の配列（catalogCategoriesまたはproductCategories）
+          // @param {number} index - 更新する配列のインデックス位置
+          // @param {Object} item - 新しいカテゴリデータ（APIのレスポンス）
+          this.$set(categories, index, item)
+        }
       }
 
       // 成功メッセージを表示
