@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Api;
 
+use App\Rules\UniqueCategoryName;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateCategoryRequest extends FormRequest
@@ -23,7 +24,13 @@ class UpdateCategoryRequest extends FormRequest
     {
         return [
             'enterprise_id' => 'bail|required|integer|exists:enterprises,id',
-            'name' => 'bail|required|string|max:255',
+            'name' => [
+                'bail',
+                'required',
+                'string',
+                'max:30',
+                new UniqueCategoryName($this->input('id')) // リクエストデータからIDを取得
+            ],
             'type' => 'bail|required|string|in:catalog,product'
         ];
     }
