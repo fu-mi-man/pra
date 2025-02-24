@@ -26,7 +26,7 @@
               <v-icon>mdi-plus</v-icon>
               <span class="d-none d-sm-inline ml-2">新規カテゴリ</span>
             </v-btn>
-            <v-btn color="secondary">
+            <v-btn color="secondary" @click="showOrderDialog">
               <v-icon>mdi-sort</v-icon>
               <span class="d-none d-sm-inline ml-2">並び順を変更</span>
             </v-btn>
@@ -86,6 +86,14 @@
         </v-card>
       </v-col>
     </v-row>
+    <!-- 並び順ダイアログ -->
+    <category-order-dialog
+      v-model="orderDialog"
+      :categories="activeTab === 0 ? catalogCategories : productCategories"
+      :category-type="currentCategoryType"
+      :enterprise-id="59665517"
+      @completed="handleOrderComplete"
+    />
     <!-- 編集ダイアログ -->
     <category-form-dialog
       v-model="formDialog"
@@ -114,12 +122,14 @@
 
 <script>
 import CategoryFormDialog from '@/components/organisms/dialogs/CategoryFormDialog.vue'
+import CategoryOrderDialog from '@/components/organisms/dialogs/CategoryOrderDialog.vue'
 import DeleteCategoryDialog from '@/components/organisms/dialogs/DeleteCategoryDialog.vue'
 
 export default {
   name: 'CategoryManagement',
   components: {
     CategoryFormDialog,
+    CategoryOrderDialog,
     DeleteCategoryDialog,
   },
 
@@ -158,6 +168,7 @@ export default {
       // ダイアログ表示制御
       formDialog: false,
       deleteDialog: false,
+      orderDialog: false,
 
       // スナックバー
       snackbar: false,
@@ -270,6 +281,35 @@ export default {
       this.snackbarColor = 'success'
       this.snackbarText = message
       this.snackbar = true
+    },
+    /**
+     * 並び順変更ダイアログを表示する
+     */
+    showOrderDialog() {
+      this.orderDialog = true
+    },
+    /**
+     * 並び順変更完了時の処理
+     * @param {Object} params - 並び順変更の結果
+     * @param {boolean} params.success - 処理の成功/失敗
+     * @param {Array} params.categories - 更新されたカテゴリ一覧
+     * @param {string|null} params.message - 表示するメッセージ
+     */
+    handleOrderComplete({ success, categories, message }) {
+      if (message) {
+        this.snackbarColor = success ? 'success' : 'error'
+        this.snackbarText = message
+        this.snackbar = true
+      }
+
+      if (success) {
+        // カテゴリタイプに応じて更新
+        if (this.activeTab === 0) {
+          this.catalogCategories = categories
+        } else {
+          this.productCategories = categories
+        }
+      }
     },
     /**
      * 削除確認ダイアログを表示する
