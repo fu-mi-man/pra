@@ -27,3 +27,9 @@ Route::apiResource('announcements', AnnouncementController::class);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::put('/categories/{id}', [CategoryController::class, 'update']);
 Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
+// REST APIの標準的なCRUD操作との整合性
+// GET    /categories     - 一覧取得
+// POST   /categories     - 作成
+// GET    /categories/1   - 個別取得
+// PUT    /categories/1   - 更新
+// DELETE /categories/1   - 削除

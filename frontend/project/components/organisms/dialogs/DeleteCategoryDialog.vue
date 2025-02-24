@@ -142,7 +142,13 @@ export default {
         this.validationErrors = []
 
         // APIをコールする処理をここに実装
-        await this.$axios.$delete(`/api/categories/${this.deletedItem.id}`)
+        await this.$axios.$delete(`/api/categories/${this.deletedItem.id}`, {
+          // DELETEリクエストのボディデータを送信する場合、dataオプションを使用
+          data: {
+            enterprise_id: 59665517,
+            type: this.categoryType
+          }
+        })
 
         // テスト用コード（2秒スリープ・仮API）
         // await new Promise(resolve => setTimeout(resolve, 2000))

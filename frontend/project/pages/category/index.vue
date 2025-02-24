@@ -275,8 +275,9 @@ export default {
       const categories =
         this.activeTab === 0 ? this.catalogCategories : this.productCategories
 
-      const index = categories.findIndex((c) => c.id === item.id)
+      const index = categories.findIndex(c => c.id === item.id)
       if (index > -1) {
+        // `splice`はVueのリアクティビティシステムが変更を検知できる
         categories.splice(index, 1)
       }
 

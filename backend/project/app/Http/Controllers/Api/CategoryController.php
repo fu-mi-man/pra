@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\IndexCategoryRequest;
 use App\Http\Requests\Api\UpdateCategoryRequest;
+use App\Http\Requests\Api\DeleteCategoryRequest;
 use App\Models\Category;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 
@@ -48,12 +50,16 @@ class CategoryController extends Controller
     /**
      * 指定されたカテゴリーを削除
      *
+     * @param DeleteCategoryRequest $request
      * @param int $id
      * @return JsonResponse
      */
-    public function destroy(int $id): JsonResponse
+    public function destroy(DeleteCategoryRequest $request, int $id): JsonResponse
     {
-        $category = Category::findOrFail($id);
+        $category = Category::where('id', $id)
+            ->where('enterprise_id', $request->validated('enterprise_id'))
+            ->where('type', $request->validated('type'))
+            ->firstOrFail();
         $category->delete();
 
         return response()->json(null, 204);
