@@ -12,6 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('categories', function (Blueprint $table) {
+            // テーブル全体の照合順序を設定
+            $table->collation = 'utf8mb4_bin'; // nameで大文字小文字が区別つかなかった場合
+
             $table->id();
             $table->unsignedBigInteger('enterprise_id');
             $table->enum('type', ['catalog', 'product']);
