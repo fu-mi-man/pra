@@ -47,6 +47,7 @@
         </draggable>
       </v-card-text>
 
+      <!-- あってもなくてもどっちでもいいかな -->
       <v-divider></v-divider>
 
       <v-card-actions>
