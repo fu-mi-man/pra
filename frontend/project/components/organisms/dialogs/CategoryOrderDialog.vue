@@ -6,7 +6,7 @@
       <loading-overlay :value="loading" />
 
       <v-card-title class="text-h5">
-        {{ categoryType === 'catalog' ? '文書カテゴリ' : '商品カテゴリ' }}の並び順を変更
+        {{ dialogTitle }}
       </v-card-title>
 
       <v-card-text>
@@ -121,6 +121,9 @@ export default {
       set(value) {
         this.$emit('input', value)
       }
+    },
+    dialogTitle() {
+      return `${this.categoryType === 'catalog' ? '文書カテゴリ' : '商品カテゴリ'}の並び順を変更`
     }
   },
 
