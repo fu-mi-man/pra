@@ -39,15 +39,32 @@ class UpdateCategoryOrderRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'enterprise_id' => '出展者ID',
+            // 全てデフォルトメッセージでカバーできるのでコメントアウト
+            // 'enterprise_id' => '出展者ID',
+            // 'type' => 'カテゴリ種別',
+            // 'categories.required' => 'カテゴリデータは必須です',
+            // 'categories.array' => 'カテゴリデータは配列形式で送信してください',
+            // 'categories.*.id.required' => 'カテゴリIDは必須です',
+            // 'categories.*.id.exists' => '指定されたカテゴリIDは存在しません',
+            // 'categories.*.display_order.required' => '表示順は必須です',
+            // 'categories.*.display_order.integer' => '表示順は整数で指定してください',
+            // 'categories.*.display_order.min' => '表示順は1以上の数値を指定してください'
+        ];
+    }
+
+    /**
+     * バリデーション属性のカスタム名を定義
+     *
+     * @return array<string, string> 属性名の配列
+     */
+    public function attributes(): array
+    {
+        return [
             'type' => 'カテゴリ種別',
-            'categories.required' => 'カテゴリデータは必須です',
-            'categories.array' => 'カテゴリデータは配列形式で送信してください',
-            'categories.*.id.required' => 'カテゴリIDは必須です',
-            'categories.*.id.exists' => '指定されたカテゴリIDは存在しません',
-            'categories.*.display_order.required' => '表示順は必須です',
-            'categories.*.display_order.integer' => '表示順は整数で指定してください',
-            'categories.*.display_order.min' => '表示順は1以上の数値を指定してください'
+            'enterprise_id' => '出展者ID',
+            'categories' => 'カテゴリデータ',
+            'categories.*.id' => 'カテゴリID',
+            'categories.*.display_order' => '表示順'
         ];
     }
 }
