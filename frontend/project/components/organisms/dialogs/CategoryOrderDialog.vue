@@ -61,7 +61,6 @@
         <v-btn
           color="primary"
           :disabled="loading"
-          :loading="loading"
           @click="handleSave"
         >
           保存
