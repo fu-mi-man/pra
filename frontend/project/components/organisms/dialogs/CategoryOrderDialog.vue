@@ -122,9 +122,10 @@ export default {
         this.$emit('input', value)
       }
     },
+    /** ダイアログのタイトルを動的に生成する */
     dialogTitle() {
       return `${this.categoryType === 'catalog' ? '文書カテゴリ' : '商品カテゴリ'}の並び順を変更`
-    }
+    },
   },
 
   watch: {
