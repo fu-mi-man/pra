@@ -52,17 +52,17 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn
-          text
-          @click="handleCancel"
           :disabled="loading"
+          text
+          @click="close"
         >
           キャンセル
         </v-btn>
         <v-btn
           color="primary"
-          @click="handleSave"
-          :loading="loading"
           :disabled="loading"
+          :loading="loading"
+          @click="handleSave"
         >
           保存
         </v-btn>
@@ -184,16 +184,14 @@ export default {
       }
     },
 
-    handleCancel() {
-      // ダイアログを閉じる
+    /**
+     * ダイアログを閉じ，エラー状態をクリアする
+     */
+    close() {
+      this.validationErrors = []
+      this.loading = false
       this.$emit('input', false)
-      // 親コンポーネントにキャンセルを通知
-      this.$emit('completed', {
-        success: false,
-        categories: this.categories, // 元の配列を返す
-        message: null
-      })
-    }
+    },
   }
 }
 </script>
