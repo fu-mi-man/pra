@@ -88,23 +88,22 @@ export default {
   },
 
   props: {
+     /** ダイアログの表示状態を制御する値 */
     value: {
-      type: Boolean,
-      required: true
+       type: Boolean,
+       required: true
     },
+    /** 表示および並び替え対象のカテゴリ一覧 */
     categories: {
       type: Array,
       required: true
     },
+    /** カテゴリのタイプ（'catalog'または'product'） */
     categoryType: {
       type: String,
       required: true,
       validator: value => ['catalog', 'product'].includes(value)
     },
-    enterpriseId: {
-      type: Number,
-      required: true
-    }
   },
 
   data() {

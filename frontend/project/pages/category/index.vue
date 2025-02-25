@@ -91,7 +91,6 @@
       v-model="orderDialog"
       :categories="activeTab === 0 ? catalogCategories : productCategories"
       :category-type="currentCategoryType"
-      :enterprise-id="59665517"
       @completed="handleOrderComplete"
     />
     <!-- 編集ダイアログ -->
