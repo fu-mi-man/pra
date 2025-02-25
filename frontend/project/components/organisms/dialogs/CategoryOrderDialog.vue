@@ -1,6 +1,11 @@
 <!-- components/organisms/dialogs/CategoryOrderDialog.vue -->
 <template>
-  <v-dialog v-model="dialog" max-width="600px" persistent>
+  <v-dialog
+    :value="value"
+    max-width="600px"
+    persistent
+    @input="$emit('input', $event)"
+  >
     <v-card>
       <!-- ローディングオーバーレイ -->
       <loading-overlay :value="loading" />
@@ -114,14 +119,6 @@ export default {
   },
 
   computed: {
-    dialog: {
-      get() {
-        return this.value
-      },
-      set(value) {
-        this.$emit('input', value)
-      }
-    },
     /** ダイアログのタイトルを動的に生成する */
     dialogTitle() {
       return `${this.categoryType === 'catalog' ? '文書カテゴリ' : '商品カテゴリ'}の並び順を変更`
@@ -129,6 +126,10 @@ export default {
   },
 
   watch: {
+    /**
+     * ダイアログの表示状態を監視する
+     * @param {boolean} newVal - ダイアログの新しい表示状態の値
+     */
     value(newVal) {
       if (newVal) {
         // ダイアログが開かれたときに配列をコピー
@@ -163,7 +164,7 @@ export default {
         })
 
         // ダイアログを閉じる
-        this.dialog = false
+        this.$emit('input', false)
       } catch (error) {
         if (error.response) {
           console.error('Error details:', error.response.data);
@@ -185,7 +186,7 @@ export default {
 
     handleCancel() {
       // ダイアログを閉じる
-      this.dialog = false
+      this.$emit('input', false)
       // 親コンポーネントにキャンセルを通知
       this.$emit('completed', {
         success: false,
