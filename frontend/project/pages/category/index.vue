@@ -295,20 +295,22 @@ export default {
      * @param {string|null} params.message - 表示するメッセージ
      */
     handleOrderComplete({ success, categories, message }) {
-      if (message) {
-        this.snackbarColor = success ? 'success' : 'error'
+      if (!success) {
+        this.snackbarColor = 'error'
         this.snackbarText = message
         this.snackbar = true
+        return
       }
 
-      if (success) {
-        // カテゴリタイプに応じて更新
-        if (this.activeTab === 0) {
-          this.catalogCategories = categories
-        } else {
-          this.productCategories = categories
-        }
+      // カテゴリタイプに応じて更新
+      if (this.activeTab === 0) {
+        this.catalogCategories = categories
+      } else {
+        this.productCategories = categories
       }
+      this.snackbarColor = 'success'
+      this.snackbarText = message
+      this.snackbar = true
     },
     /**
      * 削除確認ダイアログを表示する

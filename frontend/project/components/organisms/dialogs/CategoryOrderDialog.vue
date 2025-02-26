@@ -159,25 +159,24 @@ export default {
         this.$emit('completed', {
           success: true,
           categories: this.localCategories,
-          message: '並び順を更新しました'
+          message: '並び順を更新しました',
         })
 
         // ダイアログを閉じる
         this.$emit('input', false)
       } catch (error) {
-        if (error.response) {
-          console.error('Error details:', error.response.data);
-        }
         if (error.response?.status === 422) {
-          console.error('Failed to update category order:', error)
           this.validationErrors = Object.values(error.response.data.errors).flat()
           return
         }
-        // this.$emit('deleted', {
-        //   item: this.deletedItem,
-        //   success: false,
-        //   message: '並び順の更新に失敗しました。再度お試しください。'
-        // })
+        this.$emit('completed', {
+          // ここでcategoriesを返す意味そんなにないかも
+          success: false,
+          categories: this.localCategories,
+          message: '並び順の更新に失敗しました。再度お試しください。'
+        })
+        // バリデーションエラー以外のエラーはダイアログを閉じるようにしたい
+        this.$emit('input', false)
       } finally {
         this.loading = false
       }
