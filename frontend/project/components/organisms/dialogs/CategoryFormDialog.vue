@@ -174,10 +174,10 @@ export default {
         // await new Promise(resolve => setTimeout(resolve, 2000))
 
         this.$emit('completed', {
+          success: true,
+          message: `${this.categoryTypeLabel}を${this.modeActionLabel}しました`,
           item: response,
           mode: this.mode,
-          success: true,
-          message: `${this.categoryTypeLabel}を${this.modeActionLabel}しました`
         })
         this.close()
       } catch (error) {

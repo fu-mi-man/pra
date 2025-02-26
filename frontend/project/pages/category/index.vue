@@ -66,7 +66,7 @@
     <!-- 並び順ダイアログ -->
     <category-order-dialog
       v-model="orderDialog"
-      :categories="activeTab === 0 ? catalogCategories : productCategories"
+      :categories="currentCategories"
       :category-type="currentCategoryType"
       @completed="handleOrderComplete"
     />
@@ -132,7 +132,6 @@ export default {
         id: null,
         name: '',
       },
-
       // 編集用の初期値を明確に定義（propsのバリデーションを防げる）
       formItem: {
         id: null,
@@ -165,7 +164,14 @@ export default {
      */
     currentCategoryType() {
       return this.activeTab === 0 ? 'catalog' : 'product'
-    }
+    },
+  /**
+   * 現在選択中のカテゴリ配列を返す
+   * @returns {Array} 現在のタブに対応するカテゴリ配列
+   */
+  currentCategories() {
+    return this.activeTab === 0 ? this.catalogCategories : this.productCategories
+  },
   },
   async mounted() {
     await this.fetchCategories()
@@ -222,24 +228,21 @@ export default {
      * 失敗時はエラーメッセージの表示を行う
      *
      * @param {Object} params - 編集完了時のパラメータ
+     * @param {boolean} params.success - 処理の成功/失敗
+     * @param {string} params.message - 表示するメッセージ
      * @param {Object} params.item - 編集されたカテゴリ情報
      * @param {number} params.item.id - カテゴリID
      * @param {string} params.item.name - カテゴリ名
      * @param {'create' | 'edit'} params.mode - モード
-     * @param {boolean} params.success - 処理の成功/失敗
-     * @param {string} params.message - 表示するメッセージ
      */
-    handleFormComplete({ item, mode, success, message }) {
+    handleFormComplete({ success, message, item, mode }) {
       if (!success) {
-        this.snackbarColor = 'error'
-        this.snackbarText = message
-        this.snackbar = true
+        this.showSnackbar(message, 'error')
         return
       }
 
       // カテゴリタイプに応じて更新対象の配列を選択
-      const categories =
-        this.activeTab === 0 ? this.catalogCategories : this.productCategories
+      const categories = this.currentCategories
 
       if (mode === 'create') {
         categories.push(item)
@@ -256,9 +259,7 @@ export default {
       }
 
       // 成功メッセージを表示
-      this.snackbarColor = 'success'
-      this.snackbarText = message
-      this.snackbar = true
+      this.showSnackbar(message)
     },
     /**
      * 並び順変更ダイアログを表示する
@@ -275,9 +276,7 @@ export default {
      */
     handleOrderComplete({ success, categories, message }) {
       if (!success) {
-        this.snackbarColor = 'error'
-        this.snackbarText = message
-        this.snackbar = true
+        this.showSnackbar(message, 'error')
         return
       }
 
@@ -287,9 +286,8 @@ export default {
       } else {
         this.productCategories = categories
       }
-      this.snackbarColor = 'success'
-      this.snackbarText = message
-      this.snackbar = true
+
+      this.showSnackbar(message)
     },
     /**
      * 削除確認ダイアログを表示する
@@ -301,14 +299,11 @@ export default {
     },
     handleDeleteComplete({ item, success, message }) {
       if (!success) {
-        this.snackbarColor = 'error'
-        this.snackbarText = message
-        this.snackbar = true
+        this.showSnackbar(message, 'error')
         return
       }
       // カテゴリタイプの判定は親コンポーネントで行う
-      const categories =
-        this.activeTab === 0 ? this.catalogCategories : this.productCategories
+      const categories = this.currentCategories
 
       const index = categories.findIndex(c => c.id === item.id)
       if (index > -1) {
@@ -317,8 +312,16 @@ export default {
       }
 
       // 成功メッセージを表示
-      this.snackbarColor = 'success'
+      this.showSnackbar(message)
+    },
+    /**
+     * スナックバーでメッセージを表示する
+     * @param {string} message - 表示するメッセージ
+     * @param {'success'|'error'|'info'} color - スナックバーの色
+     */
+    showSnackbar(message, color = 'success') {
       this.snackbarText = message
+      this.snackbarColor = color
       this.snackbar = true
     },
   },
