@@ -40,47 +40,24 @@
           <v-tabs-items v-model="activeTab" class="px-4">
             <!-- 文書カテゴリのタブパネル -->
             <v-tab-item>
-              <v-data-table
+              <category-table
                 :headers="headers"
                 :items="catalogCategories"
                 :loading="loading"
-                :no-data-text="'表示するカテゴリがありません'"
-                dense
-              >
-                <!-- 編集アイコンと削除アイコン -->
-                <template #[`item.edit`]="{ item }">
-                  <v-btn icon small @click="showEditDialog(item)">
-                    <v-icon small>mdi-pencil</v-icon>
-                  </v-btn>
-                </template>
-                <template #[`item.delete`]="{ item }">
-                  <v-btn icon small @click="showDeleteDialog(item)">
-                    <v-icon small>mdi-delete</v-icon>
-                  </v-btn>
-                </template>
-              </v-data-table>
+                @edit="showEditDialog"
+                @delete="showDeleteDialog"
+              />
             </v-tab-item>
 
             <!-- 商品カテゴリのタブパネル -->
             <v-tab-item>
-              <v-data-table
+              <category-table
                 :headers="headers"
                 :items="productCategories"
                 :loading="loading"
-                dense
-              >
-                <!-- 編集アイコンと削除アイコン -->
-                <template #[`item.edit`]="{ item }">
-                  <v-btn icon small @click="showEditDialog(item)">
-                    <v-icon small>mdi-pencil</v-icon>
-                  </v-btn>
-                </template>
-                <template #[`item.delete`]="{ item }">
-                  <v-btn icon small @click="showDeleteDialog(item)">
-                    <v-icon small>mdi-delete</v-icon>
-                  </v-btn>
-                </template>
-              </v-data-table>
+                @edit="showEditDialog"
+                @delete="showDeleteDialog"
+              />
             </v-tab-item>
           </v-tabs-items>
         </v-card>
@@ -120,6 +97,7 @@
 </template>
 
 <script>
+import CategoryTable from '@/components/molecules/tables/CategoryTable.vue'
 import CategoryFormDialog from '@/components/organisms/dialogs/CategoryFormDialog.vue'
 import CategoryOrderDialog from '@/components/organisms/dialogs/CategoryOrderDialog.vue'
 import DeleteCategoryDialog from '@/components/organisms/dialogs/DeleteCategoryDialog.vue'
@@ -127,6 +105,7 @@ import DeleteCategoryDialog from '@/components/organisms/dialogs/DeleteCategoryD
 export default {
   name: 'CategoryManagement',
   components: {
+    CategoryTable,
     CategoryFormDialog,
     CategoryOrderDialog,
     DeleteCategoryDialog,
