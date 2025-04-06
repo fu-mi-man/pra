@@ -18,6 +18,8 @@ export default {
     return {
       directoryStructure: [
         { name: 'ホーム', path: '/' },
+        { name: 'バーチャルスクロール', path: '/scroll' },
+        { name: 'ナビゲーションドロワー', path: '/drawer' },
         { name: 'カテゴリ管理', path: '/category' },
         { name: 'お知らせ作成', path: '/announcements/create' },
         { name: 'ボタンのバリデーション', path: '/validateButton' },
