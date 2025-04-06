@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
@@ -27,7 +27,7 @@ class EnterpriseFactory extends Factory
             'header' => fake()->optional()->imageUrl(1200, 300),
             'is_published' => fake()->boolean(),
             'website' => fake()->optional()->url(),
-            'site_id' => fake()->unique()->word(),
+            'site_id' => Str::uuid()->toString(),
         ];
     }
 }
