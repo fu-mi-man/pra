@@ -4,14 +4,23 @@
     <h2>出展者一覧</h2>
 
     <!-- テーブルヘッダー -->
-    <!-- <div class="d-flex align-center py-3 px-4 grey lighten-4 border rounded-t">
+    <div class="d-flex align-center py-3 px-6 grey lighten-4 table-header">
+      <div class="checkbox-column">
+        <v-checkbox
+          v-model="selectAll"
+          dense
+          hide-details
+          @change="toggleSelectAll"
+        ></v-checkbox>
+      </div>
       <div class="flex-grow-1 font-weight-bold">商品名</div>
-      <div class="text-center" style="width: 160px">操作</div>
-    </div> -->
+      <div class="font-weight-bold shared-column">共有元</div>
+      <div class="font-weight-bold request-column">リクエスト</div>
+    </div>
 
     <v-virtual-scroll
       v-if="renderVirtualScroll"
-      :height="'calc(100vh - 180px)'"
+      :height="'calc(100vh - 240px)'"
       :items="currentPageEnterprises"
       class="table-borders"
       ref="virtualScroll"
@@ -20,9 +29,18 @@
       <template v-slot:default="{ item }">
         <div
           v-ripple
-          class="d-flex align-center px-6 border-bottom row-hover"
-          style="height: 56px; cursor: default"
+          class="d-flex align-center px-6 table-row row-hover"
         >
+          <!-- チェックボックス -->
+          <div class="checkbox-column">
+            <v-checkbox
+              v-model="selectedItems"
+              :value="item.id"
+              dense
+              hide-details
+            ></v-checkbox>
+          </div>
+
           <!-- 商品名 -->
           <div
             class="flex-grow-1 py-2 px-2 text-subtitle-1"
@@ -30,12 +48,19 @@
           >
             {{ item.name }}
           </div>
+
+          <!-- 共有元 -->
+          <div class="shared-column">
+            {{ item.source || '未設定' }}
+          </div>
+
           <!-- 承認ボタン -->
           <div class="mr-6">
             <v-btn color="success" @click="approveProduct(item.id)">
               承認する
             </v-btn>
           </div>
+
           <!-- 否認ボタン -->
           <div>
             <v-btn color="error" @click="rejectProduct(item.id)">
@@ -68,7 +93,9 @@ export default {
   data() {
     return {
       currentPageEnterprises: [],
-      renderVirtualScroll: true, // コンポーネントの表示・非表示を制御
+      renderVirtualScroll: true, // VirtualScrollの再マウントを制御するフラグ
+      selectAll: false,          // 全選択チェックボックスの状態
+      selectedItems: [],         // 選択された項目のID配列
 
       // ローディング
       loading: false,
@@ -143,6 +170,24 @@ export default {
         this.loading = false
       }
     },
+    /**
+     * 全選択の切り替え処理
+     */
+    toggleSelectAll() {
+      if (this.selectAll) {
+        // すべての項目を選択
+        this.selectedItems = this.currentPageEnterprises.map(item => item.id)
+      } else {
+        // 選択をクリア
+        this.selectedItems = []
+      }
+    },
+    /**
+     * 指定されたページ番号へ遷移する
+     * 現在と同じページ番号の場合は処理をスキップし，クエリパラメータを使用して画面遷移を行う
+     *
+     * @param {number} pageNumber - 移動先のページ番号
+     */
     changePage(pageNumber) {
       // ページ番号が現在と同じなら何もしない
       if (this.page === pageNumber) return
@@ -160,13 +205,39 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.table-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+// チェックボックス
+.checkbox-column {
+  width: 40px;
+}
+
+// 商品名
+.name-column {
+  flex-grow: 1;
+}
+
+// 共有元
+.shared-column {
+  width: 150px;
+}
+
+// リクエスト
+.request-column {
+  width: 240px;
+}
+
+// v-virtual-scroll
 .table-borders {
   border-top: 1px solid rgba(0, 0, 0, 0.12);
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 }
 
-.border-bottom {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
+.table-row {
+  height: 56px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 }
 
 /* ホバー時の効果 */
