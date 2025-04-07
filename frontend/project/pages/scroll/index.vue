@@ -10,21 +10,22 @@
     </div> -->
 
     <v-virtual-scroll
+      v-if="renderVirtualScroll"
       :height="'calc(100vh - 180px)'"
       :items="currentPageEnterprises"
       class="table-borders"
+      ref="virtualScroll"
       item-height="56"
     >
       <template v-slot:default="{ item }">
         <div
-          class="d-flex align-center px-6 border-bottom row-hover"
-          :class="{ 'grey lighten-5': index % 2 === 0 }"
-          style="height: 56px; cursor: default"
           v-ripple
+          class="d-flex align-center px-6 border-bottom row-hover"
+          style="height: 56px; cursor: default"
         >
           <!-- 商品名 -->
           <div
-            class="flex-grow-1 py-2 px-2 cursor-pointer text-subtitle-1"
+            class="flex-grow-1 py-2 px-2 text-subtitle-1"
             @click="showProductDetail(item.id)"
           >
             {{ item.name }}
@@ -32,13 +33,13 @@
           <!-- 承認ボタン -->
           <div class="mr-6">
             <v-btn color="success" @click="approveProduct(item.id)">
-              承認
+              承認する
             </v-btn>
           </div>
           <!-- 否認ボタン -->
           <div>
             <v-btn color="error" @click="rejectProduct(item.id)">
-              否認
+              削除する
             </v-btn>
           </div>
         </div>
@@ -46,7 +47,7 @@
     </v-virtual-scroll>
 
     <!-- ページネーション -->
-    <div class="d-flex flex-column align-center mt-6">
+    <div v-if="renderVirtualScroll" class="d-flex flex-column align-center mt-6">
       <div v-if="totalItems > 0" class="text-body-1 grey--text">
         全{{ formattedTotalItems }}件
       </div>
@@ -55,8 +56,8 @@
         :disabled="loading"
         :length="pageCount"
         :total-visible="7"
-        @input="changePage"
         class="mb-2"
+        @input="changePage"
       />
     </div>
   </v-container>
@@ -67,6 +68,7 @@ export default {
   data() {
     return {
       currentPageEnterprises: [],
+      renderVirtualScroll: true, // コンポーネントの表示・非表示を制御
 
       // ローディング
       loading: false,
@@ -104,7 +106,7 @@ export default {
      */
     page() {
       this.fetchEnterprises()
-    }
+    },
   },
 
   created() {
@@ -116,8 +118,11 @@ export default {
     // Enterprise一覧データの取得
     async fetchEnterprises() {
       this.loading = true
+
       try {
-        // APIからページネーションを含めたリクエスト
+        // renderVirtualScrollをfalseにすることでv-ifが再評価され，
+        // コンポーネントが再マウントされることでスクロール位置をリセットする
+        this.renderVirtualScroll = false
         const response = await this.$axios.$get('/api/enterprises', {
           params: {
             page: this.page,
@@ -125,10 +130,9 @@ export default {
           }
         })
 
-        // レスポンスの形式に応じて調整（Laravelのデフォルト形式を想定）
         this.currentPageEnterprises = response.data
         this.totalItems = response.total
-        // this.lastFetchedPage = this.page // 取得したページを記録
+        this.renderVirtualScroll = true
       } catch (error) {
         // エラー通知を表示
         // this.$store.dispatch('snackbar/setSnackbar', {
@@ -138,7 +142,19 @@ export default {
       } finally {
         this.loading = false
       }
-    }
+    },
+    changePage(pageNumber) {
+      // ページ番号が現在と同じなら何もしない
+      if (this.page === pageNumber) return
+
+      // クエリパラメータを使ってページ遷移
+      this.$router.push({
+        query: {
+          ...this.$route.query,
+          page: pageNumber
+        }
+      })
+    },
   }
 }
 </script>
