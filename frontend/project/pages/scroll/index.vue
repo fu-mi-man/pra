@@ -4,18 +4,19 @@
     <h2>出展者一覧</h2>
 
     <!-- テーブルヘッダー -->
-    <div class="d-flex align-center py-3 px-6 grey lighten-4 table__header">
+    <div class="d-flex align-center py-4 px-6 grey lighten-4 table__header">
       <div class="table__cell table__cell--checkbox">
         <v-checkbox
           v-model="selectAll"
+          class="table__checkbox"
           dense
           hide-details
           @change="toggleSelectAll"
         />
       </div>
-      <div class="flex-grow-1 font-weight-bold table__cell table__cell--name">商品名</div>
-      <div class="font-weight-bold table__cell table__cell--source">共有元</div>
-      <div class="font-weight-bold table__cell table__cell--request">リクエスト</div>
+      <div class="text-center font-weight-bold table__cell table__cell--name">商品名</div>
+      <div class="text-center font-weight-bold table__cell table__cell--source">共有元</div>
+      <div class="text-center font-weight-bold table__cell table__cell--request">リクエスト</div>
     </div>
 
     <v-virtual-scroll
@@ -44,26 +45,24 @@
 
           <!-- 商品名 -->
           <div
-            class="flex-grow-1 py-2 px-2 text-subtitle-1 table__cell table__cell--name"
+            class="px-2 text-subtitle-1 table__cell table__cell--name"
             @click="showProductDetail(item.id)"
           >
             {{ item.name }}
           </div>
 
           <!-- 共有元 -->
-          <div class="table__cell table__cell--source">
-            {{ item.source || '未設定' }}
+          <div class="text-center table__cell table__cell--source">
+            {{ item.source || '未設定４５６７８９０１２３４５６７９０１２３４５６７８９０' }}
           </div>
 
-          <!-- 承認ボタン -->
-          <div class="mr-6">
-            <v-btn color="success" @click="approveProduct(item.id)">
+          <!-- リクエスト -->
+          <div class="text-center table__cell table__cell--request">
+            <!-- 承認ボタン -->
+            <v-btn class="mr-3" color="success" @click="approveProduct(item.id)">
               承認する
             </v-btn>
-          </div>
-
-          <!-- 否認ボタン -->
-          <div>
+            <!-- 削除ボタン -->
             <v-btn color="error" @click="rejectProduct(item.id)">
               削除する
             </v-btn>
@@ -73,16 +72,16 @@
     </v-virtual-scroll>
 
     <!-- ページネーション -->
-    <div v-if="renderVirtualScroll" class="d-flex flex-column align-center mt-6">
+    <div v-if="renderVirtualScroll" class="d-flex flex-column mt-6 align-center">
       <div v-if="totalItems > 0" class="text-body-1 grey--text">
         全{{ formattedTotalItems }}件
       </div>
       <v-pagination
         v-model="page"
+        class="mb-2"
         :disabled="loading"
         :length="pageCount"
         :total-visible="7"
-        class="mb-2"
         @input="changePage"
       />
     </div>
@@ -207,15 +206,18 @@ export default {
 
 <style lang="scss" scoped>
 .table {
+  // テーブルヘッダー
   &__header {
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
   }
 
+  // VirtualScroll
   &__body {
     border-top: 1px solid rgba(0, 0, 0, 0.12);
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
   }
 
+  // VirtualScrollの行
   &__row {
     height: 56px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
@@ -225,37 +227,41 @@ export default {
     }
   }
 
+  // 全てのセル
   &__cell {
     // 共通のセルスタイル
+    overflow: hidden;
 
     // チェックボックス
     &--checkbox {
       width: 40px;
+      min-width: 40px;
     }
 
     // 商品名
     &--name {
-      // flex-grow: 1; は既にHTMLで指定
+      width: calc(70% - 280px); // 70%から固定幅セル(チェックボックス+リクエスト)の幅を引く
+      min-width: 200px; // 最小幅を確保
+      overflow-wrap: break-word; // スペースのない文字列でも必要に応じて折り返す
     }
 
     // 共有元
     &--source {
-      width: 150px;
+      width: calc(30% - 0px); // 30%
+      min-width: 120px;
     }
 
     // リクエスト
     &--request {
       width: 240px;
+      min-width: 240px;
     }
   }
 
+  // チェックボックス本体
   &__checkbox {
     margin: 0;
     padding: 0;
-  }
-
-  &__action {
-    // ボタンを含むセル
   }
 }
 </style>
