@@ -4,53 +4,54 @@
     <h2>出展者一覧</h2>
 
     <!-- テーブルヘッダー -->
-    <div class="d-flex align-center py-3 px-6 grey lighten-4 table-header">
-      <div class="checkbox-column">
+    <div class="d-flex align-center py-3 px-6 grey lighten-4 table__header">
+      <div class="table__cell table__cell--checkbox">
         <v-checkbox
           v-model="selectAll"
           dense
           hide-details
           @change="toggleSelectAll"
-        ></v-checkbox>
+        />
       </div>
-      <div class="flex-grow-1 font-weight-bold">商品名</div>
-      <div class="font-weight-bold shared-column">共有元</div>
-      <div class="font-weight-bold request-column">リクエスト</div>
+      <div class="flex-grow-1 font-weight-bold table__cell table__cell--name">商品名</div>
+      <div class="font-weight-bold table__cell table__cell--source">共有元</div>
+      <div class="font-weight-bold table__cell table__cell--request">リクエスト</div>
     </div>
 
     <v-virtual-scroll
       v-if="renderVirtualScroll"
+      ref="virtualScroll"
+      class="table__body"
+      item-height="56"
       :height="'calc(100vh - 240px)'"
       :items="currentPageEnterprises"
-      class="table-borders"
-      ref="virtualScroll"
-      item-height="56"
     >
-      <template v-slot:default="{ item }">
+      <template #default="{ item }">
         <div
           v-ripple
-          class="d-flex align-center px-6 table-row row-hover"
+          class="d-flex align-center px-6 table__row"
         >
           <!-- チェックボックス -->
-          <div class="checkbox-column">
+          <div class="table__cell table__cell--checkbox">
             <v-checkbox
               v-model="selectedItems"
-              :value="item.id"
+              class="table__checkbox"
               dense
               hide-details
-            ></v-checkbox>
+              :value="item.id"
+            />
           </div>
 
           <!-- 商品名 -->
           <div
-            class="flex-grow-1 py-2 px-2 text-subtitle-1"
+            class="flex-grow-1 py-2 px-2 text-subtitle-1 table__cell table__cell--name"
             @click="showProductDetail(item.id)"
           >
             {{ item.name }}
           </div>
 
           <!-- 共有元 -->
-          <div class="shared-column">
+          <div class="table__cell table__cell--source">
             {{ item.source || '未設定' }}
           </div>
 
@@ -205,43 +206,56 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.table-header {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-}
+.table {
+  &__header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  }
 
-// チェックボックス
-.checkbox-column {
-  width: 40px;
-}
+  &__body {
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  }
 
-// 商品名
-.name-column {
-  flex-grow: 1;
-}
+  &__row {
+    height: 56px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 
-// 共有元
-.shared-column {
-  width: 150px;
-}
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+  }
 
-// リクエスト
-.request-column {
-  width: 240px;
-}
+  &__cell {
+    // 共通のセルスタイル
 
-// v-virtual-scroll
-.table-borders {
-  border-top: 1px solid rgba(0, 0, 0, 0.12);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-}
+    // チェックボックス
+    &--checkbox {
+      width: 40px;
+    }
 
-.table-row {
-  height: 56px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-}
+    // 商品名
+    &--name {
+      // flex-grow: 1; は既にHTMLで指定
+    }
 
-/* ホバー時の効果 */
-.row-hover:hover {
-  background-color: rgba(0, 0, 0, 0.04);
+    // 共有元
+    &--source {
+      width: 150px;
+    }
+
+    // リクエスト
+    &--request {
+      width: 240px;
+    }
+  }
+
+  &__checkbox {
+    margin: 0;
+    padding: 0;
+  }
+
+  &__action {
+    // ボタンを含むセル
+  }
 }
 </style>
