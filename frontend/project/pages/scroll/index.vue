@@ -44,16 +44,37 @@
           </div>
 
           <!-- 商品名 -->
-          <div
-            class="px-2 text-subtitle-1 table__cell table__cell--name"
-            @click="showProductDetail(item.id)"
-          >
-            {{ item.name }}
+          <div class="px-2 text-subtitle-1 table__cell table__cell--name">
+            <v-tooltip bottom color="warning" max-width="300">
+              <template #activator="{ on, attrs }">
+                <div
+                  class="table__text-truncate"
+                  v-bind="attrs"
+                  v-on="on"
+                  @click="showProductDetail(item.id)"
+                >
+                  {{ item.name }}
+                </div>
+              </template>
+              {{ item.name }}
+            </v-tooltip>
           </div>
 
           <!-- 共有元 -->
           <div class="text-center table__cell table__cell--source">
-            {{ item.source || '未設定４５６７８９０１２３４５６７９０１２３４５６７８９０' }}
+            <v-tooltip bottom color="warning" max-width="300">
+              <template #activator="{ on, attrs }">
+                <div
+                  class="table__text-truncate"
+                  color="warning"
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  {{ item.source || '共有元は未設定なのでーす' }}
+                </div>
+              </template>
+              {{ item.source || '未設定' }}
+            </v-tooltip>
           </div>
 
           <!-- リクエスト -->
@@ -262,6 +283,17 @@ export default {
   &__checkbox {
     margin: 0;
     padding: 0;
+  }
+
+    // 2行表示後に省略するテキスト用のElement
+  &__text-truncate {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2em;
+    max-height: 2.4em; // 1.2em × 2行
   }
 }
 </style>
