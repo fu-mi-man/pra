@@ -22,9 +22,24 @@ class EnterpriseController extends Controller
         // 大量データでのクエリ最適化
         $enterprises = Enterprise::query()
             ->select('id', 'name')
-            ->orderBy('id', 'desc')
+            ->orderBy('id', 'asc')
             ->paginate($perPage);
 
         return response()->json($enterprises);
+    }
+
+    /**
+     * 指定された出展者を削除
+     *
+     * @param DeleteEnterpriseRequest $request
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function destroy(Request $request, int $id): JsonResponse
+    {
+        $enterprise = Enterprise::findOrFail($id);
+        $enterprise->delete();
+
+        return response()->json(null, 204);
     }
 }

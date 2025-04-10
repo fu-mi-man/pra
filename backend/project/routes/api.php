@@ -24,6 +24,7 @@ Route::post('/upload', [UploadController::class, 'upload']);
 
 // 出展者一覧
 Route::get('/enterprises', [EnterpriseController::class, 'index']);
+Route::delete('/enterprises/{id}', [EnterpriseController::class, 'destroy']);
 
 // お知らせのAPIルート
 Route::apiResource('announcements', AnnouncementController::class);

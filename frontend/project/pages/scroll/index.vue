@@ -73,7 +73,7 @@
                   {{ item.source || '共有元は未設定なのでーす' }}
                 </div>
               </template>
-              {{ item.source || '未設定' }}
+              {{ item.source || '共有元は未設定なのでーす' }}
             </v-tooltip>
           </div>
 
@@ -84,7 +84,7 @@
               承認する
             </v-btn>
             <!-- 削除ボタン -->
-            <v-btn color="error" @click="rejectProduct(item.id)">
+            <v-btn color="error" @click="deleteRequest(item.id)">
               削除する
             </v-btn>
           </div>
@@ -106,11 +106,24 @@
         @input="changePage"
       />
     </div>
+
+    <!-- 削除ダイアログ -->
+    <delete-request-dialog
+      v-model="deleteDialog"
+      :selected-request="selectedRequest"
+      @deleted="handleProductDeleted"
+    />
   </v-container>
 </template>
 
 <script>
+import DeleteRequestDialog from '@/components/organisms/dialogs/DeleteRequestDialog.vue'
+
 export default {
+  components: {
+    DeleteRequestDialog,
+  },
+
   data() {
     return {
       currentPageEnterprises: [],
@@ -120,6 +133,13 @@ export default {
 
       // ローディング
       loading: false,
+
+      // 削除ダイアログ関連
+      deleteDialog: false,
+      selectedRequest: {
+        id: null,
+        name: ''
+      },
 
       // ページネーション
       page: 1,            // 現在のページ番号
@@ -189,6 +209,36 @@ export default {
         // })
       } finally {
         this.loading = false
+      }
+    },
+    /**
+     * リクエスト削除ボタンがクリックされたときの処理
+     * @param {number} id - 削除対象のID
+     */
+    deleteRequest(id) {
+      const request = this.currentPageEnterprises.find(item => item.id === id)
+      if (request) {
+        this.selectedRequest = request
+        this.deleteDialog = true
+      }
+    },
+    /**
+     * 商品が削除された後の処理
+     * @param {Object} event - 削除イベントの詳細
+     * @param {Object} event.item - 削除された商品情報
+     * @param {boolean} event.success - 削除が成功したかどうか
+     * @param {string} event.message - 表示するメッセージ
+     */
+    handleProductDeleted(event) {
+      // 成功メッセージまたは失敗メッセージを表示
+      this.$store.dispatch('snackbar/setSnackbar', {
+        color: event.success ? 'success' : 'error',
+        text: event.message
+      })
+
+      // 削除が成功した場合、データを再取得
+      if (event.success) {
+        this.fetchEnterprises()
       }
     },
     /**
