@@ -2,6 +2,8 @@
 <template>
   <v-container fluid>
     <h2>出展者一覧</h2>
+    <!-- バリデーションエラーメッセージ -->
+    <validation-error-alert :errors="validationErrors" />
 
     <!-- テーブルヘッダー -->
     <div class="d-flex align-center py-4 px-6 grey lighten-4 table__header">
@@ -84,7 +86,7 @@
               承認する
             </v-btn>
             <!-- 削除ボタン -->
-            <v-btn color="error" @click="deleteRequest(item.id)">
+            <v-btn color="error" @click="showDeleteDialog(item)">
               削除する
             </v-btn>
           </div>
@@ -111,16 +113,27 @@
     <delete-request-dialog
       v-model="deleteDialog"
       :selected-request="selectedRequest"
-      @deleted="handleProductDeleted"
+      @deleted="handleRequestDeleted"
     />
+
+    <!-- 通知用のsnackbar -->
+    <v-snackbar
+      v-model="snackbar"
+      :color="snackbarColor"
+      :timeout="3000"
+    >
+      {{ snackbarText }}
+    </v-snackbar>
   </v-container>
 </template>
 
 <script>
+import ValidationErrorAlert from '@/components/molecules/alerts/ValidationErrorAlert.vue'
 import DeleteRequestDialog from '@/components/organisms/dialogs/DeleteRequestDialog.vue'
 
 export default {
   components: {
+    ValidationErrorAlert,
     DeleteRequestDialog,
   },
 
@@ -136,15 +149,17 @@ export default {
 
       // 削除ダイアログ関連
       deleteDialog: false,
-      selectedRequest: {
-        id: null,
-        name: ''
-      },
+      selectedRequest: null,
 
       // ページネーション
       page: 1,            // 現在のページ番号
       itemsPerPage: 1000, // 1ページあたりのアイテム数
       totalItems: 0,      // 全データ数（サーバーから取得）
+
+      // スナックバー関連
+      snackbar: false,
+      snackbarText: '',
+      snackbarColor: 'success',
     }
   },
 
@@ -191,6 +206,8 @@ export default {
         // renderVirtualScrollをfalseにすることでv-ifが再評価され，
         // コンポーネントが再マウントされることでスクロール位置をリセットする
         this.renderVirtualScroll = false
+
+        // 情報取得
         const response = await this.$axios.$get('/api/enterprises', {
           params: {
             page: this.page,
@@ -202,25 +219,22 @@ export default {
         this.totalItems = response.total
         this.renderVirtualScroll = true
       } catch (error) {
-        // エラー通知を表示
-        // this.$store.dispatch('snackbar/setSnackbar', {
-        //   color: 'error'
-        //   text: 'データの取得に失敗しました'
-        // })
+        if (error.response?.status === 422) {
+          this.validationErrors = Object.values(error.response.data.errors).flat()
+          return // finallyは呼ばれる
+        }
+        this.validationErrors = '共有リクエストの取得に失敗しました。'
       } finally {
         this.loading = false
       }
     },
     /**
-     * リクエスト削除ボタンがクリックされたときの処理
-     * @param {number} id - 削除対象のID
+     * 削除ダイアログを開く
+     * @param {Object} request - 削除対象のリクエスト
      */
-    deleteRequest(id) {
-      const request = this.currentPageEnterprises.find(item => item.id === id)
-      if (request) {
-        this.selectedRequest = request
-        this.deleteDialog = true
-      }
+    showDeleteDialog(request) {
+      this.selectedRequest = request // ダイアログ内でデータを編集しないので浅いコピーを作成しない
+      this.deleteDialog = true
     },
     /**
      * 商品が削除された後の処理
@@ -229,17 +243,19 @@ export default {
      * @param {boolean} event.success - 削除が成功したかどうか
      * @param {string} event.message - 表示するメッセージ
      */
-    handleProductDeleted(event) {
+    handleRequestDeleted({ success, message }) {
       // 成功メッセージまたは失敗メッセージを表示
-      this.$store.dispatch('snackbar/setSnackbar', {
-        color: event.success ? 'success' : 'error',
-        text: event.message
-      })
+      if (!success) {
+        this.showSnackbar(message, 'error')
+        return
+      }
 
       // 削除が成功した場合、データを再取得
-      if (event.success) {
+      if (success) {
         this.fetchEnterprises()
       }
+      // 成功メッセージまたは失敗メッセージを表示
+      this.showSnackbar(message)
     },
     /**
      * 全選択の切り替え処理
@@ -270,6 +286,16 @@ export default {
           page: pageNumber
         }
       })
+    },
+    /**
+     * スナックバーでメッセージを表示する
+     * @param {string} message - 表示するメッセージ
+     * @param {'success'|'error'} color - スナックバーの色
+     */
+    showSnackbar(message, color = 'success') {
+      this.snackbarText = message
+      this.snackbarColor = color
+      this.snackbar = true
     },
   }
 }

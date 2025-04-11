@@ -7,13 +7,10 @@
     @input="$emit('input', $event)"
   >
     <v-card>
-      <!-- ローディングオーバーレイ -->
-      <loading-overlay :value="loading" />
-
       <v-card-title>
-        <span class="text-h6">
-          リクエスト削除確認
-        </span>
+        <v-icon>
+          mdi-alert-circle
+        </v-icon>
       </v-card-title>
 
       <v-card-text>
@@ -45,6 +42,9 @@
         </v-btn>
       </v-card-actions>
     </v-card>
+
+    <!-- ローディングオーバーレイ -->
+    <loading-overlay :value="loading" />
   </v-dialog>
 </template>
 
@@ -63,7 +63,7 @@ export default {
   },
 
   props: {
-    /** ダイアログの表示/非表示を制御するフラグ */
+    /** ダイアログの表示/非表示を制御する値 */
     value: {
       type: Boolean,
       default: false
@@ -73,9 +73,9 @@ export default {
       type: Object,
       required: true,
       validator: (value) => {
-        return 'id' in value
+        return value && 'id' in value
       }
-    }
+    },
   },
 
   data() {
@@ -118,13 +118,11 @@ export default {
           // DELETEリクエストのボディデータを送信する場合、dataオプションを使用
           data: {
             enterprise_id: 59665517,
-            type: this.categoryType
           }
         })
 
         // 成功時は deleted イベントを発火
         this.$emit('deleted', {
-          item: this.deletedItem,
           success: true,
           message: `リクエストを削除しました。`
         })
@@ -137,7 +135,6 @@ export default {
         }
         // その他のエラー
         this.$emit('deleted', {
-          item: this.deletedItem,
           success: false,
           message: '削除に失敗しました。再度お試しください。'
         })
