@@ -1,11 +1,11 @@
 <!-- @/components/atoms/inputs/base/ValidatedTextField.vue -->
 <template>
   <v-text-field
-    v-bind="$attrs"
-    v-on="$listeners"
     :value="value"
     :rules="rules"
     type="text"
+    v-bind="$attrs"
+    v-on="$listeners"
     @input="$emit('input', $event)"
     @update:error="$emit('update:error', $event)"
   />
