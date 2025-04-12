@@ -229,6 +229,36 @@ export default {
       }
     },
     /**
+     * スクロール位置をリセットせずにデータを再取得する
+     */
+    async fetchEnterprisesWithoutReset() {
+      this.loading = true
+
+      try {
+        // 情報取得（renderVirtualScrollは変更しない）
+        const response = await this.$axios.$get('/api/enterprises', {
+          params: {
+            page: this.page,
+            per_page: this.itemsPerPage,
+          }
+        })
+        this.currentPageEnterprises = response.data
+        this.totalItems = response.total
+        
+        // チェックボックスにチェックが入る不具合を防ぐために，APIコール後にチェックボックスをリセットする
+        this.selectedItems = []
+        this.selectAll = false
+      } catch (error) {
+        if (error.response?.status === 422) {
+          this.validationErrors = Object.values(error.response.data.errors).flat()
+          return
+        }
+        this.validationErrors = '共有リクエストの取得に失敗しました'
+      } finally {
+        this.loading = false
+      }
+    },
+    /**
      * 削除ダイアログを開く
      * @param {Object} request - 削除対象のリクエスト
      */
@@ -237,24 +267,18 @@ export default {
       this.deleteDialog = true
     },
     /**
-     * 商品が削除された後の処理
+     * リクエストが削除された後の処理
      * @param {Object} event - 削除イベントの詳細
-     * @param {Object} event.item - 削除された商品情報
      * @param {boolean} event.success - 削除が成功したかどうか
      * @param {string} event.message - 表示するメッセージ
      */
     handleRequestDeleted({ success, message }) {
-      // 成功メッセージまたは失敗メッセージを表示
       if (!success) {
         this.showSnackbar(message, 'error')
         return
       }
-
-      // 削除が成功した場合、データを再取得
-      if (success) {
-        this.fetchEnterprises()
-      }
-      // 成功メッセージまたは失敗メッセージを表示
+      // 削除が成功した場合、スクロール位置を維持したままデータを再取得
+      this.fetchEnterprisesWithoutReset()
       this.showSnackbar(message)
     },
     /**

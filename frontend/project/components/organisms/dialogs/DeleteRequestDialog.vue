@@ -59,7 +59,7 @@ import LoadingOverlay from '@/components/molecules/overlays/LoadingOverlay.vue'
 export default {
   components: {
     ValidationErrorAlert,
-    LoadingOverlay
+    LoadingOverlay,
   },
 
   props: {
