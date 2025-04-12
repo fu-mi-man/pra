@@ -18,12 +18,28 @@ class EnterpriseController extends Controller
     public function index(Request $request): JsonResponse
     {
         $perPage = $request->input('per_page');
+        $searchKeyword = $request->input('search');
 
-        // 大量データでのクエリ最適化
-        $enterprises = Enterprise::query()
-            ->select('id', 'name')
+        $query = Enterprise::query()
+            ->select('id', 'name');
+
+        // 検索キーワードがある場合、検索条件を追加
+        if ($searchKeyword) {
+            // 商品名で検索
+            $query->where('name', 'like', "%{$searchKeyword}%");
+
+            // 将来的に検索対象を拡張する場合の例：
+            // $query->orWhere('source', 'like', "%{$searchKeyword}%");
+        }
+
+        // 将来的に他の絞り込み条件を追加する場合はここに追加
+        // if ($request->has('status')) {
+        //     $query->where('status', $request->input('status'));
+        // }
+        // ソートとページネーション
+        $enterprises = $query
             ->orderBy('id', 'asc')
-            ->paginate($perPage);
+            ->paginate($perPage); // paginateメソッドは自動的にリクエストからpageクエリパラメータを取得して使用
 
         return response()->json($enterprises);
     }
