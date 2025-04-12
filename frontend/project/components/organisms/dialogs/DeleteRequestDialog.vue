@@ -70,11 +70,11 @@ export default {
     },
     /** 削除対象のリクエスト情報 */
     selectedRequest: {
-      type: Object,
-      required: true,
-      validator: (value) => {
-        return value && 'id' in value
-      }
+      type: [Object, null], // null値も許容
+      default: () => ({}),  // デフォルト値として空オブジェクトを返す
+      // validator: (value) => {
+      //   return value && 'id' in value
+      // }
     },
   },
 

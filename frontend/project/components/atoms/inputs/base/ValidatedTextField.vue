@@ -2,6 +2,7 @@
 <template>
   <v-text-field
     v-bind="$attrs"
+    v-on="$listeners"
     :value="value"
     :rules="rules"
     type="text"
@@ -14,6 +15,9 @@
 /**
  * バリデーション機能付きテキストフィールドコンポーネント
  * 必須チェック、最大文字数チェック、特殊文字チェック、全角数字チェックの機能を提供します
+ *
+ * v-bind="$attrs"により親から渡されたすべての属性を子コンポーネントに転送する
+ * v-on="$listeners"により親から渡されたすべてのイベントリスナーを子コンポーネントに転送する
  *
  * @example
  * <validated-text-field

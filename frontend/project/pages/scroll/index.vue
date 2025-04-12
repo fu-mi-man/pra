@@ -1,9 +1,27 @@
 <!-- pages/scroll/index.vue -->
 <template>
   <v-container fluid>
-    <h2>出展者一覧</h2>
+    <h2>共有リクエスト一覧</h2>
     <!-- バリデーションエラーメッセージ -->
     <validation-error-alert :errors="validationErrors" />
+
+    <!-- 検索フォーム -->
+    <div class="mb-4 search-form">
+      <validated-text-field
+        v-model="searchKeyword"
+        append-icon="mdi-magnify"
+        class="search-input"
+        clearable
+        dense
+        hide-details
+        label="キーワード検索"
+        outlined
+        :loading="loading"
+        :disabled="loading"
+        @click:append="executeSearch"
+        @keydown.enter="executeSearch"
+      />
+    </div>
 
     <!-- テーブルヘッダー -->
     <div class="d-flex align-center py-4 px-6 grey lighten-4 table__header">
@@ -128,17 +146,21 @@
 </template>
 
 <script>
+import ValidatedTextField from '@/components/atoms/inputs/base/ValidatedTextField.vue'
 import ValidationErrorAlert from '@/components/molecules/alerts/ValidationErrorAlert.vue'
 import DeleteRequestDialog from '@/components/organisms/dialogs/DeleteRequestDialog.vue'
 
 export default {
   components: {
+    ValidatedTextField,
     ValidationErrorAlert,
     DeleteRequestDialog,
   },
 
   data() {
     return {
+      searchKeyword: '', // 検索キーワード
+
       currentPageEnterprises: [],
       renderVirtualScroll: true, // VirtualScrollの再マウントを制御するフラグ
       selectAll: false,          // 全選択チェックボックスの状態
@@ -150,6 +172,9 @@ export default {
       // 削除ダイアログ関連
       deleteDialog: false,
       selectedRequest: null,
+
+      // バリデーションエラー用の配列
+      validationErrors: [],
 
       // ページネーション
       page: 1,            // 現在のページ番号
@@ -181,23 +206,51 @@ export default {
   },
 
   watch: {
+    // URLのクエリパラメータが変更されたら状態を更新して検索実行
+    '$route.query': {
+      handler() {
+        this.restoreStateFromURL()
+        this.fetchEnterprises()
+      },
+      deep: true,
+      immediate: true // コンポーネント初期化時にも実行
+    },
     /**
      * 現在のページ番号が変更されたときに実行される
      * 新しいページのデータを取得するためにfetchEnterprisesメソッドを呼び出す
      * @param {number} newPage - 新しいページ番号
      * @param {number} oldPage - 以前のページ番号
      */
-    page() {
-      this.fetchEnterprises()
-    },
+    // page() {
+    //   this.fetchEnterprises()
+    // },
   },
 
   created() {
+    // URLからクエリパラメータを読み込む
+    this.restoreStateFromURL()
     // 初期データ取得
-    this.fetchEnterprises()
+    // this.fetchEnterprises()
   },
 
   methods: {
+    /**
+     * URLからクエリパラメータを読み込んで状態を復元する
+     */
+    restoreStateFromURL() {
+      const query = this.$route.query
+
+      // ページ番号の復元
+      this.page = query.page ? parseInt(query.page, 10) : 1
+
+      // 検索キーワードの復元
+      this.searchKeyword = query.search || ''
+
+      // 将来的な絞り込み条件のためのスペース
+      // this.filterStatus = query.status || ''
+      // this.filterCategory = query.category || ''
+      // など
+    },
     // Enterprise一覧データの取得
     async fetchEnterprises() {
       this.loading = true
@@ -212,6 +265,7 @@ export default {
           params: {
             page: this.page,
             per_page: this.itemsPerPage,
+            search: this.searchKeyword || undefined, // 検索キーワードがある場合のみ送信
           }
         })
 
@@ -240,11 +294,12 @@ export default {
           params: {
             page: this.page,
             per_page: this.itemsPerPage,
+            search: this.searchKeyword || undefined, // 検索キーワードがある場合のみ送信
           }
         })
         this.currentPageEnterprises = response.data
         this.totalItems = response.total
-        
+
         // チェックボックスにチェックが入る不具合を防ぐために，APIコール後にチェックボックスをリセットする
         this.selectedItems = []
         this.selectAll = false
@@ -257,6 +312,44 @@ export default {
       } finally {
         this.loading = false
       }
+    },
+    /**
+     * 検索を実行する
+     * 検索キーワードをURLに反映し、ページを1に戻して結果を表示する
+     */
+    executeSearch() {
+      console.log('AAA');
+
+      // 現在のクエリパラメータをコピー
+      const newQuery = { ...this.$route.query }
+
+      // 検索キーワードの処理
+      if (this.searchKeyword) {
+        // 検索キーワードがある場合は追加
+        newQuery.search = this.searchKeyword
+      } else {
+        // 検索キーワードがない場合は削除
+        delete newQuery.search
+      }
+
+      // 検索実行時は必ずページ1から表示
+      newQuery.page = 1
+      // URLを更新（これにより$route.queryのwatcherが発火してデータが再取得される）
+      this.$router.push({ query: newQuery })
+
+      // 注：データの取得自体は$route.queryのwatcherで自動的に行われるため
+      // ここではfetchExhibitorsを呼び出す必要はない
+
+      // URLクエリパラメータに検索キーワードを反映
+      // this.$router.push({
+      //   query: {
+      //     ...this.$route.query,
+      //     page: 1,
+      //     search: this.searchKeyword || undefined
+      //   }
+      // })
+      // URLの変更でページが再読み込みされるため、ここではfetchEnterprisesを呼ばない
+      // this.fetchEnterprises()
     },
     /**
      * 削除ダイアログを開く
@@ -326,6 +419,24 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+// 検索フォーム
+.search-form {
+  width: 100%;
+
+  @media (min-width: 600px) {
+    max-width: 300px;
+  }
+
+  // 虫眼鏡アイコンにポインターを適用
+  :deep(.v-input__append-inner .v-icon) {
+    cursor: pointer;
+    // transition: color 0.2s;
+  }
+  :deep(.v-input__append-inner .v-icon):hover {
+    color: red;
+  }
+}
+
 .table {
   // テーブルヘッダー
   &__header {
