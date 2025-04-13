@@ -45,7 +45,7 @@
       class="table__body"
       item-height="56"
       :height="'calc(100vh - 240px)'"
-      :items="currentPageEnterprises"
+      :items="currentPageData"
     >
       <template #default="{ item }">
         <div
@@ -123,7 +123,6 @@
         :disabled="loading"
         :length="pageCount"
         :total-visible="7"
-        @input="changePage"
       />
     </div>
 
@@ -161,7 +160,7 @@ export default {
     return {
       searchKeyword: '', // 検索キーワード
 
-      currentPageEnterprises: [],
+      currentPageData: [],
       renderVirtualScroll: true, // VirtualScrollの再マウントを制御するフラグ
       selectAll: false,          // 全選択チェックボックスの状態
       selectedItems: [],         // 選択された項目のID配列
@@ -206,31 +205,22 @@ export default {
   },
 
   watch: {
-    // URLのクエリパラメータが変更されたら状態を更新して検索実行
-    '$route.query': {
-      handler() {
-        this.restoreStateFromURL()
-        this.fetchEnterprises()
-      },
-      deep: true,
-      immediate: true // コンポーネント初期化時にも実行
-    },
     /**
-     * 現在のページ番号が変更されたときに実行される
-     * 新しいページのデータを取得するためにfetchEnterprisesメソッドを呼び出す
+     * ページ遷移を監視する（ページネーション押下時に処理される）
+     * 新しいページのデータを取得するためにAPIをコールする
      * @param {number} newPage - 新しいページ番号
      * @param {number} oldPage - 以前のページ番号
      */
-    // page() {
-    //   this.fetchEnterprises()
-    // },
+    page(newPage, oldPage) {
+      this.fetchSharedRequest()
+    },
   },
 
   created() {
     // URLからクエリパラメータを読み込む
-    this.restoreStateFromURL()
+    // this.restoreStateFromURL()
     // 初期データ取得
-    // this.fetchEnterprises()
+    this.fetchSharedRequest()
   },
 
   methods: {
@@ -251,8 +241,14 @@ export default {
       // this.filterCategory = query.category || ''
       // など
     },
-    // Enterprise一覧データの取得
-    async fetchEnterprises() {
+    /**
+     * 共有リクエストのデータを取得する
+     * ページネーションと検索条件に基づいてAPIからデータを取得し
+     * 仮想スクロールを再マウントしてスクロール位置をリセットする
+     * @async
+     * @returns {Promise<void>} - 取得処理の結果を示すPromise
+     */
+    async fetchSharedRequest() {
       this.loading = true
 
       try {
@@ -269,7 +265,7 @@ export default {
           }
         })
 
-        this.currentPageEnterprises = response.data
+        this.currentPageData = response.data
         this.totalItems = response.total
         this.renderVirtualScroll = true
       } catch (error) {
@@ -297,7 +293,7 @@ export default {
             search: this.searchKeyword || undefined, // 検索キーワードがある場合のみ送信
           }
         })
-        this.currentPageEnterprises = response.data
+        this.currentPageData = response.data
         this.totalItems = response.total
 
         // チェックボックスにチェックが入る不具合を防ぐために，APIコール後にチェックボックスをリセットする
@@ -315,27 +311,27 @@ export default {
     },
     /**
      * 検索を実行する
-     * 検索キーワードをURLに反映し、ページを1に戻して結果を表示する
      */
     executeSearch() {
-      console.log('AAA');
+      this.page = 1 // 検索後は必ず1ページ目
+      this.fetchSharedRequest()
 
       // 現在のクエリパラメータをコピー
-      const newQuery = { ...this.$route.query }
+      // const newQuery = { ...this.$route.query }
 
       // 検索キーワードの処理
-      if (this.searchKeyword) {
-        // 検索キーワードがある場合は追加
-        newQuery.search = this.searchKeyword
-      } else {
-        // 検索キーワードがない場合は削除
-        delete newQuery.search
-      }
+      // if (this.searchKeyword) {
+      //   // 検索キーワードがある場合は追加
+      //   newQuery.search = this.searchKeyword
+      // } else {
+      //   // 検索キーワードがない場合は削除
+      //   delete newQuery.search
+      // }
 
       // 検索実行時は必ずページ1から表示
-      newQuery.page = 1
-      // URLを更新（これにより$route.queryのwatcherが発火してデータが再取得される）
-      this.$router.push({ query: newQuery })
+      // newQuery.page = 1
+      // // URLを更新（これにより$route.queryのwatcherが発火してデータが再取得される）
+      // this.$router.push({ query: newQuery })
 
       // 注：データの取得自体は$route.queryのwatcherで自動的に行われるため
       // ここではfetchExhibitorsを呼び出す必要はない
@@ -380,29 +376,11 @@ export default {
     toggleSelectAll() {
       if (this.selectAll) {
         // すべての項目を選択
-        this.selectedItems = this.currentPageEnterprises.map(item => item.id)
+        this.selectedItems = this.currentPageData.map(item => item.id)
       } else {
         // 選択をクリア
         this.selectedItems = []
       }
-    },
-    /**
-     * 指定されたページ番号へ遷移する
-     * 現在と同じページ番号の場合は処理をスキップし，クエリパラメータを使用して画面遷移を行う
-     *
-     * @param {number} pageNumber - 移動先のページ番号
-     */
-    changePage(pageNumber) {
-      // ページ番号が現在と同じなら何もしない
-      if (this.page === pageNumber) return
-
-      // クエリパラメータを使ってページ遷移
-      this.$router.push({
-        query: {
-          ...this.$route.query,
-          page: pageNumber
-        }
-      })
     },
     /**
      * スナックバーでメッセージを表示する
