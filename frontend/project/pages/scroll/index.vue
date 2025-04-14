@@ -114,16 +114,28 @@
 
     <!-- ページネーション -->
     <div v-if="renderVirtualScroll" class="d-flex flex-column mt-6 align-center">
-      <div v-if="totalItems > 0" class="text-body-1 grey--text">
-        全{{ formattedTotalItems }}件
+      <div class="d-flex align-center mb-2">
+        <div v-if="totalItems > 0" class="text-body-1 grey--text">
+          全{{ formattedTotalItems }}件
+        </div>
+        <v-select
+          v-model="itemsPerPage"
+          class="items-per-page-select"
+          dense
+          hide-details
+          label="表示件数"
+          outlined
+          :disabled="loading"
+          :items="[2, 10, 50, 100, 500, 1000]"
+        />
+        <v-pagination
+          v-model="page"
+          class="mb-2"
+          :disabled="loading"
+          :length="pageCount"
+          :total-visible="7"
+        />
       </div>
-      <v-pagination
-        v-model="page"
-        class="mb-2"
-        :disabled="loading"
-        :length="pageCount"
-        :total-visible="7"
-      />
     </div>
 
     <!-- 削除ダイアログ -->
@@ -213,6 +225,15 @@ export default {
      */
     page(newPage, oldPage) {
       this.fetchSharedRequest()
+    },
+    /**
+     * 表示件数の変更を監視する
+     * 表示件数が変更されたら1ページ目に戻してデータを再取得する
+     * @param {number} newItemsPerPage - 新しい表示件数
+     * @param {number} oldItemsPerPage - 以前の表示件数
+     */
+    itemsPerPage(newItemsPerPage, oldItemsPerPage) {
+      this.refreshData()
     },
   },
 
@@ -321,13 +342,7 @@ export default {
      * 検索を実行する
      */
     executeSearch() {
-      if (this.page === 1) {
-        // ページ1で検索した場合は明示的にデータを取得する
-        this.fetchSharedRequest()
-      } else {
-        // ページ1以外の場合はページを1に設定（watchが検知して自動的にfetchSharedRequestが実行される）
-        this.page = 1
-      }
+      this.refreshData()
       // this.page = 1 // 検索後は必ず1ページ目
       // this.fetchSharedRequest()
 
@@ -361,6 +376,20 @@ export default {
       // })
       // URLの変更でページが再読み込みされるため、ここではfetchEnterprisesを呼ばない
       // this.fetchEnterprises()
+    },
+    /**
+     * データを再取得する際の共通処理
+     * 現在のページが1ページ目の場合は直接データを取得し，
+     * そうでない場合はページを1ページ目に設定してwatchトリガーでデータを取得する
+     */
+    refreshData() {
+      if (this.page === 1) {
+        // 1ページ目の場合は page値が変わらないため watch が発火しないので明示的にデータを取得する
+        this.fetchSharedRequest()
+      } else {
+        // ページ1以外の場合はページを1に設定（watchが検知して自動的にfetchSharedRequestが実行される）
+        this.page = 1
+      }
     },
     /**
      * 削除ダイアログを開く
