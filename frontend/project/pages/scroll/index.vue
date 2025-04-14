@@ -296,7 +296,15 @@ export default {
         this.currentPageData = response.data
         this.totalItems = response.total
 
-        // チェックボックスにチェックが入る不具合を防ぐために，APIコール後にチェックボックスをリセットする
+        // ページ内のデータが全て削除された場合に，空のページを表示せず前のページに戻る処理（いいコメント例）
+        // 現在のページが空で かつ 1ページ目ではない場合（ダメなコメント例）
+        if (this.currentPageData.length === 0 && this.page > 1) {
+          // ページを1つ戻し，pageの変更をwatchに検知させる
+          this.page--
+          return
+        }
+
+        // チェックボックスにチェックが入る謎挙動を防ぐために，APIコール後にチェックボックスをリセットする
         this.selectedItems = []
         this.selectAll = false
       } catch (error) {
