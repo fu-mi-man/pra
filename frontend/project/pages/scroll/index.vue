@@ -321,8 +321,15 @@ export default {
      * 検索を実行する
      */
     executeSearch() {
-      this.page = 1 // 検索後は必ず1ページ目
-      this.fetchSharedRequest()
+      if (this.page === 1) {
+        // ページ1で検索した場合は明示的にデータを取得する
+        this.fetchSharedRequest()
+      } else {
+        // ページ1以外の場合はページを1に設定（watchが検知して自動的にfetchSharedRequestが実行される）
+        this.page = 1
+      }
+      // this.page = 1 // 検索後は必ず1ページ目
+      // this.fetchSharedRequest()
 
       // 現在のクエリパラメータをコピー
       // const newQuery = { ...this.$route.query }
