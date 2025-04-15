@@ -21,6 +21,17 @@
         @click:append="executeSearch"
         @keydown.enter="executeSearch"
       />
+      <!-- フィルターボタン -->
+      <v-btn
+        color="primary"
+        outlined
+        @click="drawer = !drawer"
+      >
+        <v-icon left>
+          mdi-filter-variant
+        </v-icon>
+        フィルター
+      </v-btn>
     </div>
 
     <!-- テーブルヘッダー -->
@@ -138,6 +149,13 @@
       </div>
     </div>
 
+    <!-- フィルタードロワー -->
+    <filter-drawer
+      v-model="drawer"
+      :filters="filters"
+      @change="handleFiltersChange"
+    />
+
     <!-- 削除ダイアログ -->
     <delete-request-dialog
       v-model="deleteDialog"
@@ -160,17 +178,25 @@
 import ValidatedTextField from '@/components/atoms/inputs/base/ValidatedTextField.vue'
 import ValidationErrorAlert from '@/components/molecules/alerts/ValidationErrorAlert.vue'
 import DeleteRequestDialog from '@/components/organisms/dialogs/DeleteRequestDialog.vue'
+import FilterDrawer from '@/components/organisms/drawers/FilterDrawer.vue'
 
 export default {
   components: {
     ValidatedTextField,
     ValidationErrorAlert,
     DeleteRequestDialog,
+    FilterDrawer,
   },
 
   data() {
     return {
       searchKeyword: '', // 検索キーワード
+
+      // ドロワー関連
+      drawer: false,
+      filters: {
+        deleted: false
+      },
 
       currentPageData: [],
       renderVirtualScroll: true, // VirtualScrollの再マウントを制御するフラグ
@@ -376,6 +402,14 @@ export default {
       // })
       // URLの変更でページが再読み込みされるため、ここではfetchEnterprisesを呼ばない
       // this.fetchEnterprises()
+    },
+    /**
+     * フィルター変更時のハンドラー
+     * @param {Object} newFilters - 新しいフィルター設定
+     */
+    handleFiltersChange(newFilters) {
+      this.filters = newFilters
+      this.refreshData()
     },
     /**
      * データを再取得する際の共通処理
