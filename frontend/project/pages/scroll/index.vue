@@ -25,7 +25,7 @@
       <v-btn
         color="primary"
         outlined
-        @click="drawer = !drawer"
+        @click="drawer = true"
       >
         <v-icon left>
           mdi-filter-variant

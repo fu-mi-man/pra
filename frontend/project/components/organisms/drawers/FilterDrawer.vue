@@ -1,17 +1,18 @@
 <!-- components/organisms/drawers/FilterDrawer.vue -->
 <template>
   <v-navigation-drawer
-    v-model="isOpen"
+    :value="value"
     app
     clipped
     right
     temporary
     width="300"
+    @input="$emit('input', $event)"
   >
     <v-list>
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title class="text-h6">フィルター</v-list-item-title>
+          <v-list-item-title class="text-h6">絞り込み</v-list-item-title>
         </v-list-item-content>
         <v-list-item-action>
           <v-btn
@@ -60,10 +61,16 @@
 <script>
 export default {
   props: {
+    /**
+     * ドロワーの表示/非表示を制御する値
+     */
     value: {
       type: Boolean,
       default: false
     },
+    /**
+     * 親コンポーネントから渡されるフィルター設定
+     */
     filters: {
       type: Object,
       default: () => ({
@@ -77,48 +84,35 @@ export default {
       // propsをローカルデータにコピー
       localFilters: {
         deleted: this.filters.deleted
-      }
+      },
     }
   },
 
   watch: {
-    // propsが変更されたらローカルデータを更新
+    /**
+     * 親コンポーネントからのfiltersプロップが変更された時に
+     * ローカルの状態を同期する
+     *
+     * @param {Object} newFilters - 新しいフィルター設定
+     */
     filters: {
       handler(newFilters) {
         this.localFilters = { ...newFilters }
       },
       deep: true
-    }
-  },
-
-  computed: {
-    isOpen: {
-      get() {
-        return this.value
-      },
-      set(value) {
-        this.$emit('input', value)
-      }
-    }
+    },
   },
 
   methods: {
-    /**
-     * ドロワーを閉じる
-     */
-    close() {
-      this.isOpen = false
-    },
-
     /**
      * フィルター変更時にイベントを発行する
      */
     emitChange() {
       this.$emit('change', { ...this.localFilters })
     },
-
     /**
-     * フィルターをリセットする
+     * フィルター設定をデフォルト値にリセットする
+     * リセット後は親コンポーネントに変更を通知
      */
     resetFilters() {
       // フィルターを初期状態にリセット
@@ -126,7 +120,13 @@ export default {
 
       // イベントを発行
       this.emitChange()
-    }
+    },
+    /**
+     * ドロワーを閉じる
+     */
+    close() {
+      this.$emit('input', false)
+    },
   }
 }
 </script>
