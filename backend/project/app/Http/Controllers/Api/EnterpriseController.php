@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\BulkDeleteSharedRequestsJob;
 use App\Models\Enterprise;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -57,5 +58,25 @@ class EnterpriseController extends Controller
         $enterprise->delete();
 
         return response()->json(null, 204);
+    }
+
+    /**
+     * 出展者の一括削除
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function bulkDestroy(Request $request): JsonResponse
+    {
+        $enterpriseIds = $request->input('enterprise_ids', []);
+
+        if (empty($enterpriseIds)) {
+            return response()->json(['message' => '削除対象の出展者IDが指定されていません'], 400);
+        }
+
+        // ジョブをディスパッチ
+        BulkDeleteSharedRequestsJob::dispatch($enterpriseIds);
+
+        return response()->json(['message' => '一括削除処理をキューに追加しました'], 202);
     }
 }
