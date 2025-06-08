@@ -16,8 +16,8 @@
       :width="400"
     >
       <!-- ヘッダー部分 -->
-      <div class="drawer-header">
-        <div class="d-flex px-4 py-3 align-center justify-space-between">
+      <div class="px-4">
+        <div class="d-flex py-3 align-center justify-space-between">
           <div class="text-h6">絞り込み</div>
           <v-btn
             icon
@@ -31,48 +31,45 @@
       <v-divider />
 
       <!-- 条件部分 -->
-      <div class="drawer-content">
-        <v-list class="pa-0">
-          <!-- 展開可能なパネル -->
-          <v-expansion-panels multiple accordion>
-            <!-- 商品種別 -->
-            <v-expansion-panel>
-              <v-expansion-panel-header>
-                商品種別
-              </v-expansion-panel-header>
-              <v-expansion-panel-content>
-                <v-select
-                  v-model="selectedProductType"
-                  :items="productTypes"
-                  label="商品種別"
-                  outlined
-                  dense
-                  hide-details
-                  class="mt-2"
-                />
-              </v-expansion-panel-content>
-            </v-expansion-panel>
+      <v-list class="pa-0 drawer-content">
+        <v-expansion-panels multiple accordion>
+          <!-- 商品種別 -->
+          <v-expansion-panel>
+            <v-expansion-panel-header>
+              商品種別
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-select
+                v-model="selectedProductType"
+                :items="productTypes"
+                label="商品種別"
+                outlined
+                dense
+                hide-details
+                class="mt-2"
+              />
+            </v-expansion-panel-content>
+          </v-expansion-panel>
 
-            <!-- 公開状態 -->
-            <v-expansion-panel>
-              <v-expansion-panel-header>
-                公開状態
-              </v-expansion-panel-header>
-              <v-expansion-panel-content>
-                <v-select
-                  v-model="selectedPublishStatus"
-                  :items="publishStatuses"
-                  class="mt-2"
-                  dense
-                  hide-details
-                  label="公開状態"
-                  outlined
-                />
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-          </v-expansion-panels>
-        </v-list>
-      </div>
+          <!-- 公開状態 -->
+          <v-expansion-panel>
+            <v-expansion-panel-header>
+              公開状態
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-select
+                v-model="selectedPublishStatus"
+                :items="publishStatuses"
+                class="mt-2"
+                dense
+                hide-details
+                label="公開状態"
+                outlined
+              />
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
+      </v-list>
 
       <!-- 絞り込みボタン -->
       <div class="filter-button-container">
@@ -127,7 +124,6 @@ export default {
 .drawer-content {
   height: calc(100vh - 125px); /* ヘッダーとボタンの高さを考慮 */
   overflow-y: auto;
-  padding-bottom: 16px;
 }
 
 .filter-button-container {
