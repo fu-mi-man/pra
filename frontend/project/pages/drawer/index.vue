@@ -16,29 +16,23 @@
       :width="400"
     >
       <!-- ヘッダー部分 -->
-      <v-list>
-        <v-list-item>
-          <v-list-item-content>
-            <v-list-item-title class="title">
-              絞り込み
-            </v-list-item-title>
-          </v-list-item-content>
-          <v-list-item-action>
-            <v-btn
-              icon
-              @click="drawer = false"
-            >
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-          </v-list-item-action>
-        </v-list-item>
+      <div class="drawer-header">
+        <div class="d-flex px-4 py-3 align-center justify-space-between">
+          <div class="text-h6">絞り込み</div>
+          <v-btn
+            icon
+            @click="drawer = false"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </div>
+      </div>
 
-        <v-divider />
-      </v-list>
+      <v-divider />
 
       <!-- 条件部分 -->
       <div class="drawer-content">
-        <v-list>
+        <v-list class="pa-0">
           <!-- 展開可能なパネル -->
           <v-expansion-panels multiple accordion>
             <!-- 商品種別 -->
@@ -131,7 +125,7 @@ export default {
 </script>
 <style scoped>
 .drawer-content {
-  height: calc(100vh - 180px); /* ヘッダーとボタンの高さを考慮 */
+  height: calc(100vh - 125px); /* ヘッダーとボタンの高さを考慮 */
   overflow-y: auto;
   padding-bottom: 16px;
 }
