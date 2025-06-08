@@ -17,7 +17,7 @@
       class="d-flex flex-column"
     >
       <!-- ヘッダー部分 -->
-      <div class="px-4 py-3 d-flex align-center justify-space-between flex-shrink-0 drawer__header">
+      <div class="d-flex px-4 py-3 align-center justify-space-between drawer__header">
         <div class="text-h6">絞り込み</div>
         <v-btn
           icon
@@ -27,55 +27,49 @@
         </v-btn>
       </div>
 
-      <!-- <v-divider /> -->
-
       <!-- 条件部分 -->
-      <div class="pa-0 flex-grow-1 overflow-y-auto drawer__content" style="min-height: 0;">
-        <v-list class="pa-0">
-          <v-expansion-panels multiple accordion>
-            <!-- 商品種別 -->
-            <v-expansion-panel>
-              <v-expansion-panel-header>
-                商品種別
-              </v-expansion-panel-header>
-              <v-expansion-panel-content>
-                <v-select
-                  v-model="selectedProductType"
-                  :items="productTypes"
-                  label="商品種別"
-                  outlined
-                  dense
-                  hide-details
-                  class="mt-2"
-                />
-              </v-expansion-panel-content>
-            </v-expansion-panel>
+      <div class="overflow-y-auto drawer__content">
+        <v-expansion-panels multiple accordion>
+          <!-- 商品種別 -->
+          <v-expansion-panel>
+            <v-expansion-panel-header>
+              商品種別
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-select
+                v-model="selectedProductType"
+                :items="productTypes"
+                class="mt-2"
+                dense
+                hide-details
+                label="商品種別"
+                outlined
+              />
+            </v-expansion-panel-content>
+          </v-expansion-panel>
 
-            <!-- 公開状態 -->
-            <v-expansion-panel>
-              <v-expansion-panel-header>
-                公開状態
-              </v-expansion-panel-header>
-              <v-expansion-panel-content>
-                <v-select
-                  v-model="selectedPublishStatus"
-                  :items="publishStatuses"
-                  class="mt-2"
-                  dense
-                  hide-details
-                  label="公開状態"
-                  outlined
-                />
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-          </v-expansion-panels>
-        </v-list>
+          <!-- 公開状態 -->
+          <v-expansion-panel>
+            <v-expansion-panel-header>
+              公開状態
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-select
+                v-model="selectedPublishStatus"
+                :items="publishStatuses"
+                class="mt-2"
+                dense
+                hide-details
+                label="公開状態"
+                outlined
+              />
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
       </div>
 
-      <!-- <v-divider /> -->
-
       <!-- 絞り込みボタン -->
-      <div class="pa-4 drawer__footer flex-shrink-0">
+      <div class="pa-4 drawer__footer">
         <v-btn
           block
           color="primary"
@@ -121,24 +115,17 @@ export default {
   },
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .drawer__header {
   border-bottom: 1px solid rgba(0,0,0,0.12);
-  position: sticky;
-  top: 0;
-  z-index: 2; /* 1だとスクロールが上に来るので2を指定 */
 }
 
 .drawer__content {
-  flex-grow: 1;
+  /* ヘッダー + フッター + border2px */
   height: calc(100vh - 130px);
-  overflow-y: auto;
 }
 
 .drawer__footer {
   border-top: 1px solid rgba(0,0,0,0.12);
-  bottom: 0;
-  position: sticky;
-  z-index: 1;
 }
 </style>
