@@ -15,6 +15,7 @@
       temporary
       :width="400"
     >
+      <!-- ヘッダー部分 -->
       <v-list>
         <v-list-item>
           <v-list-item-content>
@@ -33,47 +34,63 @@
         </v-list-item>
 
         <v-divider />
-
-        <!-- 展開可能なパネル -->
-        <v-expansion-panels>
-          <!-- 商品種別 -->
-          <v-expansion-panel>
-            <v-expansion-panel-header>
-              商品種別
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
-              <v-select
-                v-model="selectedProductType"
-                :items="productTypes"
-                label="商品種別"
-                outlined
-                dense
-                hide-details
-                class="mt-2"
-              ></v-select>
-            </v-expansion-panel-content>
-          </v-expansion-panel>
-
-          <!-- 公開状態 -->
-          <v-expansion-panel>
-            <v-expansion-panel-header>
-              公開状態
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
-              <v-select
-                v-model="selectedPublishStatus"
-                :items="publishStatuses"
-                label="公開状態"
-                outlined
-                dense
-                hide-details
-                class="mt-2"
-              ></v-select>
-            </v-expansion-panel-content>
-          </v-expansion-panel>
-
-        </v-expansion-panels>
       </v-list>
+
+      <!-- 条件部分 -->
+      <div class="drawer-content">
+        <v-list>
+          <!-- 展開可能なパネル -->
+          <v-expansion-panels multiple accordion>
+            <!-- 商品種別 -->
+            <v-expansion-panel>
+              <v-expansion-panel-header>
+                商品種別
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <v-select
+                  v-model="selectedProductType"
+                  :items="productTypes"
+                  label="商品種別"
+                  outlined
+                  dense
+                  hide-details
+                  class="mt-2"
+                />
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+
+            <!-- 公開状態 -->
+            <v-expansion-panel>
+              <v-expansion-panel-header>
+                公開状態
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <v-select
+                  v-model="selectedPublishStatus"
+                  :items="publishStatuses"
+                  class="mt-2"
+                  dense
+                  hide-details
+                  label="公開状態"
+                  outlined
+                />
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
+        </v-list>
+      </div>
+
+      <!-- 絞り込みボタン -->
+      <div class="filter-button-container">
+        <v-btn
+          block
+          color="primary"
+          @click="applyFilter"
+        >
+          絞り込む
+        </v-btn>
+      </div>
+
     </v-navigation-drawer>
   </v-container>
 </template>
@@ -101,6 +118,32 @@ export default {
       ],
       selectedPublishStatus: 'all', // 選択された公開状態
     }
-  }
+  },
+  methods: {
+    applyFilter() {
+      // 絞り込み処理を実装
+      console.log('商品種別:', this.selectedProductType)
+      console.log('公開状態:', this.selectedPublishStatus)
+      // ここに実際の絞り込み処理を追加
+    }
+  },
 }
 </script>
+<style scoped>
+.drawer-content {
+  height: calc(100vh - 180px); /* ヘッダーとボタンの高さを考慮 */
+  overflow-y: auto;
+  padding-bottom: 16px;
+}
+
+.filter-button-container {
+  background-color: white;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  bottom: 0;
+  left: 0;
+  padding: 16px;
+  position: fixed;
+  right: 0;
+  z-index: 1;
+}
+</style>
