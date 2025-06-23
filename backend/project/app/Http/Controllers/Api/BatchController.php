@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\BatchJob;
+use Illuminate\Bus\Batch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class BatchController extends Controller
 {
@@ -32,8 +34,22 @@ class BatchController extends Controller
 
         // バッチでディスパッチ
         Bus::batch($jobs)
-            ->then(function () {
-                Log::info('全てのバッチジョブが完了！');
+            ->name('BATCHNAME!!!')
+            ->allowFailures(false) // デフォルトfalse（バッチがキャンセル扱い＆完了時間挿入）
+            ->then(function (Batch $batch) {
+                Log::info('ジョブの中でエラーが発生すればここには入りません');
+                Log::info('ジョブが全て成功すればここに入ります');
+                // バッチレコードを削除
+                // $batch->delete();
+                // Log::info('バッチレコードを削除しました', ['batch_id' => $batch->id]);
+            })
+            ->catch(function (Batch $batch, Throwable $e) {
+                // 最初の失敗検知時に1回だけ実行
+                // $eは最初に失敗したジョブの例外
+                Log::error('バッチで失敗発生', [
+                    'error' => $e->getMessage(),
+                    'failed_jobs' => $batch->failedJobs,
+                ]);
             })
             ->dispatch();
     }
