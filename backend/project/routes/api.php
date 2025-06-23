@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AnnouncementController;
+use App\Http\Controllers\Api\BatchController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\EnterpriseController;
 use App\Http\Controllers\CSVValidationController;
@@ -21,6 +22,9 @@ Route::get('/hello', function() {
 Route::get('/groups', [GroupController::class, 'index']);
 Route::post('/validate-csv', [CSVValidationController::class, 'validate']);
 Route::post('/upload', [UploadController::class, 'upload']);
+
+// バッチ
+Route::post('/batch', [BatchController::class, 'store']);
 
 // 出展者一覧
 Route::get('/enterprises', [EnterpriseController::class, 'index']);

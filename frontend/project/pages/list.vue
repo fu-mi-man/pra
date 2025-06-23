@@ -18,6 +18,7 @@ export default {
     return {
       directoryStructure: [
         { name: 'ホーム', path: '/' },
+        { name: 'バッチ', path: '/batch' },
         { name: 'バーチャルスクロール', path: '/scroll' },
         { name: 'ナビゲーションドロワー', path: '/drawer' },
         { name: 'カテゴリ管理', path: '/category' },
