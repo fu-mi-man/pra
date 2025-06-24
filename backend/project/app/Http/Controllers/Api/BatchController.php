@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\BatchJob;
+use App\Mail\BatchCompletedMail;
 use Illuminate\Bus\Batch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Throwable;
 
 class BatchController extends Controller
@@ -50,6 +52,11 @@ class BatchController extends Controller
                     'error' => $e->getMessage(),
                     'failed_jobs' => $batch->failedJobs,
                 ]);
+            })
+            ->finally(function (Batch $batch) {
+                Log::info('メール送信します');
+                Mail::to('admin@example.com')->send(new BatchCompletedMail());
+                Log::info('メール送信しました');
             })
             ->dispatch();
     }
