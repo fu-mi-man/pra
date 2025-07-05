@@ -24,6 +24,7 @@ services:
     image: "php:8.3"
     volumes:
       - ./backend:/var/www
+      - ./backend/supervisor/conf.d:/etc/supervisor/conf.d # supervisorの設定ファイルをマウント
     #   - ./backend/conf.d/custom-php.ini:/usr/local/etc/php/conf.d/zz-custom-php.ini:ro # 読み取り専用でマウントする
     # environment:
     #   - TZ=Asia/Tokyo # コンテナ自体のタイムゾーンの設定

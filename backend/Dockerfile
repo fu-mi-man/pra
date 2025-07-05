@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
   git \
   zip \
   unzip \
+  supervisor \
   && docker-php-ext-install pdo_mysql
 
 # マルチステージビルドを使って常に最新の`composer`をインストールする
