@@ -37,6 +37,7 @@ class BatchController extends Controller
         // バッチでディスパッチ
         Bus::batch($jobs)
             ->name('BATCHNAME!!!')
+            ->onQueue('batch')
             ->allowFailures(false) // デフォルトfalse（バッチがキャンセル扱い＆完了時間挿入）
             ->then(function (Batch $batch) {
                 Log::info('ジョブの中でエラーが発生すればここには入りません');
