@@ -44,12 +44,29 @@ which supervisorctl
 
 ## systemd サービス設定
 **※サーバー再起動時に自動起動させたい場合，systemdサービス化が必要**  
-⇒**設定する必要がある**
+⇒**設定する必要がある**  
 
-自動起動が有効かどうか確認
+### systemd とは
+Linuxシステムのサービス管理システム
+- サービスの自動起動・停止・再起動
+- 依存関係の管理
+- ログ管理
+
+<br>
+
+
+
+サービス状態確認
+```bash
+systemctl status supervisor
+# Unit supervisor.service could not be found.
+```
+
+
+自動起動設定が有効かどうか確認
 ```bash
 sudo systemctl is-enabled supervisord
-# Failed to get unit file state for supervisord.service: No such file or directory（未設定時のエラー）
+# 未設定時： Failed to get unit file state for supervisord.service: No such file or directory
 ```
 
 システム起動時にsupervisordを自動起動する設定
